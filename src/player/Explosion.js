@@ -1,12 +1,13 @@
 import Particle from "./Particle";
 
 export default class Explosion {
-  constructor(x, y, vector2){
+  constructor(x, y, vector2, numberOfParticles){
     this.x = x;
     this.y = y;
     this.vector2 = vector2;
-    this.numberOfParticles = 6
+    this.numberOfParticles = numberOfParticles
     this.particles = new Map();
+    this.hash = Math.random().toString(36).slice(2);
     this.init()
   }
 
@@ -17,11 +18,11 @@ export default class Explosion {
     }
   }
 
-  update(){
+/*   update(){
     this.particles.forEach((particle) => {
       particle.update();
     })
-  }
+  } */
 }
 
 // maxLength not normalised

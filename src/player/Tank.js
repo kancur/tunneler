@@ -3,17 +3,28 @@
 // 3 for barel
 
 import KeyHandler from '../KeyHandler';
+import { Base } from './Base';
+import Projectile from './Projectile';
 
 export default class Tank {
-  constructor(colorOffset) {
+  constructor(colorOffset, map, lightColorCode, darkColorCode, baseColorCode) {
+    this.lightColor = lightColorCode;
+    this.darkColor = darkColorCode;
+    this.gameMap = map;
     this.movementSpeed = 1;
     this.x = 50;
     this.y = 50;
+    this.vector2 = { x: 0, y: -1 };
+    this._prevX;
+    this._prevY;
     this._originalWidth = 7;
     this._originalHeight = 7;
     this.width = this._originalWidth;
     this.height = this._originalHeight;
-    this.movementSpeed = 0; //pixel per update
+    this.hash = Math.random().toString(36).slice(2);
+    this.base = new Base(this.x -15, this.y - 14, this.hash, baseColorCode)
+    this.framesSinceLastShot = 0;
+    this.movementSpeed = 1; //pixel per update
     // prettier-ignore
     this.tankUp = [
       0,0,0,3,0,0,0,
@@ -23,9 +34,20 @@ export default class Tank {
       0,1,2,2,2,1,0,
       0,1,2,2,2,1,0,
       0,1,0,0,0,1,0,
-    ].map((x) =>
-    x !== 0 ? x + colorOffset : 0
+    ].map((x) => {
+      if (x === 1) {
+        return this.darkColor;
+      }
+      if (x === 2) {
+        return this.lightColor;
+      }
+      if (x === 3) {
+        return 6;
+      }
+      return 0;
+    }
   );
+
     this.tankDown = this.tankUp.slice().reverse();
     this.tankRight = get90degRotatedOriginalShape(
       this.tankUp,
@@ -58,6 +80,7 @@ export default class Tank {
       this._originalHeight
     );
     this.currentTankShape = this.tankUp;
+    this._prevTankShape = null;
     this.keyHandler = new KeyHandler();
   }
 
@@ -65,92 +88,104 @@ export default class Tank {
     return this.currentTankShape[y * this.width + x];
   }
 
+  getPreviousTankTile(x, y) {
+    return this._prevTankShape[y * this.width + x];
+  }
+
   getOriginalTile(x, y) {
     return this.tankUp[y * this.width + x];
   }
 
+  checkIfDirt() {
+    /* if (this.direction === 'up') {
+      for (let i = 0; i < this.width; i++) {
+        const currentTile = this.gameMap.getTile(this.x + i, this.y - 1);
+      }
+    } */
+  }
+
   rotateUp() {
     this.currentTankShape = this.tankUp;
-    this.lastDirection = 'up';
+    this.vector2 = { x: 0, y: -1 };
     this.setWidths('vertical');
   }
 
   rotateDown() {
     this.currentTankShape = this.tankDown;
-    this.lastDirection = 'down';
+    this.vector2 = { x: 0, y: 1 };
     this.setWidths('vertical');
   }
 
   rotateRight() {
     this.currentTankShape = this.tankRight;
-    this.lastDirection = 'right';
+    this.vector2 = { x: 1, y: 0 };
     this.setWidths('horizontal');
   }
 
   rotateLeft() {
     this.currentTankShape = this.tankLeft;
-    this.lastDirection = 'left';
+    this.vector2 = { x: -1, y: 0 };
     this.setWidths('horizontal');
   }
 
   rotateTopRight() {
     this.currentTankShape = this.tankTopRight;
-    this.lastDirection = 'topRight';
+    this.vector2 = { x: 1, y: -1 };
     this.setWidths('diagonal');
   }
   rotateBottomRight() {
     this.currentTankShape = this.tankBottomRight;
-    this.lastDirection = 'bottomRight';
+    this.vector2 = { x: 1, y: 1 };
     this.setWidths('diagonal');
   }
   rotateBottomLeft() {
     this.currentTankShape = this.tankBottomLeft;
-    this.lastDirection = 'bottomLeft';
+    this.vector2 = { x: -1, y: 1 };
     this.setWidths('diagonal');
   }
   rotateTopLeft() {
     this.currentTankShape = this.tankTopLeft;
-    this.lastDirection = 'topLeft';
+    this.vector2 = { x: -1, y: -1 };
     this.setWidths('diagonal');
   }
 
   moveUp() {
-    if ((this.lastDirection = 'up')) {
-      this.y -= this.movementSpeed;
-    }
     this.rotateUp();
+    this.moveByVector();
   }
   moveDown() {
     this.rotateDown();
-    this.y += this.movementSpeed;
+    this.moveByVector();
   }
   moveRight() {
     this.rotateRight();
-    this.x += this.movementSpeed;
+    this.moveByVector();
   }
   moveLeft() {
     this.rotateLeft();
-    this.x -= this.movementSpeed;
+    this.moveByVector();
   }
   moveTopRight() {
     this.rotateTopRight();
-    this.x += this.movementSpeed;
-    this.y -= this.movementSpeed;
+    this.moveByVector();
   }
   moveBottomRight() {
     this.rotateBottomRight();
-    this.x += this.movementSpeed;
-    this.y += this.movementSpeed;
+    this.moveByVector();
   }
   moveBottomLeft() {
     this.rotateBottomLeft();
-    this.x -= this.movementSpeed;
-    this.y += this.movementSpeed;
+    this.moveByVector();
   }
   moveTopLeft() {
     this.rotateTopLeft();
-    this.x -= this.movementSpeed;
-    this.y -= this.movementSpeed;
+    this.moveByVector();
+  }
+
+  moveByVector() {
+    this.x += this.vector2.x * this.movementSpeed;
+    this.y += this.vector2.y * this.movementSpeed;
+
   }
 
   setWidths(orientation) {
@@ -166,8 +201,20 @@ export default class Tank {
     }
   }
 
+  shootProjectile() {
+    this.gameMap.pushProjectile(
+      new Projectile(this.x + 3, this.y + 3, this.vector2)
+    );
+    this.framesSinceLastShot = 0;
+  }
+
   update() {
-    const { up, down, right, left } = this.keyHandler.pressedKeys;
+    this.framesSinceLastShot += 1;
+    const { up, down, right, left, shoot } = this.keyHandler.pressedKeys;
+
+    if (shoot && this.framesSinceLastShot >= 2) {
+      this.shootProjectile();
+    }
 
     if (up && right) {
       this.moveTopRight();

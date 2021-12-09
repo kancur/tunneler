@@ -1,34 +1,44 @@
 // 0 === stone
 // 1 && 2 === ground
 // 3 === empty cell
-// 4 === tank tracks
-// 5 === tank body
-// 6 === barel
+// 4 === tank tracks blue
+// 5 === tank body blue
+// 6 === barel tank blue
+// 7 === tank tracks green
+// 8 === tank body green
+// 9 === barel tank green
+// 10 === projectile light
+// 11 === projectile dark
+// 12 === blue base
+// 13 === green base
 
 // prettier-ignore
-const ground_colors = [
+const colors = [
   { r: 154, g: 154, b: 154 }, // stone
   { r: 186, g: 89, b: 4 }, // ground 1
   { r: 195, g: 121, b: 48 },// ground 2
   { r: 0, g: 0, b: 0 },// empty cell (black)
   { r: 0, g: 0, b: 182 }, // tank tracks blue
   { r: 44, g: 44, b: 255 }, // tank body blue
-  { r: 243, g: 235, b: 28 }, // tank barrel
+  { r: 243, g: 235, b: 28 }, // tank barrel blue
+  { r: 0, g: 182, b: 0 }, // tank tracks green
+  { r: 44, g: 255, b: 44 }, // tank body green
+  { r: 243, g: 235, b: 28 }, // tank barrel green
+  { r: 255, g: 52, b: 8 }, // projectile light
+  { r: 186, g: 0, b: 0 }, // projectile dark
+  { r: 0, g: 0, b: 182 }, // blue base 
+  { r: 0, g: 182, b: 0 }, // green base 
+
 ];
 
 export default class Render {
   constructor(viewport) {
     this.viewport = viewport;
-    this.canvas = document.querySelector("canvas");
+    this.canvas = document.querySelector('canvas');
     this.canvas.width = viewport.width;
     this.canvas.height = viewport.height;
-    this.ctx = this.canvas.getContext("2d");
-    this.imageData = this.ctx.getImageData(
-      0,
-      0,
-      this.canvas.width,
-      this.canvas.height
-    );
+    this.ctx = this.canvas.getContext('2d');
+    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
 
     this.pixels = this.imageData.data;
 
@@ -36,8 +46,8 @@ export default class Render {
   }
 
   init() {
-    this.canvas.style.height = "500px";
-    this.canvas.style.imageRendering = "pixelated";
+    this.canvas.style.height = '500px';
+    this.canvas.style.imageRendering = 'pixelated';
   }
 
   render() {
@@ -45,10 +55,10 @@ export default class Render {
       for (let x = 0; x < this.viewport.width; x++) {
         const offset = y * this.viewport.width * 4 + x * 4;
         const currentTile = this.viewport.getTile(x, y);
-        
-        this.pixels[offset] = ground_colors[currentTile].r;
-        this.pixels[offset + 1] = ground_colors[currentTile].g;
-        this.pixels[offset + 2] = ground_colors[currentTile].b;
+
+        this.pixels[offset] = colors[currentTile].r;
+        this.pixels[offset + 1] = colors[currentTile].g;
+        this.pixels[offset + 2] = colors[currentTile].b;
         this.pixels[offset + 3] = 255;
       }
     }
