@@ -5,28 +5,32 @@ export default class KeyHandler {
       up: false,
       left: false,
       right: false,
+      shoot: false,
     };
     this.init();
   }
 
   init() {
-    this.attachListener("keydown", true);
-    this.attachListener("keyup", false);
+    this.attachListener('keydown', true);
+    this.attachListener('keyup', false);
   }
 
   attachListener(event, bool) {
     document.addEventListener(event, ({ key }) => {
-      if (key === "ArrowUp") {
+      if (key === 'ArrowUp') {
         this.pressedKeys.up = bool;
       }
-      if (key === "ArrowDown") {
+      if (key === 'ArrowDown') {
         this.pressedKeys.down = bool;
       }
-      if (key === "ArrowRight") {
+      if (key === 'ArrowRight') {
         this.pressedKeys.right = bool;
       }
-      if (key === "ArrowLeft") {
+      if (key === 'ArrowLeft') {
         this.pressedKeys.left = bool;
+      }
+      if (key === ' ' || key === 'x') {
+        this.pressedKeys.shoot = bool;
       }
     });
   }
