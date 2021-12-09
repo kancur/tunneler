@@ -10,7 +10,6 @@ export default class Projectile {
     this.tailY = null;
     this.futurePath = null;
     this.vector2 = vector2;
-    //this.hash = `${this.x}${this.y}${this.direction}${Math.floor(Math.random() * 9999)}`
     this.hash = Math.random().toString(36).slice(2);
   }
 
