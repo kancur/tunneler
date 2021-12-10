@@ -3,17 +3,20 @@
 // 3 for barel
 
 import KeyHandler from '../KeyHandler';
+import { IMPENETRABLES, IMPENETRABLES_EXCEPT_TANKS } from '../map/GameMap';
 import { Base } from './Base';
 import Projectile from './Projectile';
 
 export default class Tank {
-  constructor(colorOffset, map, lightColorCode, darkColorCode, baseColorCode) {
+  constructor(colorOffset, map, lightColorCode, darkColorCode, baseColorCode, barelColorCode) {
     this.lightColor = lightColorCode;
     this.darkColor = darkColorCode;
+    this.barelColor = barelColorCode;
+    this.impenetrables = IMPENETRABLES.filter((code) => code !== this.lightColor && code !== this.darkColor && code !== this.barelColor);
     this.gameMap = map;
     this.movementSpeed = 1;
-    this.x = 50;
-    this.y = 50;
+    this.x = 70 + Math.floor(Math.random() * (map.width - 70));
+    this.y = 70 + Math.floor(Math.random() * (map.height - 70));
     this.vector2 = { x: 0, y: -1 };
     this._prevX;
     this._prevY;
@@ -22,7 +25,7 @@ export default class Tank {
     this.width = this._originalWidth;
     this.height = this._originalHeight;
     this.hash = Math.random().toString(36).slice(2);
-    this.base = new Base(this.x - 15, this.y - 14, this.hash, baseColorCode);
+    this.base = new Base(this.x - 14, this.y - 14, this.hash, baseColorCode);
     this.framesSinceLastShot = 0;
     this.movementSpeed = 1; //pixel per update
     this.readyToMove = false;
@@ -94,67 +97,93 @@ export default class Tank {
   }
 
   rotateUp() {
-    this.currentTankShape = this.tankUp;
-    this.vector2 = { x: 0, y: -1 };
-    this.setWidths('vertical');
-  }
-
-  rotateDown() {
-    this.currentTankShape = this.tankDown;
-    this.vector2 = { x: 0, y: 1 };
-    this.setWidths('vertical');
-  }
-
-  rotateRight() {
-    this.currentTankShape = this.tankRight;
-    this.vector2 = { x: 1, y: 0 };
-    this.setWidths('horizontal');
-  }
-
-  rotateLeft() {
-    this.currentTankShape = this.tankLeft;
-    this.vector2 = { x: -1, y: 0 };
-    this.setWidths('horizontal');
-  }
-
-  rotateTopRight() {
-    this.currentTankShape = this.tankTopRight;
-    this.vector2 = { x: 1, y: -1 };
-    this.setWidths('diagonal');
-  }
-  rotateBottomRight() {
-    this.currentTankShape = this.tankBottomRight;
-    this.vector2 = { x: 1, y: 1 };
-    this.setWidths('diagonal');
-  }
-  rotateBottomLeft() {
-    this.currentTankShape = this.tankBottomLeft;
-    this.vector2 = { x: -1, y: 1 };
-    this.setWidths('diagonal');
-  }
-  rotateTopLeft() {
-    this.currentTankShape = this.tankTopLeft;
-    this.vector2 = { x: -1, y: -1 };
-    this.setWidths('diagonal');
-  }
-
-  moveByCurrentVector() {
-    if (this.readyToMove) {
-      this.x += this.vector2.x * this.movementSpeed;
-      this.y += this.vector2.y * this.movementSpeed;
+    if (this.isLegalMove(this.x, this.y, this.tankUp)) {
+      this.currentTankShape = this.tankUp;
+      this.vector2 = { x: 0, y: -1 };
+    } else {
     }
   }
 
-  setWidths(orientation) {
-    if (orientation === 'vertical') {
-      this.width = this._originalWidth;
-      this.height = this._originalHeight;
-    } else if (orientation === 'horizontal') {
-      this.width = this._originalHeight;
-      this.height = this._originalWidth;
-    } else if (orientation === 'diagonal') {
-      this.width = this._originalHeight;
-      this.height = this._originalHeight;
+  rotateDown() {
+    if (this.isLegalMove(this.x, this.y, this.tankDown)) {
+      this.currentTankShape = this.tankDown;
+      this.vector2 = { x: 0, y: 1 };
+    } else {
+    }
+  }
+
+  rotateRight() {
+    if (this.isLegalMove(this.x, this.y, this.tankRight)) {
+      this.currentTankShape = this.tankRight;
+      this.vector2 = { x: 1, y: 0 };
+    } else {
+    }
+  }
+
+  rotateLeft() {
+    if (this.isLegalMove(this.x, this.y, this.tankLeft)) {
+      this.currentTankShape = this.tankLeft;
+      this.vector2 = { x: -1, y: 0 };
+    } else {
+    }
+  }
+
+  rotateTopRight() {
+    if (this.isLegalMove(this.x, this.y, this.tankTopRight)) {
+      this.currentTankShape = this.tankTopRight;
+      this.vector2 = { x: 1, y: -1 };
+    } else {
+    }
+  }
+  rotateBottomRight() {
+    if (this.isLegalMove(this.x, this.y, this.tankBottomRight)) {
+      this.currentTankShape = this.tankBottomRight;
+      this.vector2 = { x: 1, y: 1 };
+    } else {
+    }
+  }
+  rotateBottomLeft() {
+    if (this.isLegalMove(this.x, this.y, this.tankBottomLeft)) {
+      this.currentTankShape = this.tankBottomLeft;
+      this.vector2 = { x: -1, y: 1 };
+    } else {
+    }
+  }
+  rotateTopLeft() {
+    if (this.isLegalMove(this.x, this.y, this.tankTopLeft)) {
+      this.currentTankShape = this.tankTopLeft;
+      this.vector2 = { x: -1, y: -1 };
+    } else {
+    }
+  }
+
+  isLegalMove(x, y, shape) {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        // ignore tiles of type 0 on tank
+        if (shape[j * this.width + i] !== 0) {
+          const underlyingTile = this.gameMap.getTile(x + i, y + j);
+          if (IMPENETRABLES_EXCEPT_TANKS.includes(underlyingTile)) { 
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  moveByVector(vector2) {
+    if (this.readyToMove) {
+      if (
+        this.isLegalMove(
+          this.x + vector2.x * this.movementSpeed,
+          this.y + vector2.y * this.movementSpeed,
+          this.currentTankShape
+        )
+      ) {
+        this.x += vector2.x * this.movementSpeed;
+        this.y += vector2.y * this.movementSpeed;
+      }
     }
   }
 
@@ -171,30 +200,40 @@ export default class Tank {
       this.shootProjectile();
     }
 
+    // duplicate rotations are to handle an edge case where the first rotation failed due to costraints
+    // the tank is allowed to "reverse" but should immediately rotate to the correct orientation in the same gameupdate
     if (up && right) {
       this.rotateTopRight();
-      this.moveByCurrentVector();
+      this.moveByVector({x: 1, y: -1});
+      this.rotateTopRight();
     } else if (right && down) {
       this.rotateBottomRight();
-      this.moveByCurrentVector();
+      this.moveByVector({x: 1, y: 1});
+      this.rotateBottomRight();
     } else if (down && left) {
       this.rotateBottomLeft();
-      this.moveByCurrentVector();
+      this.moveByVector({x: -1, y: 1});
+      this.rotateBottomLeft();
     } else if (up && left) {
       this.rotateTopLeft();
-      this.moveByCurrentVector();
+      this.moveByVector({x: -1, y: -1});
+      this.rotateTopLeft();
     } else if (up) {
       this.rotateUp();
-      this.moveByCurrentVector();
+      this.moveByVector({x: 0, y: -1});
+      this.rotateUp();
     } else if (down) {
       this.rotateDown();
-      this.moveByCurrentVector();
+      this.moveByVector({x: 0, y: 1});
+      this.rotateDown();
     } else if (right) {
       this.rotateRight();
-      this.moveByCurrentVector();
+      this.moveByVector({x: 1, y: 0});
+      this.rotateRight();
     } else if (left) {
       this.rotateLeft();
-      this.moveByCurrentVector();
+      this.moveByVector({x: -1, y: 0});
+      this.rotateLeft();
     }
 
     if (left || right || up || down) {
