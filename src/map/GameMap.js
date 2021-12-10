@@ -1,5 +1,5 @@
-// 1200 * 600
-
+// 1200 * 600 map size probably default
+import { SeededRNG } from '../Helpers';
 import Explosion from '../player/Explosion';
 
 // 0 === stone
@@ -22,7 +22,7 @@ export const PROJECTILE_BLOCKERS_EXCEPT_TANKS = [0, 1, 2, 12, 13];
 export const IMPENETRABLES_EXCEPT_TANKS = [0, 12, 13];
 
 export default class GameMap {
-  constructor(width = 1200, height = 600) {
+  constructor(width = 1200, height = 600, seed = 1) {
     this.settings = {
       border: {
         maxDepth: 50,
@@ -30,19 +30,44 @@ export default class GameMap {
         maxSteepness: 4,
       },
     };
+    this.seed = seed;
     this.width = width;
     this.height = height;
     this.tiles = [];
     this.tiles.length = width * height;
     this.tiles.fill(0);
-    this.tiles = this.tiles.map(() => (Math.random() > 0.5 ? 1 : 2));
-    this.generateStoneBorders();
+    this.tiles = this.tiles.map((code) => {
+      if (code === 0) return Math.random() > 0.5 ? 1 : 2;
+    });
+    this.generateStoneBorders(); 
     this.tiles = Uint8Array.from(this.tiles);
     this.prevTankTiles = [];
     this.activeTank = null;
     this.activeProjectiles = new Map();
     this.activeExplosions = new Map();
     this.bases = [];
+
+    this.init();
+  }
+
+  init() {
+    this.sendDataToServer();
+  }
+
+  sendDataToServer() {
+    const gameMap = {
+      seed: this.seed,
+      width: this.width,
+      height: this.height,
+      settings: this.settings,
+   }
+  }
+
+  logSize() {
+    const json = JSON.stringify(this.tiles);
+    const size = new TextEncoder().encode(json).length;
+    const kiloBytes = size / 1024;
+    console.log(`Map size: ${kiloBytes} KB`);
   }
 
   addBase(base) {
@@ -151,11 +176,11 @@ export default class GameMap {
   }
 
   generateStoneBorders() {
-    const { maxDepth } = this.settings.border;
-    const left = this.generateForOneSide(this.height, maxDepth);
-    const right = this.generateForOneSide(this.height, maxDepth);
-    const top = this.generateForOneSide(this.width, maxDepth);
-    const bottom = this.generateForOneSide(this.width, maxDepth);
+    const { maxDepth, maxEdgeLength, maxSteepness } = this.settings.border;
+    const left = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed);
+    const right = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 1);
+    const top = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 2);
+    const bottom = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 3);
 
     for (let y = 0; y < this.height; y++) {
       // left
@@ -194,17 +219,16 @@ export default class GameMap {
     }
   }
 
-  generateForOneSide(edgeLength, maxDepth) {
-    const { maxEdgeLength, maxSteepness } = this.settings.border;
-
-    let willKeepDirectionFor = getDirectionLength(maxEdgeLength);
-    let currentMaxSteepness = getCurrentMaxSteepness(maxSteepness);
-    let currentDistance = 10;
+  generateForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
+    const rng = new SeededRNG(seed);
+    let willKeepDirectionFor = 0; 
+    let currentMaxSteepness = 0;
+    let currentDistance = 50;
     let grow = true;
     let currentChange = 0;
     const array = [];
     array.length = edgeLength * maxDepth;
-    array.fill(1);
+    array.fill(1); // 1 will be ignored, 0 will be stone
 
     const setLocalTile = (x, y, type) => {
       array[y * maxDepth + x] = type;
