@@ -22,9 +22,10 @@ export default class Tank {
     this.width = this._originalWidth;
     this.height = this._originalHeight;
     this.hash = Math.random().toString(36).slice(2);
-    this.base = new Base(this.x -15, this.y - 14, this.hash, baseColorCode)
+    this.base = new Base(this.x - 15, this.y - 14, this.hash, baseColorCode);
     this.framesSinceLastShot = 0;
     this.movementSpeed = 1; //pixel per update
+    this.readyToMove = false;
     // prettier-ignore
     this.tankUp = [
       0,0,0,3,0,0,0,
@@ -49,10 +50,7 @@ export default class Tank {
   );
 
     this.tankDown = this.tankUp.slice().reverse();
-    this.tankRight = get90degRotatedOriginalShape(
-      this.tankUp,
-      this._originalWidth
-    );
+    this.tankRight = get90degRotatedOriginalShape(this.tankUp, this._originalWidth);
     this.tankLeft = this.tankRight.slice().reverse();
 
     // prettier-ignore
@@ -67,18 +65,9 @@ export default class Tank {
     ].map((x) =>
     x !== 0 ? x + colorOffset : 0
   );
-    this.tankBottomRight = get90degRotatedOriginalShape(
-      this.tankTopRight,
-      this._originalHeight
-    );
-    this.tankBottomLeft = get90degRotatedOriginalShape(
-      this.tankBottomRight,
-      this._originalHeight
-    );
-    this.tankTopLeft = get90degRotatedOriginalShape(
-      this.tankBottomLeft,
-      this._originalHeight
-    );
+    this.tankBottomRight = get90degRotatedOriginalShape(this.tankTopRight, this._originalHeight);
+    this.tankBottomLeft = get90degRotatedOriginalShape(this.tankBottomRight, this._originalHeight);
+    this.tankTopLeft = get90degRotatedOriginalShape(this.tankBottomLeft, this._originalHeight);
     this.currentTankShape = this.tankUp;
     this._prevTankShape = null;
     this.keyHandler = new KeyHandler();
@@ -149,43 +138,11 @@ export default class Tank {
     this.setWidths('diagonal');
   }
 
-  moveUp() {
-    this.rotateUp();
-    this.moveByVector();
-  }
-  moveDown() {
-    this.rotateDown();
-    this.moveByVector();
-  }
-  moveRight() {
-    this.rotateRight();
-    this.moveByVector();
-  }
-  moveLeft() {
-    this.rotateLeft();
-    this.moveByVector();
-  }
-  moveTopRight() {
-    this.rotateTopRight();
-    this.moveByVector();
-  }
-  moveBottomRight() {
-    this.rotateBottomRight();
-    this.moveByVector();
-  }
-  moveBottomLeft() {
-    this.rotateBottomLeft();
-    this.moveByVector();
-  }
-  moveTopLeft() {
-    this.rotateTopLeft();
-    this.moveByVector();
-  }
-
-  moveByVector() {
-    this.x += this.vector2.x * this.movementSpeed;
-    this.y += this.vector2.y * this.movementSpeed;
-
+  moveByCurrentVector() {
+    if (this.readyToMove) {
+      this.x += this.vector2.x * this.movementSpeed;
+      this.y += this.vector2.y * this.movementSpeed;
+    }
   }
 
   setWidths(orientation) {
@@ -202,9 +159,7 @@ export default class Tank {
   }
 
   shootProjectile() {
-    this.gameMap.pushProjectile(
-      new Projectile(this.x + 3, this.y + 3, this.vector2)
-    );
+    this.gameMap.pushProjectile(new Projectile(this.x + 3, this.y + 3, this.vector2));
     this.framesSinceLastShot = 0;
   }
 
@@ -217,40 +172,35 @@ export default class Tank {
     }
 
     if (up && right) {
-      this.moveTopRight();
-      return;
+      this.rotateTopRight();
+      this.moveByCurrentVector();
+    } else if (right && down) {
+      this.rotateBottomRight();
+      this.moveByCurrentVector();
+    } else if (down && left) {
+      this.rotateBottomLeft();
+      this.moveByCurrentVector();
+    } else if (up && left) {
+      this.rotateTopLeft();
+      this.moveByCurrentVector();
+    } else if (up) {
+      this.rotateUp();
+      this.moveByCurrentVector();
+    } else if (down) {
+      this.rotateDown();
+      this.moveByCurrentVector();
+    } else if (right) {
+      this.rotateRight();
+      this.moveByCurrentVector();
+    } else if (left) {
+      this.rotateLeft();
+      this.moveByCurrentVector();
     }
 
-    if (right && down) {
-      this.moveBottomRight();
-      return;
-    }
-
-    if (down && left) {
-      this.moveBottomLeft();
-      return;
-    }
-
-    if (up && left) {
-      this.moveTopLeft();
-      return;
-    }
-
-    if (up) {
-      this.moveUp();
-      return;
-    }
-    if (down) {
-      this.moveDown();
-      return;
-    }
-    if (right) {
-      this.moveRight();
-      return;
-    }
-    if (left) {
-      this.moveLeft();
-      return;
+    if (left || right || up || down) {
+      this.readyToMove = true;
+    } else {
+      this.readyToMove = false;
     }
   }
 }
