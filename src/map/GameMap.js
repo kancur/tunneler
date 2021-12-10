@@ -178,9 +178,9 @@ export default class GameMap {
   generateStoneBorders() {
     const { maxDepth, maxEdgeLength, maxSteepness } = this.settings.border;
     const left = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed);
-    const right = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 1);
-    const top = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 2);
-    const bottom = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 3);
+    const right = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 10);
+    const top = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 22);
+    const bottom = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 35);
 
     for (let y = 0; y < this.height; y++) {
       // left
@@ -220,7 +220,7 @@ export default class GameMap {
   }
 
   generateForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
-    const rng = new SeededRNG(seed);
+    const seededRNG = new SeededRNG(seed);
     let willKeepDirectionFor = 0; 
     let currentMaxSteepness = 0;
     let currentDistance = 50;
@@ -234,18 +234,30 @@ export default class GameMap {
       array[y * maxDepth + x] = type;
     };
 
+    const getDirectionLength = (maxLength, random) => {
+      return Math.floor(random * maxLength);
+    };
+    
+    const getChange = (maxSteepness, random) => {
+      return random * maxSteepness;
+    };
+    
+    const getCurrentMaxSteepness = (maxSteepness, random) => {
+      return Math.floor(random * maxSteepness) + 1;
+    };
+
     for (let col = 0; col < edgeLength; col++) {
       if (willKeepDirectionFor <= 0) {
         //grow = !grow;
-        grow = Math.random() < 0.5;
-        currentMaxSteepness = getCurrentMaxSteepness(maxSteepness);
-        willKeepDirectionFor = getDirectionLength(maxEdgeLength);
+        grow = seededRNG.get() < 0.5;
+        currentMaxSteepness = getCurrentMaxSteepness(maxSteepness, seededRNG.get());
+        willKeepDirectionFor = getDirectionLength(maxEdgeLength, seededRNG.get());
       }
 
       if (grow) {
-        currentChange = getChange(currentMaxSteepness);
+        currentChange = getChange(currentMaxSteepness, seededRNG.get());
       } else {
-        currentChange = -getChange(currentMaxSteepness);
+        currentChange = -getChange(currentMaxSteepness, seededRNG.get());
       }
 
       currentDistance += currentChange;
@@ -328,14 +340,4 @@ export default class GameMap {
   }
 }
 
-const getDirectionLength = (maxLength) => {
-  return Math.floor(Math.random() * maxLength);
-};
 
-const getChange = (maxSteepness) => {
-  return Math.random() * maxSteepness;
-};
-
-const getCurrentMaxSteepness = (maxSteepness) => {
-  return Math.floor(Math.random() * maxSteepness) + 1;
-};
