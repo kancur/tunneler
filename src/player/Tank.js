@@ -2,6 +2,7 @@
 // 2 for tank body
 // 3 for barel
 
+import { randomInt } from '../Helpers';
 import KeyHandler from '../KeyHandler';
 import { IMPENETRABLES, IMPENETRABLES_EXCEPT_TANKS } from '../map/GameMap';
 import { Base } from './Base';
@@ -15,8 +16,10 @@ export default class Tank {
     this.impenetrables = IMPENETRABLES.filter((code) => code !== this.lightColor && code !== this.darkColor && code !== this.barelColor);
     this.gameMap = map;
     this.movementSpeed = 1;
-    this.x = 70 + Math.floor(Math.random() * (map.width - 70));
-    this.y = 70 + Math.floor(Math.random() * (map.height - 70));
+    //this.x = randomInt(70, map.width - 70);
+    //this.y = randomInt(70, map.height - 70);
+    this.x = 50;
+    this.y = 50;
     this.vector2 = { x: 0, y: -1 };
     this._prevX;
     this._prevY;
