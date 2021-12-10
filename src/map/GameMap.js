@@ -16,6 +16,11 @@ import Explosion from '../player/Explosion';
 // 12 === blue base
 // 13 === green base
 
+export const IMPENETRABLES = [0, 4, 5, 6, 7, 8, 9, 12, 13];
+export const PROJECTILE_BLOCKERS = [...IMPENETRABLES, 1, 2];
+export const PROJECTILE_BLOCKERS_EXCEPT_TANKS = [0, 1, 2, 12, 13];
+export const IMPENETRABLES_EXCEPT_TANKS = [0, 12, 13];
+
 export default class GameMap {
   constructor(width = 1200, height = 600) {
     this.settings = {
@@ -104,7 +109,7 @@ export default class GameMap {
       for (let x = 0; x < base.width; x++) {
         for (let y = 0; y < base.height; y++) {
           const baseTile = base.getTile(x, y);
-          if (baseTile !== 2){
+          if (baseTile !== 2) {
             this.setTile(x + base.x, y + base.y, baseTile === 0 ? 3 : base.colorCode);
           }
         }
@@ -239,16 +244,12 @@ export default class GameMap {
     return array;
   }
 
-  update() {
-    this.clearMapBeforeRender();
-    this.renderTankToMap();
-
-    // active explosions / particles
+  updateExplosions() {
     this.activeExplosions.forEach((explosion) => {
       explosion.particles.forEach((particle) => {
         particle.update();
         const underlyingTile = this.getTile(particle.x, particle.y);
-        if (underlyingTile === 12 || underlyingTile === 13) {
+        if (IMPENETRABLES.includes(underlyingTile)) {
           explosion.particles.delete(particle.hash);
         }
         if (particle.life === 0) {
@@ -259,10 +260,18 @@ export default class GameMap {
         }
       });
     });
+  }
 
-    // active projectiles
+  updateProjectiles() {
     this.activeProjectiles.forEach((projectile) => {
       projectile.update();
+
+      const tailTile = this.getTile(projectile.tailX, projectile.tailY);
+      if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
+        this.activeProjectiles.delete(projectile.hash);
+        const explosion = new Explosion(projectile.tailX, projectile.tailY, { x: 0, y: 0 }, 6);
+        this.activeExplosions.set(explosion.hash, explosion);
+      }
 
       // this iterates over hypothetical future path of the projectile
       // done to handle sub single frame/gameupdate collisions
@@ -274,19 +283,21 @@ export default class GameMap {
           y: coords.y + projectile.vector2.y * -1,
         };
         const tile = this.getTile(coords.x, coords.y);
-        if (tile < 3 || tile === 12 || tile === 13) {
+        if (PROJECTILE_BLOCKERS_EXCEPT_TANKS.includes(tile)) {
           this.activeProjectiles.delete(projectile.hash);
-          let explosionVector = { x: 0, y: 0 };
-          
-          /* if (tile !== 1 && tile !== 2) {
-            explosionVector = { x: projectile.vector2.x * -1, y: projectile.vector2.y * -1 };
-          }  */
-          const explosion = new Explosion(prevCoords.x, prevCoords.y, explosionVector, 6);
+          const explosion = new Explosion(prevCoords.x, prevCoords.y, { x: 0, y: 0 }, 6);
           this.activeExplosions.set(explosion.hash, explosion);
           break;
         }
       }
     });
+  }
+
+  update() {
+    this.clearMapBeforeRender();
+    this.renderTankToMap();
+    this.updateExplosions();
+    this.updateProjectiles();
 
     this.renderProjectilesToMap();
     this.renderExplosionsToMap();
