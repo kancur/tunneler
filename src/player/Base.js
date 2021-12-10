@@ -21,7 +21,7 @@ export class Base {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         if (x === 0 || x === this.width - 1 || y === 0 || y === this.height - 1) {
-          if (x > ((this.width / 2) -3) && x < ((this.width / 2) + 3)) {
+          if (x > ((this.width / 2) -4) && x < ((this.width / 2) + 3)) {
             this.shape[x + y * this.width] = 2;
           } else {
             this.shape[x + y * this.width] = 1;
