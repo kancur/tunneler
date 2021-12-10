@@ -10,7 +10,7 @@ export default class Game {
     this.fps = 18;
     this.fpsInterval = 1000 / this.fps;
     this.prevFrameTime = Date.now();
-    this.gameMap = new GameMap();
+    this.gameMap = new GameMap(1200, 600, Math.random());
     this.viewport = new Viewport(this.gameMap);
     this.renderer = new Render(this.viewport);
 
