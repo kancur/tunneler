@@ -12,9 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "pixi-cull": "^2.1.0",
-    "pixi-viewport": "^4.34.3",
-    "pixi.js": "^6.2.0"
+    "socket.io-client": "^4.4.0"
   },
   "devDependencies": {
     "webpack": "^5.64.4",
