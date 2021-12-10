@@ -14,7 +14,7 @@ export default class Game {
     this.viewport = new Viewport(this.gameMap);
     this.renderer = new Render(this.viewport);
 
-    this.player = new Tank(3, this.gameMap, 5, 4, 12);
+    this.player = new Tank(3, this.gameMap, 5, 4, 12, 6);
     this.gameMap.addTank(this.player);
     this.gameMap.addBase(this.player.base);
     this.gameLoop();
