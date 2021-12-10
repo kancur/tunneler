@@ -5,19 +5,14 @@ import Tank from "./player/Tank";
 import Render from "./render/Render";
 import Viewport from "./Viewport";
 
-const MOVEMENT_SPEED = 7;
-let x = 0;
-let y = 0;
-
 export default class Game {
   constructor() {
-    this.fps = 15;
+    this.fps = 18;
     this.fpsInterval = 1000 / this.fps;
     this.prevFrameTime = Date.now();
     this.gameMap = new GameMap();
     this.viewport = new Viewport(this.gameMap);
     this.renderer = new Render(this.viewport);
-    //this.keyHandler = new KeyHandler();
 
     this.player = new Tank(3, this.gameMap, 5, 4, 12);
     this.gameMap.addTank(this.player);
