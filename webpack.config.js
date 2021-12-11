@@ -1,6 +1,6 @@
 const path = require('path');
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',
@@ -11,37 +11,53 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     //publicPath: "auto",
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   devServer: {
     static: {
-      directory: path.join(__dirname, "dist"),
+      directory: path.join(__dirname, 'dist'),
     },
     compress: true,
     port: 3000,
     hot: true,
     //liveReload: true,
-    watchFiles: ['src/index.html']
+    watchFiles: ['src/index.html'],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/index.html",
+      template: './src/index.html',
     }),
     new MiniCssExtractPlugin(),
   ],
   module: {
     rules: [
       {
+        test: /\.js?$/,
+        exclude: /node_modules/, //don't test node_modules folder
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.svelte$/,
+        use: {
+          loader: 'svelte-loader',
+        },
+      },
+      {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.(html)$/,
-        use: ["html-loader"],
+        use: ['html-loader'],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
       },
     ],
-  }
+  },
+  resolve: {
+    extensions: ['.mjs', '.js', '.svelte'],
+  },
 };

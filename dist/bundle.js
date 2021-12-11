@@ -187,6 +187,1514 @@ Emitter.prototype.hasListeners = function(event){
 
 /***/ }),
 
+/***/ "./src/ConnectionHandler.js":
+/*!**********************************!*\
+  !*** ./src/ConnectionHandler.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ConnectionHandler)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/build/cjs/index.js"),
+    io = _require.io;
+
+var ConnectionHandler = /*#__PURE__*/function () {
+  function ConnectionHandler() {
+    _classCallCheck(this, ConnectionHandler);
+
+    this.socket = io("http://localhost:3100");
+    this.socket.on('init', this.handleInit); //this.socket.on('gamestate', this.handleGameState)
+  }
+
+  _createClass(ConnectionHandler, [{
+    key: "handleInit",
+    value: function handleInit(data) {
+      console.log(data);
+    }
+  }]);
+
+  return ConnectionHandler;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/Game.js":
+/*!*********************!*\
+  !*** ./src/Game.js ***!
+  \*********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Game)
+/* harmony export */ });
+/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./KeyHandler */ "./src/KeyHandler.js");
+/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./map/GameMap */ "./src/map/GameMap.js");
+/* harmony import */ var _player_Base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./player/Base */ "./src/player/Base.js");
+/* harmony import */ var _player_Tank__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./player/Tank */ "./src/player/Tank.js");
+/* harmony import */ var _render_Render__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./render/Render */ "./src/render/Render.js");
+/* harmony import */ var _Viewport__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Viewport */ "./src/Viewport.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
+
+
+
+var Game = /*#__PURE__*/function () {
+  function Game() {
+    _classCallCheck(this, Game);
+
+    this.fps = 18;
+    this.fpsInterval = 1000 / this.fps;
+    this.prevFrameTime = Date.now();
+    this.gameMap = new _map_GameMap__WEBPACK_IMPORTED_MODULE_1__["default"](1200, 600, Math.random());
+    this.viewport = new _Viewport__WEBPACK_IMPORTED_MODULE_5__["default"](this.gameMap);
+    this.renderer = new _render_Render__WEBPACK_IMPORTED_MODULE_4__["default"](this.viewport);
+    this.player = new _player_Tank__WEBPACK_IMPORTED_MODULE_3__["default"](3, this.gameMap, 5, 4, 12, 6);
+    this.gameMap.addTank(this.player);
+    this.gameMap.addBase(this.player.base);
+    this.gameLoop();
+  }
+
+  _createClass(Game, [{
+    key: "gameLoop",
+    value: function gameLoop() {
+      window.requestAnimationFrame(this.gameLoop.bind(this));
+      var now = Date.now();
+      var elapsed = now - this.prevFrameTime;
+
+      if (elapsed > this.fpsInterval) {
+        this.prevFrameTime = now - elapsed % this.fpsInterval;
+        this.update();
+        this.player.update();
+        this.gameMap.renderTankToMap(this.player);
+        this.gameMap.update();
+        this.viewport.update(this.player.x - this.viewport.width / 2, this.player.y - this.viewport.height / 2);
+      }
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.renderer.render();
+    }
+  }]);
+
+  return Game;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/Helpers.js":
+/*!************************!*\
+  !*** ./src/Helpers.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "randomInt": () => (/* binding */ randomInt),
+/* harmony export */   "SeededRNG": () => (/* binding */ SeededRNG)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+var SeededRNG = /*#__PURE__*/function () {
+  function SeededRNG() {
+    var seed = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+
+    _classCallCheck(this, SeededRNG);
+
+    this.seed = seed;
+  }
+
+  _createClass(SeededRNG, [{
+    key: "get",
+    value: function get(min, max) {
+      max = max || 1;
+      min = min || 0;
+      this.seed = (this.seed * 9301 + 49297) % 233280;
+      var rnd = this.seed / 233280;
+      this.seed += 1;
+      return min + rnd * (max - min);
+    }
+  }]);
+
+  return SeededRNG;
+}();
+
+/***/ }),
+
+/***/ "./src/KeyHandler.js":
+/*!***************************!*\
+  !*** ./src/KeyHandler.js ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ KeyHandler)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var KeyHandler = /*#__PURE__*/function () {
+  function KeyHandler() {
+    _classCallCheck(this, KeyHandler);
+
+    this.pressedKeys = {
+      down: false,
+      up: false,
+      left: false,
+      right: false,
+      shoot: false
+    };
+    this.init();
+  }
+
+  _createClass(KeyHandler, [{
+    key: "init",
+    value: function init() {
+      this.attachListener('keydown', true);
+      this.attachListener('keyup', false);
+    }
+  }, {
+    key: "attachListener",
+    value: function attachListener(event, bool) {
+      var _this = this;
+
+      document.addEventListener(event, function (_ref) {
+        var key = _ref.key;
+
+        if (key === 'ArrowUp') {
+          _this.pressedKeys.up = bool;
+        }
+
+        if (key === 'ArrowDown') {
+          _this.pressedKeys.down = bool;
+        }
+
+        if (key === 'ArrowRight') {
+          _this.pressedKeys.right = bool;
+        }
+
+        if (key === 'ArrowLeft') {
+          _this.pressedKeys.left = bool;
+        }
+
+        if (key === ' ' || key === 'x') {
+          _this.pressedKeys.shoot = bool;
+        }
+      });
+    }
+  }]);
+
+  return KeyHandler;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/Viewport.js":
+/*!*************************!*\
+  !*** ./src/Viewport.js ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Viewport)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// original game 72px * 76px visible map per player
+var Viewport = /*#__PURE__*/function () {
+  function Viewport(gameMap, width, height) {
+    _classCallCheck(this, Viewport);
+
+    this.gameMap = gameMap;
+    this.view = [];
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this.width = 72; // must be a pair number
+
+    this.height = 76; // must be a pair number
+
+    this.update(0, 0);
+  }
+
+  _createClass(Viewport, [{
+    key: "update",
+    value: function update(offsetX, offsetY) {
+      this.offsetX = offsetX;
+      this.offsetY = offsetY;
+    }
+  }, {
+    key: "getTile",
+    value: function getTile(x, y) {
+      return this.gameMap.getTile(x + this.offsetX, y + this.offsetY);
+    }
+  }]);
+
+  return Viewport;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/map/GameMap.js":
+/*!****************************!*\
+  !*** ./src/map/GameMap.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "IMPENETRABLES": () => (/* binding */ IMPENETRABLES),
+/* harmony export */   "PROJECTILE_BLOCKERS": () => (/* binding */ PROJECTILE_BLOCKERS),
+/* harmony export */   "PROJECTILE_BLOCKERS_EXCEPT_TANKS": () => (/* binding */ PROJECTILE_BLOCKERS_EXCEPT_TANKS),
+/* harmony export */   "IMPENETRABLES_EXCEPT_TANKS": () => (/* binding */ IMPENETRABLES_EXCEPT_TANKS),
+/* harmony export */   "default": () => (/* binding */ GameMap)
+/* harmony export */ });
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
+/* harmony import */ var _player_Explosion__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../player/Explosion */ "./src/player/Explosion.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// 1200 * 600 map size probably default
+
+ // 0 === stone
+// 1 && 2 === ground
+// 3 === empty cell
+// 4 === tank tracks blue
+// 5 === tank body blue
+// 6 === barel tank blue
+// 7 === tank tracks green
+// 8 === tank body green
+// 9 === barel tank green
+// 10 === projectile light
+// 11 === projectile dark
+// 12 === blue base
+// 13 === green base
+
+var IMPENETRABLES = [0, 4, 5, 6, 7, 8, 9, 12, 13];
+var PROJECTILE_BLOCKERS = [].concat(IMPENETRABLES, [1, 2]);
+var PROJECTILE_BLOCKERS_EXCEPT_TANKS = [0, 1, 2, 12, 13];
+var IMPENETRABLES_EXCEPT_TANKS = [0, 12, 13];
+
+var GameMap = /*#__PURE__*/function () {
+  function GameMap() {
+    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1200;
+    var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
+    var seed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
+    _classCallCheck(this, GameMap);
+
+    this.settings = {
+      border: {
+        maxDepth: 50,
+        maxEdgeLength: 10,
+        maxSteepness: 4
+      }
+    };
+    this.seed = seed;
+    this.width = width;
+    this.height = height;
+    this.tiles = [];
+    this.tiles.length = width * height;
+    this.tiles.fill(0);
+    this.tiles = this.tiles.map(function (code) {
+      if (code === 0) return Math.random() > 0.5 ? 1 : 2;
+    });
+    this.generateStoneBorders();
+    this.tiles = Uint8Array.from(this.tiles);
+    this.prevTankTiles = [];
+    this.activeTank = null;
+    this.activeProjectiles = new Map();
+    this.activeExplosions = new Map();
+    this.bases = [];
+    this.init();
+  }
+
+  _createClass(GameMap, [{
+    key: "init",
+    value: function init() {
+      this.sendDataToServer();
+    }
+  }, {
+    key: "sendDataToServer",
+    value: function sendDataToServer() {
+      var gameMap = {
+        seed: this.seed,
+        width: this.width,
+        height: this.height,
+        settings: this.settings
+      };
+    }
+  }, {
+    key: "logSize",
+    value: function logSize() {
+      var json = JSON.stringify(this.tiles);
+      var size = new TextEncoder().encode(json).length;
+      var kiloBytes = size / 1024;
+      console.log("Map size: ".concat(kiloBytes, " KB"));
+    }
+  }, {
+    key: "addBase",
+    value: function addBase(base) {
+      this.bases.push(base);
+      this.renderBasesToMap();
+    }
+  }, {
+    key: "addTank",
+    value: function addTank(tank) {
+      this.activeTank = tank;
+    }
+  }, {
+    key: "pushProjectile",
+    value: function pushProjectile(projectile) {
+      this.activeProjectiles.set(projectile.hash, projectile);
+    }
+  }, {
+    key: "logTiles",
+    value: function logTiles() {
+      console.log('tiles:', this.tiles);
+    }
+  }, {
+    key: "isDirt",
+    value: function isDirt(x, y, x2, y2) {}
+  }, {
+    key: "getTile",
+    value: function getTile(x, y) {
+      if (x >= this.width) return 0;
+      if (x < 0) return 0;
+      if (y >= this.height) return 0;
+      if (y < 0) return 0;
+      return this.tiles[y * this.width + x];
+    }
+  }, {
+    key: "isInBounds",
+    value: function isInBounds(x, y) {
+      if (x > this.width - 1 || x < 0) {
+        return false;
+      }
+
+      if (y > this.height - 1 || y < 0) {
+        return false;
+      }
+
+      return true;
+    }
+  }, {
+    key: "setTile",
+    value: function setTile(x, y, type) {
+      if (x >= this.width) throw Error("Trying to set a tile out of bounds (x >= width) x --> ".concat(x));
+      if (x < 0) throw Error("Trying to set a tile out of bounds (x < 0) x --> ".concat(x));
+      if (y >= this.height) throw Error("Trying to set a tile out of bounds (y >= height) y --> ".concat(y));
+      if (y < 0) throw Error("Trying to set a tile out of bounds (y < 0) y --> ".concat(y));
+      this.tiles[y * this.width + x] = type;
+    }
+  }, {
+    key: "clearMapBeforeRender",
+    value: function clearMapBeforeRender() {
+      // could be optimized by not iterating the whole map if needed
+      this.tiles = this.tiles.map(function (x) {
+        if (x >= 4 && x <= 9) {
+          return 3;
+        }
+
+        if (x === 10 || x === 11) {
+          return 3;
+        }
+
+        return x;
+      });
+    }
+  }, {
+    key: "renderBasesToMap",
+    value: function renderBasesToMap() {
+      var _this = this;
+
+      this.bases.forEach(function (base) {
+        for (var x = 0; x < base.width; x++) {
+          for (var y = 0; y < base.height; y++) {
+            var baseTile = base.getTile(x, y);
+
+            if (baseTile !== 2) {
+              _this.setTile(x + base.x, y + base.y, baseTile === 0 ? 3 : base.colorCode);
+            }
+          }
+        }
+      });
+    }
+  }, {
+    key: "renderExplosionsToMap",
+    value: function renderExplosionsToMap() {
+      var _this2 = this;
+
+      this.activeExplosions.forEach(function (explosion) {
+        explosion.particles.forEach(function (particle) {
+          var currentTile = _this2.getTile(particle.x, particle.y);
+
+          if (currentTile > 0 && currentTile < 4) {
+            _this2.setTile(particle.x, particle.y, 10);
+          }
+        });
+      });
+    }
+  }, {
+    key: "renderProjectilesToMap",
+    value: function renderProjectilesToMap() {
+      var _this3 = this;
+
+      this.activeProjectiles.forEach(function (projectile) {
+        if (!_this3.isInBounds(projectile.x, projectile.y)) return;
+
+        _this3.setTile(projectile.x, projectile.y, 10);
+
+        _this3.setTile(projectile.tailX, projectile.tailY, 11);
+      });
+    }
+  }, {
+    key: "renderTankToMap",
+    value: function renderTankToMap() {
+      for (var x = 0; x < this.activeTank.width; x++) {
+        for (var y = 0; y < this.activeTank.height; y++) {
+          var tankTile = this.activeTank.getTile(x, y);
+
+          if (tankTile !== 0) {
+            this.setTile(x + this.activeTank.x, y + this.activeTank.y, tankTile);
+          } else {//this.setTile(x + tank.x, y + tank.y, 3);
+          }
+        }
+      }
+    }
+  }, {
+    key: "generateStoneBorders",
+    value: function generateStoneBorders() {
+      var _this$settings$border = this.settings.border,
+          maxDepth = _this$settings$border.maxDepth,
+          maxEdgeLength = _this$settings$border.maxEdgeLength,
+          maxSteepness = _this$settings$border.maxSteepness;
+      var left = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed);
+      var right = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 10);
+      var top = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 22);
+      var bottom = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 35);
+
+      for (var y = 0; y < this.height; y++) {
+        // left
+        for (var x = 0; x < maxDepth; x++) {
+          var newTileVal = left[y * maxDepth + x];
+
+          if (newTileVal === 0) {
+            this.setTile(x, y, 0);
+          }
+        } // right
+
+
+        for (var _x = maxDepth; _x > 0; _x--) {
+          var _newTileVal = right[y * maxDepth + _x - 1];
+
+          if (_newTileVal === 0) {
+            this.setTile(this.width - _x, y, 0);
+          }
+        }
+      }
+
+      for (var _x2 = 0; _x2 < this.width; _x2++) {
+        // top
+        for (var _y = 0; _y < maxDepth; _y++) {
+          var _newTileVal2 = top[_x2 * maxDepth + _y];
+
+          if (_newTileVal2 === 0) {
+            this.setTile(_x2, _y, 0);
+          }
+        } // bottom
+
+
+        for (var _y2 = maxDepth; _y2 > 0; _y2--) {
+          var _newTileVal3 = bottom[_x2 * maxDepth + _y2 - 1];
+
+          if (_newTileVal3 === 0) {
+            this.setTile(_x2, this.height - _y2, 0);
+          }
+        }
+      }
+    }
+  }, {
+    key: "generateForOneSide",
+    value: function generateForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
+      var seededRNG = new _Helpers__WEBPACK_IMPORTED_MODULE_0__.SeededRNG(seed);
+      var willKeepDirectionFor = 0;
+      var currentMaxSteepness = 0;
+      var currentDistance = 50;
+      var grow = true;
+      var currentChange = 0;
+      var array = [];
+      array.length = edgeLength * maxDepth;
+      array.fill(1); // 1 will be ignored, 0 will be stone
+
+      var setLocalTile = function setLocalTile(x, y, type) {
+        array[y * maxDepth + x] = type;
+      };
+
+      var getDirectionLength = function getDirectionLength(maxLength, random) {
+        return Math.floor(random * maxLength);
+      };
+
+      var getChange = function getChange(maxSteepness, random) {
+        return random * maxSteepness;
+      };
+
+      var getCurrentMaxSteepness = function getCurrentMaxSteepness(maxSteepness, random) {
+        return Math.floor(random * maxSteepness) + 1;
+      };
+
+      for (var col = 0; col < edgeLength; col++) {
+        if (willKeepDirectionFor <= 0) {
+          //grow = !grow;
+          grow = seededRNG.get() < 0.5;
+          currentMaxSteepness = getCurrentMaxSteepness(maxSteepness, seededRNG.get());
+          willKeepDirectionFor = getDirectionLength(maxEdgeLength, seededRNG.get());
+        }
+
+        if (grow) {
+          currentChange = getChange(currentMaxSteepness, seededRNG.get());
+        } else {
+          currentChange = -getChange(currentMaxSteepness, seededRNG.get());
+        }
+
+        currentDistance += currentChange;
+        willKeepDirectionFor -= 1;
+
+        if (currentDistance >= maxDepth) {
+          currentDistance = maxDepth;
+          willKeepDirectionFor = 0;
+        } else if (currentDistance <= 0) {
+          currentDistance = 0;
+          willKeepDirectionFor = 0;
+        }
+
+        for (var row = 0; row < maxDepth; row++) {
+          if (row < currentDistance) {
+            setLocalTile(row, col, 0);
+          }
+        }
+      }
+
+      return array;
+    }
+  }, {
+    key: "updateExplosions",
+    value: function updateExplosions() {
+      var _this4 = this;
+
+      this.activeExplosions.forEach(function (explosion) {
+        explosion.particles.forEach(function (particle) {
+          particle.update();
+
+          var underlyingTile = _this4.getTile(particle.x, particle.y);
+
+          if (IMPENETRABLES.includes(underlyingTile)) {
+            explosion.particles["delete"](particle.hash);
+          }
+
+          if (particle.life === 0) {
+            explosion.particles["delete"](particle.hash);
+          }
+
+          if (!_this4.isInBounds(particle.x, particle.y)) {
+            explosion.particles["delete"](particle.hash);
+          }
+        });
+      });
+    }
+  }, {
+    key: "updateProjectiles",
+    value: function updateProjectiles() {
+      var _this5 = this;
+
+      this.activeProjectiles.forEach(function (projectile) {
+        projectile.update();
+
+        var tailTile = _this5.getTile(projectile.tailX, projectile.tailY);
+
+        if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
+          _this5.activeProjectiles["delete"](projectile.hash);
+
+          var explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_1__["default"](projectile.tailX, projectile.tailY, {
+            x: 0,
+            y: 0
+          }, 6);
+
+          _this5.activeExplosions.set(explosion.hash, explosion);
+        } // this iterates over hypothetical future path of the projectile
+        // done to handle sub single frame/gameupdate collisions
+
+
+        for (var i = 0; i < projectile.futurePath.length; i++) {
+          var coords = projectile.futurePath[i]; // prev coords are coordinates of the trailing pixel behind the projectile
+
+          var prevCoords = {
+            x: coords.x + projectile.vector2.x * -1,
+            y: coords.y + projectile.vector2.y * -1
+          };
+
+          var tile = _this5.getTile(coords.x, coords.y);
+
+          if (PROJECTILE_BLOCKERS_EXCEPT_TANKS.includes(tile)) {
+            _this5.activeProjectiles["delete"](projectile.hash);
+
+            var _explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_1__["default"](prevCoords.x, prevCoords.y, {
+              x: 0,
+              y: 0
+            }, 6);
+
+            _this5.activeExplosions.set(_explosion.hash, _explosion);
+
+            break;
+          }
+        }
+      });
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.clearMapBeforeRender();
+      this.renderTankToMap();
+      this.updateExplosions();
+      this.updateProjectiles();
+      this.renderProjectilesToMap();
+      this.renderExplosionsToMap();
+    }
+  }]);
+
+  return GameMap;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/player/Base.js":
+/*!****************************!*\
+  !*** ./src/player/Base.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Base": () => (/* binding */ Base)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Base = /*#__PURE__*/function () {
+  function Base(x, y, playerHash, colorCode) {
+    _classCallCheck(this, Base);
+
+    this.x = x;
+    this.y = y;
+    this.colorCode = colorCode;
+    this.ownerPlayer = playerHash;
+    this.width = 35;
+    this.height = 35;
+    this.doorWidth = 7;
+    this.shape = [];
+    this.shape.length = this.width * this.height;
+    this.shape.fill(0);
+    this.drawShapePerimeter();
+  }
+
+  _createClass(Base, [{
+    key: "getTile",
+    value: function getTile(x, y) {
+      return this.shape[x + y * this.width];
+    }
+  }, {
+    key: "drawShapePerimeter",
+    value: function drawShapePerimeter() {
+      for (var x = 0; x < this.width; x++) {
+        for (var y = 0; y < this.height; y++) {
+          if (x === 0 || x === this.width - 1 || y === 0 || y === this.height - 1) {
+            if (x > this.width / 2 - 4 && x < this.width / 2 + 3) {
+              this.shape[x + y * this.width] = 2;
+            } else {
+              this.shape[x + y * this.width] = 1;
+            }
+          }
+        }
+      }
+    }
+  }]);
+
+  return Base;
+}();
+
+/***/ }),
+
+/***/ "./src/player/Explosion.js":
+/*!*********************************!*\
+  !*** ./src/player/Explosion.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Explosion)
+/* harmony export */ });
+/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Particle */ "./src/player/Particle.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var Explosion = /*#__PURE__*/function () {
+  function Explosion(x, y, vector2, numberOfParticles) {
+    _classCallCheck(this, Explosion);
+
+    this.x = x;
+    this.y = y;
+    this.vector2 = vector2;
+    this.numberOfParticles = numberOfParticles;
+    this.particles = new Map();
+    this.hash = Math.random().toString(36).slice(2);
+    this.init();
+  }
+
+  _createClass(Explosion, [{
+    key: "init",
+    value: function init() {
+      for (var i = 0; i < this.numberOfParticles; i++) {
+        var particle = new _Particle__WEBPACK_IMPORTED_MODULE_0__["default"](this.x, this.y, this.vector2);
+        this.particles.set(particle.hash, particle);
+      }
+    }
+    /*   update(){
+        this.particles.forEach((particle) => {
+          particle.update();
+        })
+      } */
+
+  }]);
+
+  return Explosion;
+}(); // maxLength not normalised
+
+
+
+
+function getRandomVector(maxLength) {
+  return {
+    x: Math.floor(Math.random() * maxLength + 1),
+    y: Math.floor(Math.random() * maxLength + 1)
+  };
+}
+
+/***/ }),
+
+/***/ "./src/player/Particle.js":
+/*!********************************!*\
+  !*** ./src/player/Particle.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Particle)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Particle = /*#__PURE__*/function () {
+  function Particle(x, y, vector2) {
+    _classCallCheck(this, Particle);
+
+    this.x = x;
+    this.y = y;
+    this.vector2 = vector2;
+    this.hash = Math.random().toString(36).slice(2);
+    this.life = 3;
+  }
+
+  _createClass(Particle, [{
+    key: "update",
+    value: function update() {
+      if (this.life === 0) return;
+
+      if (this.vector2.x !== 0) {
+        this.x += this.vector2.x * Math.floor(Math.random() * 3);
+      } else {
+        this.x += Math.floor(Math.random() * 3) - 1;
+      }
+
+      if (this.vector2.y !== 0) {
+        this.y += this.vector2.y * Math.floor(Math.random() * 3);
+      } else {
+        this.y += Math.floor(Math.random() * 3) - 1;
+      }
+
+      this.life -= 1;
+    }
+  }]);
+
+  return Particle;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/player/Projectile.js":
+/*!**********************************!*\
+  !*** ./src/player/Projectile.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Projectile)
+/* harmony export */ });
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// 10 === projectile light
+// 11 === projectile dark
+var Projectile = /*#__PURE__*/function () {
+  function Projectile(x, y, vector2) {
+    _classCallCheck(this, Projectile);
+
+    this.speed = 4; //pixels per update
+
+    this.x = x;
+    this.y = y;
+    this.tailX = null;
+    this.tailY = null;
+    this.futurePath = null;
+    this.vector2 = vector2;
+    this.hash = Math.random().toString(36).slice(2);
+  }
+
+  _createClass(Projectile, [{
+    key: "calculateFuturePath",
+    value: function calculateFuturePath() {
+      this.futurePath = [];
+
+      for (var i = 0; i < 4; i++) {
+        var _getNextSteps = getNextSteps(this.x, this.y, this.vector2, i),
+            _getNextSteps2 = _slicedToArray(_getNextSteps, 2),
+            x = _getNextSteps2[0],
+            y = _getNextSteps2[1];
+
+        this.futurePath.push({
+          x: x,
+          y: y
+        });
+      }
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      var _getNextSteps3 = getNextSteps(this.x, this.y, this.vector2, this.speed);
+
+      var _getNextSteps4 = _slicedToArray(_getNextSteps3, 2);
+
+      this.x = _getNextSteps4[0];
+      this.y = _getNextSteps4[1];
+
+      var _getNextSteps5 = getNextSteps(this.x, this.y, this.vector2, -1),
+          _getNextSteps6 = _slicedToArray(_getNextSteps5, 2),
+          tailX = _getNextSteps6[0],
+          tailY = _getNextSteps6[1];
+
+      this.tailX = tailX;
+      this.tailY = tailY;
+      this.calculateFuturePath();
+    }
+  }]);
+
+  return Projectile;
+}();
+
+
+
+function getNextSteps(x, y, vector2) {
+  var step = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 4;
+  x += vector2.x * step;
+  y += vector2.y * step;
+  return [x, y];
+}
+
+/***/ }),
+
+/***/ "./src/player/Tank.js":
+/*!****************************!*\
+  !*** ./src/player/Tank.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Tank)
+/* harmony export */ });
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
+/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../KeyHandler */ "./src/KeyHandler.js");
+/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../map/GameMap */ "./src/map/GameMap.js");
+/* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Base */ "./src/player/Base.js");
+/* harmony import */ var _Projectile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Projectile */ "./src/player/Projectile.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// 1 for tank tracks
+// 2 for tank body
+// 3 for barel
+
+
+
+
+
+
+var Tank = /*#__PURE__*/function () {
+  function Tank(colorOffset, map, lightColorCode, darkColorCode, baseColorCode, barelColorCode) {
+    var _this = this;
+
+    _classCallCheck(this, Tank);
+
+    this.lightColor = lightColorCode;
+    this.darkColor = darkColorCode;
+    this.barelColor = barelColorCode;
+    this.impenetrables = _map_GameMap__WEBPACK_IMPORTED_MODULE_2__.IMPENETRABLES.filter(function (code) {
+      return code !== _this.lightColor && code !== _this.darkColor && code !== _this.barelColor;
+    });
+    this.gameMap = map;
+    this.movementSpeed = 1; //this.x = randomInt(70, map.width - 70);
+    //this.y = randomInt(70, map.height - 70);
+
+    this.x = 50;
+    this.y = 50;
+    this.vector2 = {
+      x: 0,
+      y: -1
+    };
+    this._prevX;
+    this._prevY;
+    this._originalWidth = 7;
+    this._originalHeight = 7;
+    this.width = this._originalWidth;
+    this.height = this._originalHeight;
+    this.hash = Math.random().toString(36).slice(2);
+    this.base = new _Base__WEBPACK_IMPORTED_MODULE_3__.Base(this.x - 14, this.y - 14, this.hash, baseColorCode);
+    this.framesSinceLastShot = 0;
+    this.movementSpeed = 1; //pixel per update
+
+    this.readyToMove = false; // prettier-ignore
+
+    this.tankUp = [0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 3, 0, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 2, 2, 1, 0, 0, 1, 2, 2, 2, 1, 0, 0, 1, 0, 0, 0, 1, 0].map(function (x) {
+      if (x === 1) {
+        return _this.darkColor;
+      }
+
+      if (x === 2) {
+        return _this.lightColor;
+      }
+
+      if (x === 3) {
+        return 6;
+      }
+
+      return 0;
+    });
+    this.tankDown = this.tankUp.slice().reverse();
+    this.tankRight = get90degRotatedOriginalShape(this.tankUp, this._originalWidth);
+    this.tankLeft = this.tankRight.slice().reverse(); // prettier-ignore
+
+    this.tankTopRight = [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2, 0, 3, 0, 0, 1, 2, 2, 3, 0, 0, 1, 2, 2, 3, 2, 2, 1, 0, 0, 2, 2, 2, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0].map(function (x) {
+      return x !== 0 ? x + colorOffset : 0;
+    });
+    this.tankBottomRight = get90degRotatedOriginalShape(this.tankTopRight, this._originalHeight);
+    this.tankBottomLeft = get90degRotatedOriginalShape(this.tankBottomRight, this._originalHeight);
+    this.tankTopLeft = get90degRotatedOriginalShape(this.tankBottomLeft, this._originalHeight);
+    this.currentTankShape = this.tankUp;
+    this._prevTankShape = null;
+    this.keyHandler = new _KeyHandler__WEBPACK_IMPORTED_MODULE_1__["default"]();
+  }
+
+  _createClass(Tank, [{
+    key: "getTile",
+    value: function getTile(x, y) {
+      return this.currentTankShape[y * this.width + x];
+    }
+  }, {
+    key: "getPreviousTankTile",
+    value: function getPreviousTankTile(x, y) {
+      return this._prevTankShape[y * this.width + x];
+    }
+  }, {
+    key: "getOriginalTile",
+    value: function getOriginalTile(x, y) {
+      return this.tankUp[y * this.width + x];
+    }
+  }, {
+    key: "checkIfDirt",
+    value: function checkIfDirt() {
+      /* if (this.direction === 'up') {
+        for (let i = 0; i < this.width; i++) {
+          const currentTile = this.gameMap.getTile(this.x + i, this.y - 1);
+        }
+      } */
+    }
+  }, {
+    key: "rotateUp",
+    value: function rotateUp() {
+      if (this.isLegalMove(this.x, this.y, this.tankUp)) {
+        this.currentTankShape = this.tankUp;
+        this.vector2 = {
+          x: 0,
+          y: -1
+        };
+      } else {}
+    }
+  }, {
+    key: "rotateDown",
+    value: function rotateDown() {
+      if (this.isLegalMove(this.x, this.y, this.tankDown)) {
+        this.currentTankShape = this.tankDown;
+        this.vector2 = {
+          x: 0,
+          y: 1
+        };
+      } else {}
+    }
+  }, {
+    key: "rotateRight",
+    value: function rotateRight() {
+      if (this.isLegalMove(this.x, this.y, this.tankRight)) {
+        this.currentTankShape = this.tankRight;
+        this.vector2 = {
+          x: 1,
+          y: 0
+        };
+      } else {}
+    }
+  }, {
+    key: "rotateLeft",
+    value: function rotateLeft() {
+      if (this.isLegalMove(this.x, this.y, this.tankLeft)) {
+        this.currentTankShape = this.tankLeft;
+        this.vector2 = {
+          x: -1,
+          y: 0
+        };
+      } else {}
+    }
+  }, {
+    key: "rotateTopRight",
+    value: function rotateTopRight() {
+      if (this.isLegalMove(this.x, this.y, this.tankTopRight)) {
+        this.currentTankShape = this.tankTopRight;
+        this.vector2 = {
+          x: 1,
+          y: -1
+        };
+      } else {}
+    }
+  }, {
+    key: "rotateBottomRight",
+    value: function rotateBottomRight() {
+      if (this.isLegalMove(this.x, this.y, this.tankBottomRight)) {
+        this.currentTankShape = this.tankBottomRight;
+        this.vector2 = {
+          x: 1,
+          y: 1
+        };
+      } else {}
+    }
+  }, {
+    key: "rotateBottomLeft",
+    value: function rotateBottomLeft() {
+      if (this.isLegalMove(this.x, this.y, this.tankBottomLeft)) {
+        this.currentTankShape = this.tankBottomLeft;
+        this.vector2 = {
+          x: -1,
+          y: 1
+        };
+      } else {}
+    }
+  }, {
+    key: "rotateTopLeft",
+    value: function rotateTopLeft() {
+      if (this.isLegalMove(this.x, this.y, this.tankTopLeft)) {
+        this.currentTankShape = this.tankTopLeft;
+        this.vector2 = {
+          x: -1,
+          y: -1
+        };
+      } else {}
+    }
+  }, {
+    key: "isLegalMove",
+    value: function isLegalMove(x, y, shape) {
+      for (var i = 0; i < this.width; i++) {
+        for (var j = 0; j < this.height; j++) {
+          // ignore tiles of type 0 on tank
+          if (shape[j * this.width + i] !== 0) {
+            var underlyingTile = this.gameMap.getTile(x + i, y + j);
+
+            if (_map_GameMap__WEBPACK_IMPORTED_MODULE_2__.IMPENETRABLES_EXCEPT_TANKS.includes(underlyingTile)) {
+              return false;
+            }
+          }
+        }
+      }
+
+      return true;
+    }
+  }, {
+    key: "moveByVector",
+    value: function moveByVector(vector2) {
+      if (this.readyToMove) {
+        if (this.isLegalMove(this.x + vector2.x * this.movementSpeed, this.y + vector2.y * this.movementSpeed, this.currentTankShape)) {
+          this.x += vector2.x * this.movementSpeed;
+          this.y += vector2.y * this.movementSpeed;
+        }
+      }
+    }
+  }, {
+    key: "shootProjectile",
+    value: function shootProjectile() {
+      this.gameMap.pushProjectile(new _Projectile__WEBPACK_IMPORTED_MODULE_4__["default"](this.x + 3, this.y + 3, this.vector2));
+      this.framesSinceLastShot = 0;
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.framesSinceLastShot += 1;
+      var _this$keyHandler$pres = this.keyHandler.pressedKeys,
+          up = _this$keyHandler$pres.up,
+          down = _this$keyHandler$pres.down,
+          right = _this$keyHandler$pres.right,
+          left = _this$keyHandler$pres.left,
+          shoot = _this$keyHandler$pres.shoot;
+
+      if (shoot && this.framesSinceLastShot >= 2) {
+        this.shootProjectile();
+      } // duplicate rotations are to handle an edge case where the first rotation failed due to costraints
+      // the tank is allowed to "reverse" but should immediately rotate to the correct orientation in the same gameupdate
+
+
+      if (up && right) {
+        this.rotateTopRight();
+        this.moveByVector({
+          x: 1,
+          y: -1
+        });
+        this.rotateTopRight();
+      } else if (right && down) {
+        this.rotateBottomRight();
+        this.moveByVector({
+          x: 1,
+          y: 1
+        });
+        this.rotateBottomRight();
+      } else if (down && left) {
+        this.rotateBottomLeft();
+        this.moveByVector({
+          x: -1,
+          y: 1
+        });
+        this.rotateBottomLeft();
+      } else if (up && left) {
+        this.rotateTopLeft();
+        this.moveByVector({
+          x: -1,
+          y: -1
+        });
+        this.rotateTopLeft();
+      } else if (up) {
+        this.rotateUp();
+        this.moveByVector({
+          x: 0,
+          y: -1
+        });
+        this.rotateUp();
+      } else if (down) {
+        this.rotateDown();
+        this.moveByVector({
+          x: 0,
+          y: 1
+        });
+        this.rotateDown();
+      } else if (right) {
+        this.rotateRight();
+        this.moveByVector({
+          x: 1,
+          y: 0
+        });
+        this.rotateRight();
+      } else if (left) {
+        this.rotateLeft();
+        this.moveByVector({
+          x: -1,
+          y: 0
+        });
+        this.rotateLeft();
+      }
+
+      if (left || right || up || down) {
+        this.readyToMove = true;
+      } else {
+        this.readyToMove = false;
+      }
+    }
+  }]);
+
+  return Tank;
+}();
+
+
+
+function get90degRotatedOriginalShape(matrix, width) {
+  var rotatedTank = [];
+
+  for (var x = 0; x < width; x++) {
+    for (var y = matrix.length / width - 1; y >= 0; y--) {
+      rotatedTank.push(matrix[[y * width + x]]);
+    }
+  }
+
+  return rotatedTank;
+}
+
+/***/ }),
+
+/***/ "./src/render/Render.js":
+/*!******************************!*\
+  !*** ./src/render/Render.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Render)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// 0 === stone
+// 1 && 2 === ground
+// 3 === empty cell
+// 4 === tank tracks blue
+// 5 === tank body blue
+// 6 === barel tank blue
+// 7 === tank tracks green
+// 8 === tank body green
+// 9 === barel tank green
+// 10 === projectile light
+// 11 === projectile dark
+// 12 === blue base
+// 13 === green base
+// prettier-ignore
+var colors = [{
+  r: 154,
+  g: 154,
+  b: 154
+}, // stone
+{
+  r: 186,
+  g: 89,
+  b: 4
+}, // ground 1
+{
+  r: 195,
+  g: 121,
+  b: 48
+}, // ground 2
+{
+  r: 0,
+  g: 0,
+  b: 0
+}, // empty cell (black)
+{
+  r: 0,
+  g: 0,
+  b: 182
+}, // tank tracks blue
+{
+  r: 44,
+  g: 44,
+  b: 255
+}, // tank body blue
+{
+  r: 243,
+  g: 235,
+  b: 28
+}, // tank barrel blue
+{
+  r: 0,
+  g: 182,
+  b: 0
+}, // tank tracks green
+{
+  r: 44,
+  g: 255,
+  b: 44
+}, // tank body green
+{
+  r: 243,
+  g: 235,
+  b: 28
+}, // tank barrel green
+{
+  r: 255,
+  g: 52,
+  b: 8
+}, // projectile light
+{
+  r: 186,
+  g: 0,
+  b: 0
+}, // projectile dark
+{
+  r: 0,
+  g: 0,
+  b: 182
+}, // blue base 
+{
+  r: 0,
+  g: 182,
+  b: 0
+} // green base 
+];
+
+var Render = /*#__PURE__*/function () {
+  function Render(viewport) {
+    _classCallCheck(this, Render);
+
+    this.viewport = viewport;
+    this.canvas = document.querySelector('canvas');
+    this.canvas.width = viewport.width;
+    this.canvas.height = viewport.height;
+    this.ctx = this.canvas.getContext('2d');
+    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    this.pixels = this.imageData.data;
+    this.init();
+  }
+
+  _createClass(Render, [{
+    key: "init",
+    value: function init() {
+      this.canvas.style.height = '500px';
+      this.canvas.style.imageRendering = 'pixelated';
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      for (var y = 0; y < this.viewport.height; y++) {
+        for (var x = 0; x < this.viewport.width; x++) {
+          var offset = y * this.viewport.width * 4 + x * 4;
+          var currentTile = this.viewport.getTile(x, y);
+          this.pixels[offset] = colors[currentTile].r;
+          this.pixels[offset + 1] = colors[currentTile].g;
+          this.pixels[offset + 2] = colors[currentTile].b;
+          this.pixels[offset + 3] = 255;
+        }
+      }
+
+      this.flushPixels();
+    }
+  }, {
+    key: "flushPixels",
+    value: function flushPixels() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.putImageData(this.imageData, 0, 0);
+    }
+  }]);
+
+  return Render;
+}();
+
+
+
+/***/ }),
+
 /***/ "./node_modules/backo2/index.js":
 /*!**************************************!*\
   !*** ./node_modules/backo2/index.js ***!
@@ -1106,6 +2614,32 @@ try {
   // when trying to create
   module.exports = false;
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/modern-css-reset/dist/reset.min.css":
+/*!**********************************************************!*\
+  !*** ./node_modules/modern-css-reset/dist/reset.min.css ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./src/style.css":
+/*!***********************!*\
+  !*** ./src/style.css ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
 
 
 /***/ }),
@@ -2705,6 +4239,164 @@ function plural(ms, msAbs, n, name) {
 
 /***/ }),
 
+/***/ "./src/App/App.svelte":
+/*!****************************!*\
+  !*** ./src/App/App.svelte ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var svelte_internal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! svelte/internal */ "./node_modules/svelte/internal/index.mjs");
+/* harmony import */ var _ChooseType_svelte__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ChooseType.svelte */ "./src/App/ChooseType.svelte");
+/* src/App/App.svelte generated by Svelte v3.44.2 */
+
+
+
+
+function add_css(target) {
+	(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append_styles)(target, "svelte-1d3hdy2", "h1.svelte-1d3hdy2{color:tomato}");
+}
+
+function create_fragment(ctx) {
+	let div1;
+	let div0;
+	let h1;
+	let t1;
+	let choosetype;
+	let t2;
+	let h2;
+	let t4;
+	let p;
+	let t6;
+	let button;
+	let current;
+	choosetype = new _ChooseType_svelte__WEBPACK_IMPORTED_MODULE_1__["default"]({});
+
+	return {
+		c() {
+			div1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
+			div0 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
+			h1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("h1");
+			h1.textContent = "Game raaaeady!";
+			t1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.create_component)(choosetype.$$.fragment);
+			t2 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			h2 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("h2");
+			h2.textContent = "Send this code to your friend";
+			t4 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			p = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("p");
+			p.textContent = "SKFBASGJHDBAGKB";
+			t6 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			button = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("button");
+			button.textContent = "Go back";
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(h1, "class", "svelte-1d3hdy2");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(p, "id", "code");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div0, "id", "create-new-game");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div1, "id", "content");
+		},
+		m(target, anchor) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.insert)(target, div1, anchor);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div1, div0);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, h1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.mount_component)(choosetype, div0, null);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t2);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, h2);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t4);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, p);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t6);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, button);
+			current = true;
+		},
+		p: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		i(local) {
+			if (current) return;
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_in)(choosetype.$$.fragment, local);
+			current = true;
+		},
+		o(local) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_out)(choosetype.$$.fragment, local);
+			current = false;
+		},
+		d(detaching) {
+			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(div1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.destroy_component)(choosetype);
+		}
+	};
+}
+
+class App extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
+	constructor(options) {
+		super();
+		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, null, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, {}, add_css);
+	}
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
+
+/***/ }),
+
+/***/ "./src/App/ChooseType.svelte":
+/*!***********************************!*\
+  !*** ./src/App/ChooseType.svelte ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var svelte_internal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! svelte/internal */ "./node_modules/svelte/internal/index.mjs");
+/* src/App/ChooseType.svelte generated by Svelte v3.44.2 */
+
+
+function add_css(target) {
+	(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append_styles)(target, "svelte-1m659an", "#form.svelte-1m659an{display:none;flex-direction:column;align-items:center;background-color:#375284;padding:1rem}");
+}
+
+function create_fragment(ctx) {
+	let div;
+
+	return {
+		c() {
+			div = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
+
+			div.innerHTML = `<h2>Enter your friend&#39;s code to play</h2> 
+  <input type="text" id="code"/> 
+  <h2>Or create a new game</h2> 
+  <button>Create a new game</button>`;
+
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "id", "form");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "class", "svelte-1m659an");
+		},
+		m(target, anchor) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.insert)(target, div, anchor);
+		},
+		p: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		i: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		o: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		d(detaching) {
+			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(div);
+		}
+	};
+}
+
+class ChooseType extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
+	constructor(options) {
+		super();
+		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, null, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, {}, add_css);
+	}
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChooseType);
+
+/***/ }),
+
 /***/ "./node_modules/yeast/index.js":
 /*!*************************************!*\
   !*** ./node_modules/yeast/index.js ***!
@@ -2780,1140 +4472,6 @@ for (; i < length; i++) map[alphabet[i]] = i;
 yeast.encode = encode;
 yeast.decode = decode;
 module.exports = yeast;
-
-
-/***/ }),
-
-/***/ "./src/ConnectionHandler.js":
-/*!**********************************!*\
-  !*** ./src/ConnectionHandler.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ConnectionHandler)
-/* harmony export */ });
-const { io } = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/build/cjs/index.js");
-
-class ConnectionHandler {
-  constructor() {
-    this.socket = io("http://localhost:3100");
-    this.socket.on('init', this.handleInit)
-    //this.socket.on('gamestate', this.handleGameState)
-  }
-
-  handleInit(data) {
-    console.log(data)
-  }
-
-    
-}
-
-
-
-
-/***/ }),
-
-/***/ "./src/Game.js":
-/*!*********************!*\
-  !*** ./src/Game.js ***!
-  \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Game)
-/* harmony export */ });
-/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./KeyHandler */ "./src/KeyHandler.js");
-/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./map/GameMap */ "./src/map/GameMap.js");
-/* harmony import */ var _player_Base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./player/Base */ "./src/player/Base.js");
-/* harmony import */ var _player_Tank__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./player/Tank */ "./src/player/Tank.js");
-/* harmony import */ var _render_Render__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./render/Render */ "./src/render/Render.js");
-/* harmony import */ var _Viewport__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Viewport */ "./src/Viewport.js");
-
-
-
-
-
-
-
-class Game {
-  constructor() {
-    this.fps = 18;
-    this.fpsInterval = 1000 / this.fps;
-    this.prevFrameTime = Date.now();
-    this.gameMap = new _map_GameMap__WEBPACK_IMPORTED_MODULE_1__["default"](1200, 600, Math.random());
-    this.viewport = new _Viewport__WEBPACK_IMPORTED_MODULE_5__["default"](this.gameMap);
-    this.renderer = new _render_Render__WEBPACK_IMPORTED_MODULE_4__["default"](this.viewport);
-
-    this.player = new _player_Tank__WEBPACK_IMPORTED_MODULE_3__["default"](3, this.gameMap, 5, 4, 12, 6);
-    this.gameMap.addTank(this.player);
-    this.gameMap.addBase(this.player.base);
-    this.gameLoop();
-  }
-
-  gameLoop() {
-    window.requestAnimationFrame(this.gameLoop.bind(this));
-    const now = Date.now();
-    const elapsed = now - this.prevFrameTime;
-
-    if (elapsed > this.fpsInterval) {
-      this.prevFrameTime = now - (elapsed % this.fpsInterval);
-      this.update();
-      this.player.update();
-      this.gameMap.renderTankToMap(this.player);
-      this.gameMap.update();
-      this.viewport.update(this.player.x - (this.viewport.width / 2), this.player.y - (this.viewport.height / 2));
-    }
-  }
-
-  update() {
-    this.renderer.render();
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/Helpers.js":
-/*!************************!*\
-  !*** ./src/Helpers.js ***!
-  \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "randomInt": () => (/* binding */ randomInt),
-/* harmony export */   "SeededRNG": () => (/* binding */ SeededRNG)
-/* harmony export */ });
-function randomInt(min, max) { 
-  return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
-class SeededRNG {
-  constructor(seed = 1) {
-    this.seed = seed
-  }
- 
-  get(min, max) {
-      max = max || 1;
-      min = min || 0;
-
-      this.seed = (this.seed * 9301 + 49297) % 233280;
-      var rnd = this.seed / 233280;
-      this.seed += 1;
-      return min + rnd * (max - min);
-  }
-}
-
-/***/ }),
-
-/***/ "./src/KeyHandler.js":
-/*!***************************!*\
-  !*** ./src/KeyHandler.js ***!
-  \***************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ KeyHandler)
-/* harmony export */ });
-class KeyHandler {
-  constructor() {
-    this.pressedKeys = {
-      down: false,
-      up: false,
-      left: false,
-      right: false,
-      shoot: false,
-    };
-    this.init();
-  }
-
-  init() {
-    this.attachListener('keydown', true);
-    this.attachListener('keyup', false);
-  }
-
-  attachListener(event, bool) {
-    document.addEventListener(event, ({ key }) => {
-      if (key === 'ArrowUp') {
-        this.pressedKeys.up = bool;
-      }
-      if (key === 'ArrowDown') {
-        this.pressedKeys.down = bool;
-      }
-      if (key === 'ArrowRight') {
-        this.pressedKeys.right = bool;
-      }
-      if (key === 'ArrowLeft') {
-        this.pressedKeys.left = bool;
-      }
-      if (key === ' ' || key === 'x') {
-        this.pressedKeys.shoot = bool;
-      }
-    });
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/Viewport.js":
-/*!*************************!*\
-  !*** ./src/Viewport.js ***!
-  \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Viewport)
-/* harmony export */ });
-// original game 72px * 76px visible map per player
-
-class Viewport {
-  constructor(gameMap, width, height) {
-    this.gameMap = gameMap;
-    this.view = [];
-    this.offsetX = 0;
-    this.offsetY = 0;
-    this.width = 72; // must be a pair number
-    this.height = 76; // must be a pair number
-    this.update(0, 0);
-  }
-
-  update(offsetX, offsetY) {
-    this.offsetX = offsetX;
-    this.offsetY = offsetY;
-  }
-
-  getTile(x, y) {
-    return this.gameMap.getTile(x + this.offsetX, y + this.offsetY);
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/map/GameMap.js":
-/*!****************************!*\
-  !*** ./src/map/GameMap.js ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "IMPENETRABLES": () => (/* binding */ IMPENETRABLES),
-/* harmony export */   "PROJECTILE_BLOCKERS": () => (/* binding */ PROJECTILE_BLOCKERS),
-/* harmony export */   "PROJECTILE_BLOCKERS_EXCEPT_TANKS": () => (/* binding */ PROJECTILE_BLOCKERS_EXCEPT_TANKS),
-/* harmony export */   "IMPENETRABLES_EXCEPT_TANKS": () => (/* binding */ IMPENETRABLES_EXCEPT_TANKS),
-/* harmony export */   "default": () => (/* binding */ GameMap)
-/* harmony export */ });
-/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
-/* harmony import */ var _player_Explosion__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../player/Explosion */ "./src/player/Explosion.js");
-// 1200 * 600 map size probably default
-
-
-
-// 0 === stone
-// 1 && 2 === ground
-// 3 === empty cell
-// 4 === tank tracks blue
-// 5 === tank body blue
-// 6 === barel tank blue
-// 7 === tank tracks green
-// 8 === tank body green
-// 9 === barel tank green
-// 10 === projectile light
-// 11 === projectile dark
-// 12 === blue base
-// 13 === green base
-
-const IMPENETRABLES = [0, 4, 5, 6, 7, 8, 9, 12, 13];
-const PROJECTILE_BLOCKERS = [...IMPENETRABLES, 1, 2];
-const PROJECTILE_BLOCKERS_EXCEPT_TANKS = [0, 1, 2, 12, 13];
-const IMPENETRABLES_EXCEPT_TANKS = [0, 12, 13];
-
-class GameMap {
-  constructor(width = 1200, height = 600, seed = 1) {
-    this.settings = {
-      border: {
-        maxDepth: 50,
-        maxEdgeLength: 10,
-        maxSteepness: 4,
-      },
-    };
-    this.seed = seed;
-    this.width = width;
-    this.height = height;
-    this.tiles = [];
-    this.tiles.length = width * height;
-    this.tiles.fill(0);
-    this.tiles = this.tiles.map((code) => {
-      if (code === 0) return Math.random() > 0.5 ? 1 : 2;
-    });
-    this.generateStoneBorders(); 
-    this.tiles = Uint8Array.from(this.tiles);
-    this.prevTankTiles = [];
-    this.activeTank = null;
-    this.activeProjectiles = new Map();
-    this.activeExplosions = new Map();
-    this.bases = [];
-
-    this.init();
-  }
-
-  init() {
-    this.sendDataToServer();
-  }
-
-  sendDataToServer() {
-    const gameMap = {
-      seed: this.seed,
-      width: this.width,
-      height: this.height,
-      settings: this.settings,
-   }
-  }
-
-  logSize() {
-    const json = JSON.stringify(this.tiles);
-    const size = new TextEncoder().encode(json).length;
-    const kiloBytes = size / 1024;
-    console.log(`Map size: ${kiloBytes} KB`);
-  }
-
-  addBase(base) {
-    this.bases.push(base);
-    this.renderBasesToMap();
-  }
-
-  addTank(tank) {
-    this.activeTank = tank;
-  }
-
-  pushProjectile(projectile) {
-    this.activeProjectiles.set(projectile.hash, projectile);
-  }
-
-  logTiles() {
-    console.log('tiles:', this.tiles);
-  }
-
-  isDirt(x, y, x2, y2) {}
-
-  getTile(x, y) {
-    if (x >= this.width) return 0;
-    if (x < 0) return 0;
-    if (y >= this.height) return 0;
-    if (y < 0) return 0;
-    return this.tiles[y * this.width + x];
-  }
-
-  isInBounds(x, y) {
-    if (x > this.width - 1 || x < 0) {
-      return false;
-    }
-    if (y > this.height - 1 || y < 0) {
-      return false;
-    }
-    return true;
-  }
-
-  setTile(x, y, type) {
-    if (x >= this.width) throw Error(`Trying to set a tile out of bounds (x >= width) x --> ${x}`);
-    if (x < 0) throw Error(`Trying to set a tile out of bounds (x < 0) x --> ${x}`);
-    if (y >= this.height)
-      throw Error(`Trying to set a tile out of bounds (y >= height) y --> ${y}`);
-    if (y < 0) throw Error(`Trying to set a tile out of bounds (y < 0) y --> ${y}`);
-    this.tiles[y * this.width + x] = type;
-  }
-
-  clearMapBeforeRender() {
-    // could be optimized by not iterating the whole map if needed
-    this.tiles = this.tiles.map((x) => {
-      if (x >= 4 && x <= 9) {
-        return 3;
-      }
-      if (x === 10 || x === 11) {
-        return 3;
-      }
-      return x;
-    });
-  }
-
-  renderBasesToMap() {
-    this.bases.forEach((base) => {
-      for (let x = 0; x < base.width; x++) {
-        for (let y = 0; y < base.height; y++) {
-          const baseTile = base.getTile(x, y);
-          if (baseTile !== 2) {
-            this.setTile(x + base.x, y + base.y, baseTile === 0 ? 3 : base.colorCode);
-          }
-        }
-      }
-    });
-  }
-
-  renderExplosionsToMap() {
-    this.activeExplosions.forEach((explosion) => {
-      explosion.particles.forEach((particle) => {
-        const currentTile = this.getTile(particle.x, particle.y);
-        if (currentTile > 0 && currentTile < 4) {
-          this.setTile(particle.x, particle.y, 10);
-        }
-      });
-    });
-  }
-
-  renderProjectilesToMap() {
-    this.activeProjectiles.forEach((projectile) => {
-      if (!this.isInBounds(projectile.x, projectile.y)) return;
-
-      this.setTile(projectile.x, projectile.y, 10);
-      this.setTile(projectile.tailX, projectile.tailY, 11);
-    });
-  }
-
-  renderTankToMap() {
-    for (let x = 0; x < this.activeTank.width; x++) {
-      for (let y = 0; y < this.activeTank.height; y++) {
-        const tankTile = this.activeTank.getTile(x, y);
-        if (tankTile !== 0) {
-          this.setTile(x + this.activeTank.x, y + this.activeTank.y, tankTile);
-        } else {
-          //this.setTile(x + tank.x, y + tank.y, 3);
-        }
-      }
-    }
-  }
-
-  generateStoneBorders() {
-    const { maxDepth, maxEdgeLength, maxSteepness } = this.settings.border;
-    const left = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed);
-    const right = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 10);
-    const top = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 22);
-    const bottom = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 35);
-
-    for (let y = 0; y < this.height; y++) {
-      // left
-      for (let x = 0; x < maxDepth; x++) {
-        const newTileVal = left[y * maxDepth + x];
-        if (newTileVal === 0) {
-          this.setTile(x, y, 0);
-        }
-      }
-
-      // right
-      for (let x = maxDepth; x > 0; x--) {
-        const newTileVal = right[y * maxDepth + x - 1];
-        if (newTileVal === 0) {
-          this.setTile(this.width - x, y, 0);
-        }
-      }
-    }
-
-    for (let x = 0; x < this.width; x++) {
-      // top
-      for (let y = 0; y < maxDepth; y++) {
-        const newTileVal = top[x * maxDepth + y];
-        if (newTileVal === 0) {
-          this.setTile(x, y, 0);
-        }
-      }
-
-      // bottom
-      for (let y = maxDepth; y > 0; y--) {
-        const newTileVal = bottom[x * maxDepth + y - 1];
-        if (newTileVal === 0) {
-          this.setTile(x, this.height - y, 0);
-        }
-      }
-    }
-  }
-
-  generateForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
-    const seededRNG = new _Helpers__WEBPACK_IMPORTED_MODULE_0__.SeededRNG(seed);
-    let willKeepDirectionFor = 0; 
-    let currentMaxSteepness = 0;
-    let currentDistance = 50;
-    let grow = true;
-    let currentChange = 0;
-    const array = [];
-    array.length = edgeLength * maxDepth;
-    array.fill(1); // 1 will be ignored, 0 will be stone
-
-    const setLocalTile = (x, y, type) => {
-      array[y * maxDepth + x] = type;
-    };
-
-    const getDirectionLength = (maxLength, random) => {
-      return Math.floor(random * maxLength);
-    };
-    
-    const getChange = (maxSteepness, random) => {
-      return random * maxSteepness;
-    };
-    
-    const getCurrentMaxSteepness = (maxSteepness, random) => {
-      return Math.floor(random * maxSteepness) + 1;
-    };
-
-    for (let col = 0; col < edgeLength; col++) {
-      if (willKeepDirectionFor <= 0) {
-        //grow = !grow;
-        grow = seededRNG.get() < 0.5;
-        currentMaxSteepness = getCurrentMaxSteepness(maxSteepness, seededRNG.get());
-        willKeepDirectionFor = getDirectionLength(maxEdgeLength, seededRNG.get());
-      }
-
-      if (grow) {
-        currentChange = getChange(currentMaxSteepness, seededRNG.get());
-      } else {
-        currentChange = -getChange(currentMaxSteepness, seededRNG.get());
-      }
-
-      currentDistance += currentChange;
-      willKeepDirectionFor -= 1;
-
-      if (currentDistance >= maxDepth) {
-        currentDistance = maxDepth;
-        willKeepDirectionFor = 0;
-      } else if (currentDistance <= 0) {
-        currentDistance = 0;
-        willKeepDirectionFor = 0;
-      }
-
-      for (let row = 0; row < maxDepth; row++) {
-        if (row < currentDistance) {
-          setLocalTile(row, col, 0);
-        }
-      }
-    }
-    return array;
-  }
-
-  updateExplosions() {
-    this.activeExplosions.forEach((explosion) => {
-      explosion.particles.forEach((particle) => {
-        particle.update();
-        const underlyingTile = this.getTile(particle.x, particle.y);
-        if (IMPENETRABLES.includes(underlyingTile)) {
-          explosion.particles.delete(particle.hash);
-        }
-        if (particle.life === 0) {
-          explosion.particles.delete(particle.hash);
-        }
-        if (!this.isInBounds(particle.x, particle.y)) {
-          explosion.particles.delete(particle.hash);
-        }
-      });
-    });
-  }
-
-  updateProjectiles() {
-    this.activeProjectiles.forEach((projectile) => {
-      projectile.update();
-
-      const tailTile = this.getTile(projectile.tailX, projectile.tailY);
-      if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
-        this.activeProjectiles.delete(projectile.hash);
-        const explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_1__["default"](projectile.tailX, projectile.tailY, { x: 0, y: 0 }, 6);
-        this.activeExplosions.set(explosion.hash, explosion);
-      }
-
-      // this iterates over hypothetical future path of the projectile
-      // done to handle sub single frame/gameupdate collisions
-      for (let i = 0; i < projectile.futurePath.length; i++) {
-        const coords = projectile.futurePath[i];
-        // prev coords are coordinates of the trailing pixel behind the projectile
-        const prevCoords = {
-          x: coords.x + projectile.vector2.x * -1,
-          y: coords.y + projectile.vector2.y * -1,
-        };
-        const tile = this.getTile(coords.x, coords.y);
-        if (PROJECTILE_BLOCKERS_EXCEPT_TANKS.includes(tile)) {
-          this.activeProjectiles.delete(projectile.hash);
-          const explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_1__["default"](prevCoords.x, prevCoords.y, { x: 0, y: 0 }, 6);
-          this.activeExplosions.set(explosion.hash, explosion);
-          break;
-        }
-      }
-    });
-  }
-
-  update() {
-    this.clearMapBeforeRender();
-    this.renderTankToMap();
-    this.updateExplosions();
-    this.updateProjectiles();
-
-    this.renderProjectilesToMap();
-    this.renderExplosionsToMap();
-  }
-}
-
-
-
-
-/***/ }),
-
-/***/ "./src/player/Base.js":
-/*!****************************!*\
-  !*** ./src/player/Base.js ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Base": () => (/* binding */ Base)
-/* harmony export */ });
-class Base {
-  constructor(x, y, playerHash, colorCode) {
-    this.x = x;
-    this.y = y;
-    this.colorCode = colorCode;
-    this.ownerPlayer = playerHash;
-    this.width = 35;
-    this.height = 35;
-    this.doorWidth = 7;
-    this.shape = [];
-    this.shape.length = this.width * this.height;
-    this.shape.fill(0);
-    this.drawShapePerimeter();
-  }
-
-  getTile(x, y) {
-    return this.shape[x + y * this.width];
-  }
-
-  drawShapePerimeter() {
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        if (x === 0 || x === this.width - 1 || y === 0 || y === this.height - 1) {
-          if (x > ((this.width / 2) -4) && x < ((this.width / 2) + 3)) {
-            this.shape[x + y * this.width] = 2;
-          } else {
-            this.shape[x + y * this.width] = 1;
-          }
-        }
-      }
-    }
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/player/Explosion.js":
-/*!*********************************!*\
-  !*** ./src/player/Explosion.js ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Explosion)
-/* harmony export */ });
-/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Particle */ "./src/player/Particle.js");
-
-
-class Explosion {
-  constructor(x, y, vector2, numberOfParticles){
-    this.x = x;
-    this.y = y;
-    this.vector2 = vector2;
-    this.numberOfParticles = numberOfParticles
-    this.particles = new Map();
-    this.hash = Math.random().toString(36).slice(2);
-    this.init()
-  }
-
-  init() {
-    for (let i = 0; i < this.numberOfParticles; i++){
-      const particle = new _Particle__WEBPACK_IMPORTED_MODULE_0__["default"](this.x, this.y, this.vector2)
-      this.particles.set(particle.hash, particle)
-    }
-  }
-
-/*   update(){
-    this.particles.forEach((particle) => {
-      particle.update();
-    })
-  } */
-}
-
-// maxLength not normalised
-function getRandomVector(maxLength) {
-  return {
-    x: Math.floor(Math.random() * maxLength + 1),
-    y: Math.floor(Math.random() * maxLength + 1)
-  }
-}
-
-/***/ }),
-
-/***/ "./src/player/Particle.js":
-/*!********************************!*\
-  !*** ./src/player/Particle.js ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Particle)
-/* harmony export */ });
-class Particle {
-  constructor(x, y, vector2) {
-    this.x = x;
-    this.y = y;
-    this.vector2 = vector2;
-    this.hash = Math.random().toString(36).slice(2);
-    this.life = 3;
-  }
-
-  update() {
-    if (this.life === 0) return;
-    if (this.vector2.x !== 0){
-      this.x += this.vector2.x * Math.floor(Math.random() * 3);
-    } else { 
-      this.x += Math.floor(Math.random() * 3) - 1;
-    }
-    if (this.vector2.y !== 0){
-      this.y += this.vector2.y * Math.floor(Math.random() * 3);
-    } else {
-      this.y += Math.floor(Math.random() * 3) - 1;
-    }
-    this.life -= 1;
-  }
-}
-
-/***/ }),
-
-/***/ "./src/player/Projectile.js":
-/*!**********************************!*\
-  !*** ./src/player/Projectile.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Projectile)
-/* harmony export */ });
-// 10 === projectile light
-// 11 === projectile dark
-
-class Projectile {
-  constructor(x, y, vector2) {
-    this.speed = 4; //pixels per update
-    this.x = x;
-    this.y = y;
-    this.tailX = null;
-    this.tailY = null;
-    this.futurePath = null;
-    this.vector2 = vector2;
-    this.hash = Math.random().toString(36).slice(2);
-  }
-
-  calculateFuturePath() {
-    this.futurePath = [];
-    for (let i = 0; i < 4; i++) {
-      const [x, y] = getNextSteps(this.x, this.y, this.vector2, i);
-      this.futurePath.push({ x, y });
-    }
-  }
-
-  update() {
-    [this.x, this.y] = getNextSteps(this.x, this.y, this.vector2, this.speed);
-    const [tailX, tailY] = getNextSteps(this.x, this.y, this.vector2, -1);
-    this.tailX = tailX;
-    this.tailY = tailY;
-    this.calculateFuturePath();
-  }
-}
-
-function getNextSteps(x, y, vector2, step = 4) {
-  x += vector2.x * step;
-  y += vector2.y * step;
-  return [x, y];
-}
-
-
-/***/ }),
-
-/***/ "./src/player/Tank.js":
-/*!****************************!*\
-  !*** ./src/player/Tank.js ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Tank)
-/* harmony export */ });
-/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
-/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../KeyHandler */ "./src/KeyHandler.js");
-/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../map/GameMap */ "./src/map/GameMap.js");
-/* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Base */ "./src/player/Base.js");
-/* harmony import */ var _Projectile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Projectile */ "./src/player/Projectile.js");
-// 1 for tank tracks
-// 2 for tank body
-// 3 for barel
-
-
-
-
-
-
-
-class Tank {
-  constructor(colorOffset, map, lightColorCode, darkColorCode, baseColorCode, barelColorCode) {
-    this.lightColor = lightColorCode;
-    this.darkColor = darkColorCode;
-    this.barelColor = barelColorCode;
-    this.impenetrables = _map_GameMap__WEBPACK_IMPORTED_MODULE_2__.IMPENETRABLES.filter((code) => code !== this.lightColor && code !== this.darkColor && code !== this.barelColor);
-    this.gameMap = map;
-    this.movementSpeed = 1;
-    //this.x = randomInt(70, map.width - 70);
-    //this.y = randomInt(70, map.height - 70);
-    this.x = 50;
-    this.y = 50;
-    this.vector2 = { x: 0, y: -1 };
-    this._prevX;
-    this._prevY;
-    this._originalWidth = 7;
-    this._originalHeight = 7;
-    this.width = this._originalWidth;
-    this.height = this._originalHeight;
-    this.hash = Math.random().toString(36).slice(2);
-    this.base = new _Base__WEBPACK_IMPORTED_MODULE_3__.Base(this.x - 14, this.y - 14, this.hash, baseColorCode);
-    this.framesSinceLastShot = 0;
-    this.movementSpeed = 1; //pixel per update
-    this.readyToMove = false;
-    // prettier-ignore
-    this.tankUp = [
-      0,0,0,3,0,0,0,
-      0,1,0,3,0,1,0,
-      0,1,2,3,2,1,0,
-      0,1,2,3,2,1,0,
-      0,1,2,2,2,1,0,
-      0,1,2,2,2,1,0,
-      0,1,0,0,0,1,0,
-    ].map((x) => {
-      if (x === 1) {
-        return this.darkColor;
-      }
-      if (x === 2) {
-        return this.lightColor;
-      }
-      if (x === 3) {
-        return 6;
-      }
-      return 0;
-    }
-  );
-
-    this.tankDown = this.tankUp.slice().reverse();
-    this.tankRight = get90degRotatedOriginalShape(this.tankUp, this._originalWidth);
-    this.tankLeft = this.tankRight.slice().reverse();
-
-    // prettier-ignore
-    this.tankTopRight = [
-      0,0,0,1,0,0,0,
-      0,0,1,2,0,3,0,
-      0,1,2,2,3,0,0,
-      1,2,2,3,2,2,1,
-      0,0,2,2,2,1,0,
-      0,0,0,2,1,0,0,
-      0,0,0,1,0,0,0,
-    ].map((x) =>
-    x !== 0 ? x + colorOffset : 0
-  );
-    this.tankBottomRight = get90degRotatedOriginalShape(this.tankTopRight, this._originalHeight);
-    this.tankBottomLeft = get90degRotatedOriginalShape(this.tankBottomRight, this._originalHeight);
-    this.tankTopLeft = get90degRotatedOriginalShape(this.tankBottomLeft, this._originalHeight);
-    this.currentTankShape = this.tankUp;
-    this._prevTankShape = null;
-    this.keyHandler = new _KeyHandler__WEBPACK_IMPORTED_MODULE_1__["default"]();
-  }
-
-  getTile(x, y) {
-    return this.currentTankShape[y * this.width + x];
-  }
-
-  getPreviousTankTile(x, y) {
-    return this._prevTankShape[y * this.width + x];
-  }
-
-  getOriginalTile(x, y) {
-    return this.tankUp[y * this.width + x];
-  }
-
-  checkIfDirt() {
-    /* if (this.direction === 'up') {
-      for (let i = 0; i < this.width; i++) {
-        const currentTile = this.gameMap.getTile(this.x + i, this.y - 1);
-      }
-    } */
-  }
-
-  rotateUp() {
-    if (this.isLegalMove(this.x, this.y, this.tankUp)) {
-      this.currentTankShape = this.tankUp;
-      this.vector2 = { x: 0, y: -1 };
-    } else {
-    }
-  }
-
-  rotateDown() {
-    if (this.isLegalMove(this.x, this.y, this.tankDown)) {
-      this.currentTankShape = this.tankDown;
-      this.vector2 = { x: 0, y: 1 };
-    } else {
-    }
-  }
-
-  rotateRight() {
-    if (this.isLegalMove(this.x, this.y, this.tankRight)) {
-      this.currentTankShape = this.tankRight;
-      this.vector2 = { x: 1, y: 0 };
-    } else {
-    }
-  }
-
-  rotateLeft() {
-    if (this.isLegalMove(this.x, this.y, this.tankLeft)) {
-      this.currentTankShape = this.tankLeft;
-      this.vector2 = { x: -1, y: 0 };
-    } else {
-    }
-  }
-
-  rotateTopRight() {
-    if (this.isLegalMove(this.x, this.y, this.tankTopRight)) {
-      this.currentTankShape = this.tankTopRight;
-      this.vector2 = { x: 1, y: -1 };
-    } else {
-    }
-  }
-  rotateBottomRight() {
-    if (this.isLegalMove(this.x, this.y, this.tankBottomRight)) {
-      this.currentTankShape = this.tankBottomRight;
-      this.vector2 = { x: 1, y: 1 };
-    } else {
-    }
-  }
-  rotateBottomLeft() {
-    if (this.isLegalMove(this.x, this.y, this.tankBottomLeft)) {
-      this.currentTankShape = this.tankBottomLeft;
-      this.vector2 = { x: -1, y: 1 };
-    } else {
-    }
-  }
-  rotateTopLeft() {
-    if (this.isLegalMove(this.x, this.y, this.tankTopLeft)) {
-      this.currentTankShape = this.tankTopLeft;
-      this.vector2 = { x: -1, y: -1 };
-    } else {
-    }
-  }
-
-  isLegalMove(x, y, shape) {
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        // ignore tiles of type 0 on tank
-        if (shape[j * this.width + i] !== 0) {
-          const underlyingTile = this.gameMap.getTile(x + i, y + j);
-          if (_map_GameMap__WEBPACK_IMPORTED_MODULE_2__.IMPENETRABLES_EXCEPT_TANKS.includes(underlyingTile)) { 
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
-
-  moveByVector(vector2) {
-    if (this.readyToMove) {
-      if (
-        this.isLegalMove(
-          this.x + vector2.x * this.movementSpeed,
-          this.y + vector2.y * this.movementSpeed,
-          this.currentTankShape
-        )
-      ) {
-        this.x += vector2.x * this.movementSpeed;
-        this.y += vector2.y * this.movementSpeed;
-      }
-    }
-  }
-
-  shootProjectile() {
-    this.gameMap.pushProjectile(new _Projectile__WEBPACK_IMPORTED_MODULE_4__["default"](this.x + 3, this.y + 3, this.vector2));
-    this.framesSinceLastShot = 0;
-  }
-
-  update() {
-    this.framesSinceLastShot += 1;
-    const { up, down, right, left, shoot } = this.keyHandler.pressedKeys;
-
-    if (shoot && this.framesSinceLastShot >= 2) {
-      this.shootProjectile();
-    }
-
-    // duplicate rotations are to handle an edge case where the first rotation failed due to costraints
-    // the tank is allowed to "reverse" but should immediately rotate to the correct orientation in the same gameupdate
-    if (up && right) {
-      this.rotateTopRight();
-      this.moveByVector({x: 1, y: -1});
-      this.rotateTopRight();
-    } else if (right && down) {
-      this.rotateBottomRight();
-      this.moveByVector({x: 1, y: 1});
-      this.rotateBottomRight();
-    } else if (down && left) {
-      this.rotateBottomLeft();
-      this.moveByVector({x: -1, y: 1});
-      this.rotateBottomLeft();
-    } else if (up && left) {
-      this.rotateTopLeft();
-      this.moveByVector({x: -1, y: -1});
-      this.rotateTopLeft();
-    } else if (up) {
-      this.rotateUp();
-      this.moveByVector({x: 0, y: -1});
-      this.rotateUp();
-    } else if (down) {
-      this.rotateDown();
-      this.moveByVector({x: 0, y: 1});
-      this.rotateDown();
-    } else if (right) {
-      this.rotateRight();
-      this.moveByVector({x: 1, y: 0});
-      this.rotateRight();
-    } else if (left) {
-      this.rotateLeft();
-      this.moveByVector({x: -1, y: 0});
-      this.rotateLeft();
-    }
-
-    if (left || right || up || down) {
-      this.readyToMove = true;
-    } else {
-      this.readyToMove = false;
-    }
-  }
-}
-
-function get90degRotatedOriginalShape(matrix, width) {
-  const rotatedTank = [];
-  for (let x = 0; x < width; x++) {
-    for (let y = matrix.length / width - 1; y >= 0; y--) {
-      rotatedTank.push(matrix[[y * width + x]]);
-    }
-  }
-  return rotatedTank;
-}
-
-
-/***/ }),
-
-/***/ "./src/render/Render.js":
-/*!******************************!*\
-  !*** ./src/render/Render.js ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Render)
-/* harmony export */ });
-// 0 === stone
-// 1 && 2 === ground
-// 3 === empty cell
-// 4 === tank tracks blue
-// 5 === tank body blue
-// 6 === barel tank blue
-// 7 === tank tracks green
-// 8 === tank body green
-// 9 === barel tank green
-// 10 === projectile light
-// 11 === projectile dark
-// 12 === blue base
-// 13 === green base
-
-// prettier-ignore
-const colors = [
-  { r: 154, g: 154, b: 154 }, // stone
-  { r: 186, g: 89, b: 4 }, // ground 1
-  { r: 195, g: 121, b: 48 },// ground 2
-  { r: 0, g: 0, b: 0 },// empty cell (black)
-  { r: 0, g: 0, b: 182 }, // tank tracks blue
-  { r: 44, g: 44, b: 255 }, // tank body blue
-  { r: 243, g: 235, b: 28 }, // tank barrel blue
-  { r: 0, g: 182, b: 0 }, // tank tracks green
-  { r: 44, g: 255, b: 44 }, // tank body green
-  { r: 243, g: 235, b: 28 }, // tank barrel green
-  { r: 255, g: 52, b: 8 }, // projectile light
-  { r: 186, g: 0, b: 0 }, // projectile dark
-  { r: 0, g: 0, b: 182 }, // blue base 
-  { r: 0, g: 182, b: 0 }, // green base 
-
-];
-
-class Render {
-  constructor(viewport) {
-    this.viewport = viewport;
-    this.canvas = document.querySelector('canvas');
-    this.canvas.width = viewport.width;
-    this.canvas.height = viewport.height;
-    this.ctx = this.canvas.getContext('2d');
-    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-
-    this.pixels = this.imageData.data;
-
-    this.init();
-  }
-
-  init() {
-    this.canvas.style.height = '500px';
-    this.canvas.style.imageRendering = 'pixelated';
-  }
-
-  render() {
-    for (let y = 0; y < this.viewport.height; y++) {
-      for (let x = 0; x < this.viewport.width; x++) {
-        const offset = y * this.viewport.width * 4 + x * 4;
-        const currentTile = this.viewport.getTile(x, y);
-
-        this.pixels[offset] = colors[currentTile].r;
-        this.pixels[offset + 1] = colors[currentTile].g;
-        this.pixels[offset + 2] = colors[currentTile].b;
-        this.pixels[offset + 3] = 255;
-      }
-    }
-
-    this.flushPixels();
-  }
-
-  flushPixels() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.putImageData(this.imageData, 0, 0);
-  }
-}
 
 
 /***/ }),
@@ -7263,6 +7821,2244 @@ function hasBinary(obj, toJSON) {
 exports.hasBinary = hasBinary;
 
 
+/***/ }),
+
+/***/ "./node_modules/svelte/internal/index.mjs":
+/*!************************************************!*\
+  !*** ./node_modules/svelte/internal/index.mjs ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "HtmlTag": () => (/* binding */ HtmlTag),
+/* harmony export */   "HtmlTagHydration": () => (/* binding */ HtmlTagHydration),
+/* harmony export */   "SvelteComponent": () => (/* binding */ SvelteComponent),
+/* harmony export */   "SvelteComponentDev": () => (/* binding */ SvelteComponentDev),
+/* harmony export */   "SvelteComponentTyped": () => (/* binding */ SvelteComponentTyped),
+/* harmony export */   "SvelteElement": () => (/* binding */ SvelteElement),
+/* harmony export */   "action_destroyer": () => (/* binding */ action_destroyer),
+/* harmony export */   "add_attribute": () => (/* binding */ add_attribute),
+/* harmony export */   "add_classes": () => (/* binding */ add_classes),
+/* harmony export */   "add_flush_callback": () => (/* binding */ add_flush_callback),
+/* harmony export */   "add_location": () => (/* binding */ add_location),
+/* harmony export */   "add_render_callback": () => (/* binding */ add_render_callback),
+/* harmony export */   "add_resize_listener": () => (/* binding */ add_resize_listener),
+/* harmony export */   "add_transform": () => (/* binding */ add_transform),
+/* harmony export */   "afterUpdate": () => (/* binding */ afterUpdate),
+/* harmony export */   "append": () => (/* binding */ append),
+/* harmony export */   "append_dev": () => (/* binding */ append_dev),
+/* harmony export */   "append_empty_stylesheet": () => (/* binding */ append_empty_stylesheet),
+/* harmony export */   "append_hydration": () => (/* binding */ append_hydration),
+/* harmony export */   "append_hydration_dev": () => (/* binding */ append_hydration_dev),
+/* harmony export */   "append_styles": () => (/* binding */ append_styles),
+/* harmony export */   "assign": () => (/* binding */ assign),
+/* harmony export */   "attr": () => (/* binding */ attr),
+/* harmony export */   "attr_dev": () => (/* binding */ attr_dev),
+/* harmony export */   "attribute_to_object": () => (/* binding */ attribute_to_object),
+/* harmony export */   "beforeUpdate": () => (/* binding */ beforeUpdate),
+/* harmony export */   "bind": () => (/* binding */ bind),
+/* harmony export */   "binding_callbacks": () => (/* binding */ binding_callbacks),
+/* harmony export */   "blank_object": () => (/* binding */ blank_object),
+/* harmony export */   "bubble": () => (/* binding */ bubble),
+/* harmony export */   "check_outros": () => (/* binding */ check_outros),
+/* harmony export */   "children": () => (/* binding */ children),
+/* harmony export */   "claim_component": () => (/* binding */ claim_component),
+/* harmony export */   "claim_element": () => (/* binding */ claim_element),
+/* harmony export */   "claim_html_tag": () => (/* binding */ claim_html_tag),
+/* harmony export */   "claim_space": () => (/* binding */ claim_space),
+/* harmony export */   "claim_svg_element": () => (/* binding */ claim_svg_element),
+/* harmony export */   "claim_text": () => (/* binding */ claim_text),
+/* harmony export */   "clear_loops": () => (/* binding */ clear_loops),
+/* harmony export */   "component_subscribe": () => (/* binding */ component_subscribe),
+/* harmony export */   "compute_rest_props": () => (/* binding */ compute_rest_props),
+/* harmony export */   "compute_slots": () => (/* binding */ compute_slots),
+/* harmony export */   "createEventDispatcher": () => (/* binding */ createEventDispatcher),
+/* harmony export */   "create_animation": () => (/* binding */ create_animation),
+/* harmony export */   "create_bidirectional_transition": () => (/* binding */ create_bidirectional_transition),
+/* harmony export */   "create_component": () => (/* binding */ create_component),
+/* harmony export */   "create_in_transition": () => (/* binding */ create_in_transition),
+/* harmony export */   "create_out_transition": () => (/* binding */ create_out_transition),
+/* harmony export */   "create_slot": () => (/* binding */ create_slot),
+/* harmony export */   "create_ssr_component": () => (/* binding */ create_ssr_component),
+/* harmony export */   "current_component": () => (/* binding */ current_component),
+/* harmony export */   "custom_event": () => (/* binding */ custom_event),
+/* harmony export */   "dataset_dev": () => (/* binding */ dataset_dev),
+/* harmony export */   "debug": () => (/* binding */ debug),
+/* harmony export */   "destroy_block": () => (/* binding */ destroy_block),
+/* harmony export */   "destroy_component": () => (/* binding */ destroy_component),
+/* harmony export */   "destroy_each": () => (/* binding */ destroy_each),
+/* harmony export */   "detach": () => (/* binding */ detach),
+/* harmony export */   "detach_after_dev": () => (/* binding */ detach_after_dev),
+/* harmony export */   "detach_before_dev": () => (/* binding */ detach_before_dev),
+/* harmony export */   "detach_between_dev": () => (/* binding */ detach_between_dev),
+/* harmony export */   "detach_dev": () => (/* binding */ detach_dev),
+/* harmony export */   "dirty_components": () => (/* binding */ dirty_components),
+/* harmony export */   "dispatch_dev": () => (/* binding */ dispatch_dev),
+/* harmony export */   "each": () => (/* binding */ each),
+/* harmony export */   "element": () => (/* binding */ element),
+/* harmony export */   "element_is": () => (/* binding */ element_is),
+/* harmony export */   "empty": () => (/* binding */ empty),
+/* harmony export */   "end_hydrating": () => (/* binding */ end_hydrating),
+/* harmony export */   "escape": () => (/* binding */ escape),
+/* harmony export */   "escape_attribute_value": () => (/* binding */ escape_attribute_value),
+/* harmony export */   "escape_object": () => (/* binding */ escape_object),
+/* harmony export */   "escaped": () => (/* binding */ escaped),
+/* harmony export */   "exclude_internal_props": () => (/* binding */ exclude_internal_props),
+/* harmony export */   "fix_and_destroy_block": () => (/* binding */ fix_and_destroy_block),
+/* harmony export */   "fix_and_outro_and_destroy_block": () => (/* binding */ fix_and_outro_and_destroy_block),
+/* harmony export */   "fix_position": () => (/* binding */ fix_position),
+/* harmony export */   "flush": () => (/* binding */ flush),
+/* harmony export */   "getAllContexts": () => (/* binding */ getAllContexts),
+/* harmony export */   "getContext": () => (/* binding */ getContext),
+/* harmony export */   "get_all_dirty_from_scope": () => (/* binding */ get_all_dirty_from_scope),
+/* harmony export */   "get_binding_group_value": () => (/* binding */ get_binding_group_value),
+/* harmony export */   "get_current_component": () => (/* binding */ get_current_component),
+/* harmony export */   "get_custom_elements_slots": () => (/* binding */ get_custom_elements_slots),
+/* harmony export */   "get_root_for_style": () => (/* binding */ get_root_for_style),
+/* harmony export */   "get_slot_changes": () => (/* binding */ get_slot_changes),
+/* harmony export */   "get_spread_object": () => (/* binding */ get_spread_object),
+/* harmony export */   "get_spread_update": () => (/* binding */ get_spread_update),
+/* harmony export */   "get_store_value": () => (/* binding */ get_store_value),
+/* harmony export */   "globals": () => (/* binding */ globals),
+/* harmony export */   "group_outros": () => (/* binding */ group_outros),
+/* harmony export */   "handle_promise": () => (/* binding */ handle_promise),
+/* harmony export */   "hasContext": () => (/* binding */ hasContext),
+/* harmony export */   "has_prop": () => (/* binding */ has_prop),
+/* harmony export */   "identity": () => (/* binding */ identity),
+/* harmony export */   "init": () => (/* binding */ init),
+/* harmony export */   "insert": () => (/* binding */ insert),
+/* harmony export */   "insert_dev": () => (/* binding */ insert_dev),
+/* harmony export */   "insert_hydration": () => (/* binding */ insert_hydration),
+/* harmony export */   "insert_hydration_dev": () => (/* binding */ insert_hydration_dev),
+/* harmony export */   "intros": () => (/* binding */ intros),
+/* harmony export */   "invalid_attribute_name_character": () => (/* binding */ invalid_attribute_name_character),
+/* harmony export */   "is_client": () => (/* binding */ is_client),
+/* harmony export */   "is_crossorigin": () => (/* binding */ is_crossorigin),
+/* harmony export */   "is_empty": () => (/* binding */ is_empty),
+/* harmony export */   "is_function": () => (/* binding */ is_function),
+/* harmony export */   "is_promise": () => (/* binding */ is_promise),
+/* harmony export */   "listen": () => (/* binding */ listen),
+/* harmony export */   "listen_dev": () => (/* binding */ listen_dev),
+/* harmony export */   "loop": () => (/* binding */ loop),
+/* harmony export */   "loop_guard": () => (/* binding */ loop_guard),
+/* harmony export */   "missing_component": () => (/* binding */ missing_component),
+/* harmony export */   "mount_component": () => (/* binding */ mount_component),
+/* harmony export */   "noop": () => (/* binding */ noop),
+/* harmony export */   "not_equal": () => (/* binding */ not_equal),
+/* harmony export */   "now": () => (/* binding */ now),
+/* harmony export */   "null_to_empty": () => (/* binding */ null_to_empty),
+/* harmony export */   "object_without_properties": () => (/* binding */ object_without_properties),
+/* harmony export */   "onDestroy": () => (/* binding */ onDestroy),
+/* harmony export */   "onMount": () => (/* binding */ onMount),
+/* harmony export */   "once": () => (/* binding */ once),
+/* harmony export */   "outro_and_destroy_block": () => (/* binding */ outro_and_destroy_block),
+/* harmony export */   "prevent_default": () => (/* binding */ prevent_default),
+/* harmony export */   "prop_dev": () => (/* binding */ prop_dev),
+/* harmony export */   "query_selector_all": () => (/* binding */ query_selector_all),
+/* harmony export */   "raf": () => (/* binding */ raf),
+/* harmony export */   "run": () => (/* binding */ run),
+/* harmony export */   "run_all": () => (/* binding */ run_all),
+/* harmony export */   "safe_not_equal": () => (/* binding */ safe_not_equal),
+/* harmony export */   "schedule_update": () => (/* binding */ schedule_update),
+/* harmony export */   "select_multiple_value": () => (/* binding */ select_multiple_value),
+/* harmony export */   "select_option": () => (/* binding */ select_option),
+/* harmony export */   "select_options": () => (/* binding */ select_options),
+/* harmony export */   "select_value": () => (/* binding */ select_value),
+/* harmony export */   "self": () => (/* binding */ self),
+/* harmony export */   "setContext": () => (/* binding */ setContext),
+/* harmony export */   "set_attributes": () => (/* binding */ set_attributes),
+/* harmony export */   "set_current_component": () => (/* binding */ set_current_component),
+/* harmony export */   "set_custom_element_data": () => (/* binding */ set_custom_element_data),
+/* harmony export */   "set_data": () => (/* binding */ set_data),
+/* harmony export */   "set_data_dev": () => (/* binding */ set_data_dev),
+/* harmony export */   "set_input_type": () => (/* binding */ set_input_type),
+/* harmony export */   "set_input_value": () => (/* binding */ set_input_value),
+/* harmony export */   "set_now": () => (/* binding */ set_now),
+/* harmony export */   "set_raf": () => (/* binding */ set_raf),
+/* harmony export */   "set_store_value": () => (/* binding */ set_store_value),
+/* harmony export */   "set_style": () => (/* binding */ set_style),
+/* harmony export */   "set_svg_attributes": () => (/* binding */ set_svg_attributes),
+/* harmony export */   "space": () => (/* binding */ space),
+/* harmony export */   "spread": () => (/* binding */ spread),
+/* harmony export */   "src_url_equal": () => (/* binding */ src_url_equal),
+/* harmony export */   "start_hydrating": () => (/* binding */ start_hydrating),
+/* harmony export */   "stop_propagation": () => (/* binding */ stop_propagation),
+/* harmony export */   "subscribe": () => (/* binding */ subscribe),
+/* harmony export */   "svg_element": () => (/* binding */ svg_element),
+/* harmony export */   "text": () => (/* binding */ text),
+/* harmony export */   "tick": () => (/* binding */ tick),
+/* harmony export */   "time_ranges_to_array": () => (/* binding */ time_ranges_to_array),
+/* harmony export */   "to_number": () => (/* binding */ to_number),
+/* harmony export */   "toggle_class": () => (/* binding */ toggle_class),
+/* harmony export */   "transition_in": () => (/* binding */ transition_in),
+/* harmony export */   "transition_out": () => (/* binding */ transition_out),
+/* harmony export */   "trusted": () => (/* binding */ trusted),
+/* harmony export */   "update_await_block_branch": () => (/* binding */ update_await_block_branch),
+/* harmony export */   "update_keyed_each": () => (/* binding */ update_keyed_each),
+/* harmony export */   "update_slot": () => (/* binding */ update_slot),
+/* harmony export */   "update_slot_base": () => (/* binding */ update_slot_base),
+/* harmony export */   "validate_component": () => (/* binding */ validate_component),
+/* harmony export */   "validate_each_argument": () => (/* binding */ validate_each_argument),
+/* harmony export */   "validate_each_keys": () => (/* binding */ validate_each_keys),
+/* harmony export */   "validate_slots": () => (/* binding */ validate_slots),
+/* harmony export */   "validate_store": () => (/* binding */ validate_store),
+/* harmony export */   "xlink_attr": () => (/* binding */ xlink_attr)
+/* harmony export */ });
+function noop() { }
+const identity = x => x;
+function assign(tar, src) {
+    // @ts-ignore
+    for (const k in src)
+        tar[k] = src[k];
+    return tar;
+}
+function is_promise(value) {
+    return value && typeof value === 'object' && typeof value.then === 'function';
+}
+function add_location(element, file, line, column, char) {
+    element.__svelte_meta = {
+        loc: { file, line, column, char }
+    };
+}
+function run(fn) {
+    return fn();
+}
+function blank_object() {
+    return Object.create(null);
+}
+function run_all(fns) {
+    fns.forEach(run);
+}
+function is_function(thing) {
+    return typeof thing === 'function';
+}
+function safe_not_equal(a, b) {
+    return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
+}
+let src_url_equal_anchor;
+function src_url_equal(element_src, url) {
+    if (!src_url_equal_anchor) {
+        src_url_equal_anchor = document.createElement('a');
+    }
+    src_url_equal_anchor.href = url;
+    return element_src === src_url_equal_anchor.href;
+}
+function not_equal(a, b) {
+    return a != a ? b == b : a !== b;
+}
+function is_empty(obj) {
+    return Object.keys(obj).length === 0;
+}
+function validate_store(store, name) {
+    if (store != null && typeof store.subscribe !== 'function') {
+        throw new Error(`'${name}' is not a store with a 'subscribe' method`);
+    }
+}
+function subscribe(store, ...callbacks) {
+    if (store == null) {
+        return noop;
+    }
+    const unsub = store.subscribe(...callbacks);
+    return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+}
+function get_store_value(store) {
+    let value;
+    subscribe(store, _ => value = _)();
+    return value;
+}
+function component_subscribe(component, store, callback) {
+    component.$$.on_destroy.push(subscribe(store, callback));
+}
+function create_slot(definition, ctx, $$scope, fn) {
+    if (definition) {
+        const slot_ctx = get_slot_context(definition, ctx, $$scope, fn);
+        return definition[0](slot_ctx);
+    }
+}
+function get_slot_context(definition, ctx, $$scope, fn) {
+    return definition[1] && fn
+        ? assign($$scope.ctx.slice(), definition[1](fn(ctx)))
+        : $$scope.ctx;
+}
+function get_slot_changes(definition, $$scope, dirty, fn) {
+    if (definition[2] && fn) {
+        const lets = definition[2](fn(dirty));
+        if ($$scope.dirty === undefined) {
+            return lets;
+        }
+        if (typeof lets === 'object') {
+            const merged = [];
+            const len = Math.max($$scope.dirty.length, lets.length);
+            for (let i = 0; i < len; i += 1) {
+                merged[i] = $$scope.dirty[i] | lets[i];
+            }
+            return merged;
+        }
+        return $$scope.dirty | lets;
+    }
+    return $$scope.dirty;
+}
+function update_slot_base(slot, slot_definition, ctx, $$scope, slot_changes, get_slot_context_fn) {
+    if (slot_changes) {
+        const slot_context = get_slot_context(slot_definition, ctx, $$scope, get_slot_context_fn);
+        slot.p(slot_context, slot_changes);
+    }
+}
+function update_slot(slot, slot_definition, ctx, $$scope, dirty, get_slot_changes_fn, get_slot_context_fn) {
+    const slot_changes = get_slot_changes(slot_definition, $$scope, dirty, get_slot_changes_fn);
+    update_slot_base(slot, slot_definition, ctx, $$scope, slot_changes, get_slot_context_fn);
+}
+function get_all_dirty_from_scope($$scope) {
+    if ($$scope.ctx.length > 32) {
+        const dirty = [];
+        const length = $$scope.ctx.length / 32;
+        for (let i = 0; i < length; i++) {
+            dirty[i] = -1;
+        }
+        return dirty;
+    }
+    return -1;
+}
+function exclude_internal_props(props) {
+    const result = {};
+    for (const k in props)
+        if (k[0] !== '$')
+            result[k] = props[k];
+    return result;
+}
+function compute_rest_props(props, keys) {
+    const rest = {};
+    keys = new Set(keys);
+    for (const k in props)
+        if (!keys.has(k) && k[0] !== '$')
+            rest[k] = props[k];
+    return rest;
+}
+function compute_slots(slots) {
+    const result = {};
+    for (const key in slots) {
+        result[key] = true;
+    }
+    return result;
+}
+function once(fn) {
+    let ran = false;
+    return function (...args) {
+        if (ran)
+            return;
+        ran = true;
+        fn.call(this, ...args);
+    };
+}
+function null_to_empty(value) {
+    return value == null ? '' : value;
+}
+function set_store_value(store, ret, value) {
+    store.set(value);
+    return ret;
+}
+const has_prop = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+function action_destroyer(action_result) {
+    return action_result && is_function(action_result.destroy) ? action_result.destroy : noop;
+}
+
+const is_client = typeof window !== 'undefined';
+let now = is_client
+    ? () => window.performance.now()
+    : () => Date.now();
+let raf = is_client ? cb => requestAnimationFrame(cb) : noop;
+// used internally for testing
+function set_now(fn) {
+    now = fn;
+}
+function set_raf(fn) {
+    raf = fn;
+}
+
+const tasks = new Set();
+function run_tasks(now) {
+    tasks.forEach(task => {
+        if (!task.c(now)) {
+            tasks.delete(task);
+            task.f();
+        }
+    });
+    if (tasks.size !== 0)
+        raf(run_tasks);
+}
+/**
+ * For testing purposes only!
+ */
+function clear_loops() {
+    tasks.clear();
+}
+/**
+ * Creates a new task that runs on each raf frame
+ * until it returns a falsy value or is aborted
+ */
+function loop(callback) {
+    let task;
+    if (tasks.size === 0)
+        raf(run_tasks);
+    return {
+        promise: new Promise(fulfill => {
+            tasks.add(task = { c: callback, f: fulfill });
+        }),
+        abort() {
+            tasks.delete(task);
+        }
+    };
+}
+
+// Track which nodes are claimed during hydration. Unclaimed nodes can then be removed from the DOM
+// at the end of hydration without touching the remaining nodes.
+let is_hydrating = false;
+function start_hydrating() {
+    is_hydrating = true;
+}
+function end_hydrating() {
+    is_hydrating = false;
+}
+function upper_bound(low, high, key, value) {
+    // Return first index of value larger than input value in the range [low, high)
+    while (low < high) {
+        const mid = low + ((high - low) >> 1);
+        if (key(mid) <= value) {
+            low = mid + 1;
+        }
+        else {
+            high = mid;
+        }
+    }
+    return low;
+}
+function init_hydrate(target) {
+    if (target.hydrate_init)
+        return;
+    target.hydrate_init = true;
+    // We know that all children have claim_order values since the unclaimed have been detached if target is not <head>
+    let children = target.childNodes;
+    // If target is <head>, there may be children without claim_order
+    if (target.nodeName === 'HEAD') {
+        const myChildren = [];
+        for (let i = 0; i < children.length; i++) {
+            const node = children[i];
+            if (node.claim_order !== undefined) {
+                myChildren.push(node);
+            }
+        }
+        children = myChildren;
+    }
+    /*
+    * Reorder claimed children optimally.
+    * We can reorder claimed children optimally by finding the longest subsequence of
+    * nodes that are already claimed in order and only moving the rest. The longest
+    * subsequence subsequence of nodes that are claimed in order can be found by
+    * computing the longest increasing subsequence of .claim_order values.
+    *
+    * This algorithm is optimal in generating the least amount of reorder operations
+    * possible.
+    *
+    * Proof:
+    * We know that, given a set of reordering operations, the nodes that do not move
+    * always form an increasing subsequence, since they do not move among each other
+    * meaning that they must be already ordered among each other. Thus, the maximal
+    * set of nodes that do not move form a longest increasing subsequence.
+    */
+    // Compute longest increasing subsequence
+    // m: subsequence length j => index k of smallest value that ends an increasing subsequence of length j
+    const m = new Int32Array(children.length + 1);
+    // Predecessor indices + 1
+    const p = new Int32Array(children.length);
+    m[0] = -1;
+    let longest = 0;
+    for (let i = 0; i < children.length; i++) {
+        const current = children[i].claim_order;
+        // Find the largest subsequence length such that it ends in a value less than our current value
+        // upper_bound returns first greater value, so we subtract one
+        // with fast path for when we are on the current longest subsequence
+        const seqLen = ((longest > 0 && children[m[longest]].claim_order <= current) ? longest + 1 : upper_bound(1, longest, idx => children[m[idx]].claim_order, current)) - 1;
+        p[i] = m[seqLen] + 1;
+        const newLen = seqLen + 1;
+        // We can guarantee that current is the smallest value. Otherwise, we would have generated a longer sequence.
+        m[newLen] = i;
+        longest = Math.max(newLen, longest);
+    }
+    // The longest increasing subsequence of nodes (initially reversed)
+    const lis = [];
+    // The rest of the nodes, nodes that will be moved
+    const toMove = [];
+    let last = children.length - 1;
+    for (let cur = m[longest] + 1; cur != 0; cur = p[cur - 1]) {
+        lis.push(children[cur - 1]);
+        for (; last >= cur; last--) {
+            toMove.push(children[last]);
+        }
+        last--;
+    }
+    for (; last >= 0; last--) {
+        toMove.push(children[last]);
+    }
+    lis.reverse();
+    // We sort the nodes being moved to guarantee that their insertion order matches the claim order
+    toMove.sort((a, b) => a.claim_order - b.claim_order);
+    // Finally, we move the nodes
+    for (let i = 0, j = 0; i < toMove.length; i++) {
+        while (j < lis.length && toMove[i].claim_order >= lis[j].claim_order) {
+            j++;
+        }
+        const anchor = j < lis.length ? lis[j] : null;
+        target.insertBefore(toMove[i], anchor);
+    }
+}
+function append(target, node) {
+    target.appendChild(node);
+}
+function append_styles(target, style_sheet_id, styles) {
+    const append_styles_to = get_root_for_style(target);
+    if (!append_styles_to.getElementById(style_sheet_id)) {
+        const style = element('style');
+        style.id = style_sheet_id;
+        style.textContent = styles;
+        append_stylesheet(append_styles_to, style);
+    }
+}
+function get_root_for_style(node) {
+    if (!node)
+        return document;
+    const root = node.getRootNode ? node.getRootNode() : node.ownerDocument;
+    if (root && root.host) {
+        return root;
+    }
+    return node.ownerDocument;
+}
+function append_empty_stylesheet(node) {
+    const style_element = element('style');
+    append_stylesheet(get_root_for_style(node), style_element);
+    return style_element;
+}
+function append_stylesheet(node, style) {
+    append(node.head || node, style);
+}
+function append_hydration(target, node) {
+    if (is_hydrating) {
+        init_hydrate(target);
+        if ((target.actual_end_child === undefined) || ((target.actual_end_child !== null) && (target.actual_end_child.parentElement !== target))) {
+            target.actual_end_child = target.firstChild;
+        }
+        // Skip nodes of undefined ordering
+        while ((target.actual_end_child !== null) && (target.actual_end_child.claim_order === undefined)) {
+            target.actual_end_child = target.actual_end_child.nextSibling;
+        }
+        if (node !== target.actual_end_child) {
+            // We only insert if the ordering of this node should be modified or the parent node is not target
+            if (node.claim_order !== undefined || node.parentNode !== target) {
+                target.insertBefore(node, target.actual_end_child);
+            }
+        }
+        else {
+            target.actual_end_child = node.nextSibling;
+        }
+    }
+    else if (node.parentNode !== target || node.nextSibling !== null) {
+        target.appendChild(node);
+    }
+}
+function insert(target, node, anchor) {
+    target.insertBefore(node, anchor || null);
+}
+function insert_hydration(target, node, anchor) {
+    if (is_hydrating && !anchor) {
+        append_hydration(target, node);
+    }
+    else if (node.parentNode !== target || node.nextSibling != anchor) {
+        target.insertBefore(node, anchor || null);
+    }
+}
+function detach(node) {
+    node.parentNode.removeChild(node);
+}
+function destroy_each(iterations, detaching) {
+    for (let i = 0; i < iterations.length; i += 1) {
+        if (iterations[i])
+            iterations[i].d(detaching);
+    }
+}
+function element(name) {
+    return document.createElement(name);
+}
+function element_is(name, is) {
+    return document.createElement(name, { is });
+}
+function object_without_properties(obj, exclude) {
+    const target = {};
+    for (const k in obj) {
+        if (has_prop(obj, k)
+            // @ts-ignore
+            && exclude.indexOf(k) === -1) {
+            // @ts-ignore
+            target[k] = obj[k];
+        }
+    }
+    return target;
+}
+function svg_element(name) {
+    return document.createElementNS('http://www.w3.org/2000/svg', name);
+}
+function text(data) {
+    return document.createTextNode(data);
+}
+function space() {
+    return text(' ');
+}
+function empty() {
+    return text('');
+}
+function listen(node, event, handler, options) {
+    node.addEventListener(event, handler, options);
+    return () => node.removeEventListener(event, handler, options);
+}
+function prevent_default(fn) {
+    return function (event) {
+        event.preventDefault();
+        // @ts-ignore
+        return fn.call(this, event);
+    };
+}
+function stop_propagation(fn) {
+    return function (event) {
+        event.stopPropagation();
+        // @ts-ignore
+        return fn.call(this, event);
+    };
+}
+function self(fn) {
+    return function (event) {
+        // @ts-ignore
+        if (event.target === this)
+            fn.call(this, event);
+    };
+}
+function trusted(fn) {
+    return function (event) {
+        // @ts-ignore
+        if (event.isTrusted)
+            fn.call(this, event);
+    };
+}
+function attr(node, attribute, value) {
+    if (value == null)
+        node.removeAttribute(attribute);
+    else if (node.getAttribute(attribute) !== value)
+        node.setAttribute(attribute, value);
+}
+function set_attributes(node, attributes) {
+    // @ts-ignore
+    const descriptors = Object.getOwnPropertyDescriptors(node.__proto__);
+    for (const key in attributes) {
+        if (attributes[key] == null) {
+            node.removeAttribute(key);
+        }
+        else if (key === 'style') {
+            node.style.cssText = attributes[key];
+        }
+        else if (key === '__value') {
+            node.value = node[key] = attributes[key];
+        }
+        else if (descriptors[key] && descriptors[key].set) {
+            node[key] = attributes[key];
+        }
+        else {
+            attr(node, key, attributes[key]);
+        }
+    }
+}
+function set_svg_attributes(node, attributes) {
+    for (const key in attributes) {
+        attr(node, key, attributes[key]);
+    }
+}
+function set_custom_element_data(node, prop, value) {
+    if (prop in node) {
+        node[prop] = typeof node[prop] === 'boolean' && value === '' ? true : value;
+    }
+    else {
+        attr(node, prop, value);
+    }
+}
+function xlink_attr(node, attribute, value) {
+    node.setAttributeNS('http://www.w3.org/1999/xlink', attribute, value);
+}
+function get_binding_group_value(group, __value, checked) {
+    const value = new Set();
+    for (let i = 0; i < group.length; i += 1) {
+        if (group[i].checked)
+            value.add(group[i].__value);
+    }
+    if (!checked) {
+        value.delete(__value);
+    }
+    return Array.from(value);
+}
+function to_number(value) {
+    return value === '' ? null : +value;
+}
+function time_ranges_to_array(ranges) {
+    const array = [];
+    for (let i = 0; i < ranges.length; i += 1) {
+        array.push({ start: ranges.start(i), end: ranges.end(i) });
+    }
+    return array;
+}
+function children(element) {
+    return Array.from(element.childNodes);
+}
+function init_claim_info(nodes) {
+    if (nodes.claim_info === undefined) {
+        nodes.claim_info = { last_index: 0, total_claimed: 0 };
+    }
+}
+function claim_node(nodes, predicate, processNode, createNode, dontUpdateLastIndex = false) {
+    // Try to find nodes in an order such that we lengthen the longest increasing subsequence
+    init_claim_info(nodes);
+    const resultNode = (() => {
+        // We first try to find an element after the previous one
+        for (let i = nodes.claim_info.last_index; i < nodes.length; i++) {
+            const node = nodes[i];
+            if (predicate(node)) {
+                const replacement = processNode(node);
+                if (replacement === undefined) {
+                    nodes.splice(i, 1);
+                }
+                else {
+                    nodes[i] = replacement;
+                }
+                if (!dontUpdateLastIndex) {
+                    nodes.claim_info.last_index = i;
+                }
+                return node;
+            }
+        }
+        // Otherwise, we try to find one before
+        // We iterate in reverse so that we don't go too far back
+        for (let i = nodes.claim_info.last_index - 1; i >= 0; i--) {
+            const node = nodes[i];
+            if (predicate(node)) {
+                const replacement = processNode(node);
+                if (replacement === undefined) {
+                    nodes.splice(i, 1);
+                }
+                else {
+                    nodes[i] = replacement;
+                }
+                if (!dontUpdateLastIndex) {
+                    nodes.claim_info.last_index = i;
+                }
+                else if (replacement === undefined) {
+                    // Since we spliced before the last_index, we decrease it
+                    nodes.claim_info.last_index--;
+                }
+                return node;
+            }
+        }
+        // If we can't find any matching node, we create a new one
+        return createNode();
+    })();
+    resultNode.claim_order = nodes.claim_info.total_claimed;
+    nodes.claim_info.total_claimed += 1;
+    return resultNode;
+}
+function claim_element_base(nodes, name, attributes, create_element) {
+    return claim_node(nodes, (node) => node.nodeName === name, (node) => {
+        const remove = [];
+        for (let j = 0; j < node.attributes.length; j++) {
+            const attribute = node.attributes[j];
+            if (!attributes[attribute.name]) {
+                remove.push(attribute.name);
+            }
+        }
+        remove.forEach(v => node.removeAttribute(v));
+        return undefined;
+    }, () => create_element(name));
+}
+function claim_element(nodes, name, attributes) {
+    return claim_element_base(nodes, name, attributes, element);
+}
+function claim_svg_element(nodes, name, attributes) {
+    return claim_element_base(nodes, name, attributes, svg_element);
+}
+function claim_text(nodes, data) {
+    return claim_node(nodes, (node) => node.nodeType === 3, (node) => {
+        const dataStr = '' + data;
+        if (node.data.startsWith(dataStr)) {
+            if (node.data.length !== dataStr.length) {
+                return node.splitText(dataStr.length);
+            }
+        }
+        else {
+            node.data = dataStr;
+        }
+    }, () => text(data), true // Text nodes should not update last index since it is likely not worth it to eliminate an increasing subsequence of actual elements
+    );
+}
+function claim_space(nodes) {
+    return claim_text(nodes, ' ');
+}
+function find_comment(nodes, text, start) {
+    for (let i = start; i < nodes.length; i += 1) {
+        const node = nodes[i];
+        if (node.nodeType === 8 /* comment node */ && node.textContent.trim() === text) {
+            return i;
+        }
+    }
+    return nodes.length;
+}
+function claim_html_tag(nodes) {
+    // find html opening tag
+    const start_index = find_comment(nodes, 'HTML_TAG_START', 0);
+    const end_index = find_comment(nodes, 'HTML_TAG_END', start_index);
+    if (start_index === end_index) {
+        return new HtmlTagHydration();
+    }
+    init_claim_info(nodes);
+    const html_tag_nodes = nodes.splice(start_index, end_index + 1);
+    detach(html_tag_nodes[0]);
+    detach(html_tag_nodes[html_tag_nodes.length - 1]);
+    const claimed_nodes = html_tag_nodes.slice(1, html_tag_nodes.length - 1);
+    for (const n of claimed_nodes) {
+        n.claim_order = nodes.claim_info.total_claimed;
+        nodes.claim_info.total_claimed += 1;
+    }
+    return new HtmlTagHydration(claimed_nodes);
+}
+function set_data(text, data) {
+    data = '' + data;
+    if (text.wholeText !== data)
+        text.data = data;
+}
+function set_input_value(input, value) {
+    input.value = value == null ? '' : value;
+}
+function set_input_type(input, type) {
+    try {
+        input.type = type;
+    }
+    catch (e) {
+        // do nothing
+    }
+}
+function set_style(node, key, value, important) {
+    node.style.setProperty(key, value, important ? 'important' : '');
+}
+function select_option(select, value) {
+    for (let i = 0; i < select.options.length; i += 1) {
+        const option = select.options[i];
+        if (option.__value === value) {
+            option.selected = true;
+            return;
+        }
+    }
+    select.selectedIndex = -1; // no option should be selected
+}
+function select_options(select, value) {
+    for (let i = 0; i < select.options.length; i += 1) {
+        const option = select.options[i];
+        option.selected = ~value.indexOf(option.__value);
+    }
+}
+function select_value(select) {
+    const selected_option = select.querySelector(':checked') || select.options[0];
+    return selected_option && selected_option.__value;
+}
+function select_multiple_value(select) {
+    return [].map.call(select.querySelectorAll(':checked'), option => option.__value);
+}
+// unfortunately this can't be a constant as that wouldn't be tree-shakeable
+// so we cache the result instead
+let crossorigin;
+function is_crossorigin() {
+    if (crossorigin === undefined) {
+        crossorigin = false;
+        try {
+            if (typeof window !== 'undefined' && window.parent) {
+                void window.parent.document;
+            }
+        }
+        catch (error) {
+            crossorigin = true;
+        }
+    }
+    return crossorigin;
+}
+function add_resize_listener(node, fn) {
+    const computed_style = getComputedStyle(node);
+    if (computed_style.position === 'static') {
+        node.style.position = 'relative';
+    }
+    const iframe = element('iframe');
+    iframe.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; ' +
+        'overflow: hidden; border: 0; opacity: 0; pointer-events: none; z-index: -1;');
+    iframe.setAttribute('aria-hidden', 'true');
+    iframe.tabIndex = -1;
+    const crossorigin = is_crossorigin();
+    let unsubscribe;
+    if (crossorigin) {
+        iframe.src = "data:text/html,<script>onresize=function(){parent.postMessage(0,'*')}</script>";
+        unsubscribe = listen(window, 'message', (event) => {
+            if (event.source === iframe.contentWindow)
+                fn();
+        });
+    }
+    else {
+        iframe.src = 'about:blank';
+        iframe.onload = () => {
+            unsubscribe = listen(iframe.contentWindow, 'resize', fn);
+        };
+    }
+    append(node, iframe);
+    return () => {
+        if (crossorigin) {
+            unsubscribe();
+        }
+        else if (unsubscribe && iframe.contentWindow) {
+            unsubscribe();
+        }
+        detach(iframe);
+    };
+}
+function toggle_class(element, name, toggle) {
+    element.classList[toggle ? 'add' : 'remove'](name);
+}
+function custom_event(type, detail, bubbles = false) {
+    const e = document.createEvent('CustomEvent');
+    e.initCustomEvent(type, bubbles, false, detail);
+    return e;
+}
+function query_selector_all(selector, parent = document.body) {
+    return Array.from(parent.querySelectorAll(selector));
+}
+class HtmlTag {
+    constructor() {
+        this.e = this.n = null;
+    }
+    c(html) {
+        this.h(html);
+    }
+    m(html, target, anchor = null) {
+        if (!this.e) {
+            this.e = element(target.nodeName);
+            this.t = target;
+            this.c(html);
+        }
+        this.i(anchor);
+    }
+    h(html) {
+        this.e.innerHTML = html;
+        this.n = Array.from(this.e.childNodes);
+    }
+    i(anchor) {
+        for (let i = 0; i < this.n.length; i += 1) {
+            insert(this.t, this.n[i], anchor);
+        }
+    }
+    p(html) {
+        this.d();
+        this.h(html);
+        this.i(this.a);
+    }
+    d() {
+        this.n.forEach(detach);
+    }
+}
+class HtmlTagHydration extends HtmlTag {
+    constructor(claimed_nodes) {
+        super();
+        this.e = this.n = null;
+        this.l = claimed_nodes;
+    }
+    c(html) {
+        if (this.l) {
+            this.n = this.l;
+        }
+        else {
+            super.c(html);
+        }
+    }
+    i(anchor) {
+        for (let i = 0; i < this.n.length; i += 1) {
+            insert_hydration(this.t, this.n[i], anchor);
+        }
+    }
+}
+function attribute_to_object(attributes) {
+    const result = {};
+    for (const attribute of attributes) {
+        result[attribute.name] = attribute.value;
+    }
+    return result;
+}
+function get_custom_elements_slots(element) {
+    const result = {};
+    element.childNodes.forEach((node) => {
+        result[node.slot || 'default'] = true;
+    });
+    return result;
+}
+
+const active_docs = new Set();
+let active = 0;
+// https://github.com/darkskyapp/string-hash/blob/master/index.js
+function hash(str) {
+    let hash = 5381;
+    let i = str.length;
+    while (i--)
+        hash = ((hash << 5) - hash) ^ str.charCodeAt(i);
+    return hash >>> 0;
+}
+function create_rule(node, a, b, duration, delay, ease, fn, uid = 0) {
+    const step = 16.666 / duration;
+    let keyframes = '{\n';
+    for (let p = 0; p <= 1; p += step) {
+        const t = a + (b - a) * ease(p);
+        keyframes += p * 100 + `%{${fn(t, 1 - t)}}\n`;
+    }
+    const rule = keyframes + `100% {${fn(b, 1 - b)}}\n}`;
+    const name = `__svelte_${hash(rule)}_${uid}`;
+    const doc = get_root_for_style(node);
+    active_docs.add(doc);
+    const stylesheet = doc.__svelte_stylesheet || (doc.__svelte_stylesheet = append_empty_stylesheet(node).sheet);
+    const current_rules = doc.__svelte_rules || (doc.__svelte_rules = {});
+    if (!current_rules[name]) {
+        current_rules[name] = true;
+        stylesheet.insertRule(`@keyframes ${name} ${rule}`, stylesheet.cssRules.length);
+    }
+    const animation = node.style.animation || '';
+    node.style.animation = `${animation ? `${animation}, ` : ''}${name} ${duration}ms linear ${delay}ms 1 both`;
+    active += 1;
+    return name;
+}
+function delete_rule(node, name) {
+    const previous = (node.style.animation || '').split(', ');
+    const next = previous.filter(name
+        ? anim => anim.indexOf(name) < 0 // remove specific animation
+        : anim => anim.indexOf('__svelte') === -1 // remove all Svelte animations
+    );
+    const deleted = previous.length - next.length;
+    if (deleted) {
+        node.style.animation = next.join(', ');
+        active -= deleted;
+        if (!active)
+            clear_rules();
+    }
+}
+function clear_rules() {
+    raf(() => {
+        if (active)
+            return;
+        active_docs.forEach(doc => {
+            const stylesheet = doc.__svelte_stylesheet;
+            let i = stylesheet.cssRules.length;
+            while (i--)
+                stylesheet.deleteRule(i);
+            doc.__svelte_rules = {};
+        });
+        active_docs.clear();
+    });
+}
+
+function create_animation(node, from, fn, params) {
+    if (!from)
+        return noop;
+    const to = node.getBoundingClientRect();
+    if (from.left === to.left && from.right === to.right && from.top === to.top && from.bottom === to.bottom)
+        return noop;
+    const { delay = 0, duration = 300, easing = identity, 
+    // @ts-ignore todo: should this be separated from destructuring? Or start/end added to public api and documentation?
+    start: start_time = now() + delay, 
+    // @ts-ignore todo:
+    end = start_time + duration, tick = noop, css } = fn(node, { from, to }, params);
+    let running = true;
+    let started = false;
+    let name;
+    function start() {
+        if (css) {
+            name = create_rule(node, 0, 1, duration, delay, easing, css);
+        }
+        if (!delay) {
+            started = true;
+        }
+    }
+    function stop() {
+        if (css)
+            delete_rule(node, name);
+        running = false;
+    }
+    loop(now => {
+        if (!started && now >= start_time) {
+            started = true;
+        }
+        if (started && now >= end) {
+            tick(1, 0);
+            stop();
+        }
+        if (!running) {
+            return false;
+        }
+        if (started) {
+            const p = now - start_time;
+            const t = 0 + 1 * easing(p / duration);
+            tick(t, 1 - t);
+        }
+        return true;
+    });
+    start();
+    tick(0, 1);
+    return stop;
+}
+function fix_position(node) {
+    const style = getComputedStyle(node);
+    if (style.position !== 'absolute' && style.position !== 'fixed') {
+        const { width, height } = style;
+        const a = node.getBoundingClientRect();
+        node.style.position = 'absolute';
+        node.style.width = width;
+        node.style.height = height;
+        add_transform(node, a);
+    }
+}
+function add_transform(node, a) {
+    const b = node.getBoundingClientRect();
+    if (a.left !== b.left || a.top !== b.top) {
+        const style = getComputedStyle(node);
+        const transform = style.transform === 'none' ? '' : style.transform;
+        node.style.transform = `${transform} translate(${a.left - b.left}px, ${a.top - b.top}px)`;
+    }
+}
+
+let current_component;
+function set_current_component(component) {
+    current_component = component;
+}
+function get_current_component() {
+    if (!current_component)
+        throw new Error('Function called outside component initialization');
+    return current_component;
+}
+function beforeUpdate(fn) {
+    get_current_component().$$.before_update.push(fn);
+}
+function onMount(fn) {
+    get_current_component().$$.on_mount.push(fn);
+}
+function afterUpdate(fn) {
+    get_current_component().$$.after_update.push(fn);
+}
+function onDestroy(fn) {
+    get_current_component().$$.on_destroy.push(fn);
+}
+function createEventDispatcher() {
+    const component = get_current_component();
+    return (type, detail) => {
+        const callbacks = component.$$.callbacks[type];
+        if (callbacks) {
+            // TODO are there situations where events could be dispatched
+            // in a server (non-DOM) environment?
+            const event = custom_event(type, detail);
+            callbacks.slice().forEach(fn => {
+                fn.call(component, event);
+            });
+        }
+    };
+}
+function setContext(key, context) {
+    get_current_component().$$.context.set(key, context);
+}
+function getContext(key) {
+    return get_current_component().$$.context.get(key);
+}
+function getAllContexts() {
+    return get_current_component().$$.context;
+}
+function hasContext(key) {
+    return get_current_component().$$.context.has(key);
+}
+// TODO figure out if we still want to support
+// shorthand events, or if we want to implement
+// a real bubbling mechanism
+function bubble(component, event) {
+    const callbacks = component.$$.callbacks[event.type];
+    if (callbacks) {
+        // @ts-ignore
+        callbacks.slice().forEach(fn => fn.call(this, event));
+    }
+}
+
+const dirty_components = [];
+const intros = { enabled: false };
+const binding_callbacks = [];
+const render_callbacks = [];
+const flush_callbacks = [];
+const resolved_promise = Promise.resolve();
+let update_scheduled = false;
+function schedule_update() {
+    if (!update_scheduled) {
+        update_scheduled = true;
+        resolved_promise.then(flush);
+    }
+}
+function tick() {
+    schedule_update();
+    return resolved_promise;
+}
+function add_render_callback(fn) {
+    render_callbacks.push(fn);
+}
+function add_flush_callback(fn) {
+    flush_callbacks.push(fn);
+}
+let flushing = false;
+const seen_callbacks = new Set();
+function flush() {
+    if (flushing)
+        return;
+    flushing = true;
+    do {
+        // first, call beforeUpdate functions
+        // and update components
+        for (let i = 0; i < dirty_components.length; i += 1) {
+            const component = dirty_components[i];
+            set_current_component(component);
+            update(component.$$);
+        }
+        set_current_component(null);
+        dirty_components.length = 0;
+        while (binding_callbacks.length)
+            binding_callbacks.pop()();
+        // then, once components are updated, call
+        // afterUpdate functions. This may cause
+        // subsequent updates...
+        for (let i = 0; i < render_callbacks.length; i += 1) {
+            const callback = render_callbacks[i];
+            if (!seen_callbacks.has(callback)) {
+                // ...so guard against infinite loops
+                seen_callbacks.add(callback);
+                callback();
+            }
+        }
+        render_callbacks.length = 0;
+    } while (dirty_components.length);
+    while (flush_callbacks.length) {
+        flush_callbacks.pop()();
+    }
+    update_scheduled = false;
+    flushing = false;
+    seen_callbacks.clear();
+}
+function update($$) {
+    if ($$.fragment !== null) {
+        $$.update();
+        run_all($$.before_update);
+        const dirty = $$.dirty;
+        $$.dirty = [-1];
+        $$.fragment && $$.fragment.p($$.ctx, dirty);
+        $$.after_update.forEach(add_render_callback);
+    }
+}
+
+let promise;
+function wait() {
+    if (!promise) {
+        promise = Promise.resolve();
+        promise.then(() => {
+            promise = null;
+        });
+    }
+    return promise;
+}
+function dispatch(node, direction, kind) {
+    node.dispatchEvent(custom_event(`${direction ? 'intro' : 'outro'}${kind}`));
+}
+const outroing = new Set();
+let outros;
+function group_outros() {
+    outros = {
+        r: 0,
+        c: [],
+        p: outros // parent group
+    };
+}
+function check_outros() {
+    if (!outros.r) {
+        run_all(outros.c);
+    }
+    outros = outros.p;
+}
+function transition_in(block, local) {
+    if (block && block.i) {
+        outroing.delete(block);
+        block.i(local);
+    }
+}
+function transition_out(block, local, detach, callback) {
+    if (block && block.o) {
+        if (outroing.has(block))
+            return;
+        outroing.add(block);
+        outros.c.push(() => {
+            outroing.delete(block);
+            if (callback) {
+                if (detach)
+                    block.d(1);
+                callback();
+            }
+        });
+        block.o(local);
+    }
+}
+const null_transition = { duration: 0 };
+function create_in_transition(node, fn, params) {
+    let config = fn(node, params);
+    let running = false;
+    let animation_name;
+    let task;
+    let uid = 0;
+    function cleanup() {
+        if (animation_name)
+            delete_rule(node, animation_name);
+    }
+    function go() {
+        const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+        if (css)
+            animation_name = create_rule(node, 0, 1, duration, delay, easing, css, uid++);
+        tick(0, 1);
+        const start_time = now() + delay;
+        const end_time = start_time + duration;
+        if (task)
+            task.abort();
+        running = true;
+        add_render_callback(() => dispatch(node, true, 'start'));
+        task = loop(now => {
+            if (running) {
+                if (now >= end_time) {
+                    tick(1, 0);
+                    dispatch(node, true, 'end');
+                    cleanup();
+                    return running = false;
+                }
+                if (now >= start_time) {
+                    const t = easing((now - start_time) / duration);
+                    tick(t, 1 - t);
+                }
+            }
+            return running;
+        });
+    }
+    let started = false;
+    return {
+        start() {
+            if (started)
+                return;
+            started = true;
+            delete_rule(node);
+            if (is_function(config)) {
+                config = config();
+                wait().then(go);
+            }
+            else {
+                go();
+            }
+        },
+        invalidate() {
+            started = false;
+        },
+        end() {
+            if (running) {
+                cleanup();
+                running = false;
+            }
+        }
+    };
+}
+function create_out_transition(node, fn, params) {
+    let config = fn(node, params);
+    let running = true;
+    let animation_name;
+    const group = outros;
+    group.r += 1;
+    function go() {
+        const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+        if (css)
+            animation_name = create_rule(node, 1, 0, duration, delay, easing, css);
+        const start_time = now() + delay;
+        const end_time = start_time + duration;
+        add_render_callback(() => dispatch(node, false, 'start'));
+        loop(now => {
+            if (running) {
+                if (now >= end_time) {
+                    tick(0, 1);
+                    dispatch(node, false, 'end');
+                    if (!--group.r) {
+                        // this will result in `end()` being called,
+                        // so we don't need to clean up here
+                        run_all(group.c);
+                    }
+                    return false;
+                }
+                if (now >= start_time) {
+                    const t = easing((now - start_time) / duration);
+                    tick(1 - t, t);
+                }
+            }
+            return running;
+        });
+    }
+    if (is_function(config)) {
+        wait().then(() => {
+            // @ts-ignore
+            config = config();
+            go();
+        });
+    }
+    else {
+        go();
+    }
+    return {
+        end(reset) {
+            if (reset && config.tick) {
+                config.tick(1, 0);
+            }
+            if (running) {
+                if (animation_name)
+                    delete_rule(node, animation_name);
+                running = false;
+            }
+        }
+    };
+}
+function create_bidirectional_transition(node, fn, params, intro) {
+    let config = fn(node, params);
+    let t = intro ? 0 : 1;
+    let running_program = null;
+    let pending_program = null;
+    let animation_name = null;
+    function clear_animation() {
+        if (animation_name)
+            delete_rule(node, animation_name);
+    }
+    function init(program, duration) {
+        const d = (program.b - t);
+        duration *= Math.abs(d);
+        return {
+            a: t,
+            b: program.b,
+            d,
+            duration,
+            start: program.start,
+            end: program.start + duration,
+            group: program.group
+        };
+    }
+    function go(b) {
+        const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+        const program = {
+            start: now() + delay,
+            b
+        };
+        if (!b) {
+            // @ts-ignore todo: improve typings
+            program.group = outros;
+            outros.r += 1;
+        }
+        if (running_program || pending_program) {
+            pending_program = program;
+        }
+        else {
+            // if this is an intro, and there's a delay, we need to do
+            // an initial tick and/or apply CSS animation immediately
+            if (css) {
+                clear_animation();
+                animation_name = create_rule(node, t, b, duration, delay, easing, css);
+            }
+            if (b)
+                tick(0, 1);
+            running_program = init(program, duration);
+            add_render_callback(() => dispatch(node, b, 'start'));
+            loop(now => {
+                if (pending_program && now > pending_program.start) {
+                    running_program = init(pending_program, duration);
+                    pending_program = null;
+                    dispatch(node, running_program.b, 'start');
+                    if (css) {
+                        clear_animation();
+                        animation_name = create_rule(node, t, running_program.b, running_program.duration, 0, easing, config.css);
+                    }
+                }
+                if (running_program) {
+                    if (now >= running_program.end) {
+                        tick(t = running_program.b, 1 - t);
+                        dispatch(node, running_program.b, 'end');
+                        if (!pending_program) {
+                            // we're done
+                            if (running_program.b) {
+                                // intro — we can tidy up immediately
+                                clear_animation();
+                            }
+                            else {
+                                // outro — needs to be coordinated
+                                if (!--running_program.group.r)
+                                    run_all(running_program.group.c);
+                            }
+                        }
+                        running_program = null;
+                    }
+                    else if (now >= running_program.start) {
+                        const p = now - running_program.start;
+                        t = running_program.a + running_program.d * easing(p / running_program.duration);
+                        tick(t, 1 - t);
+                    }
+                }
+                return !!(running_program || pending_program);
+            });
+        }
+    }
+    return {
+        run(b) {
+            if (is_function(config)) {
+                wait().then(() => {
+                    // @ts-ignore
+                    config = config();
+                    go(b);
+                });
+            }
+            else {
+                go(b);
+            }
+        },
+        end() {
+            clear_animation();
+            running_program = pending_program = null;
+        }
+    };
+}
+
+function handle_promise(promise, info) {
+    const token = info.token = {};
+    function update(type, index, key, value) {
+        if (info.token !== token)
+            return;
+        info.resolved = value;
+        let child_ctx = info.ctx;
+        if (key !== undefined) {
+            child_ctx = child_ctx.slice();
+            child_ctx[key] = value;
+        }
+        const block = type && (info.current = type)(child_ctx);
+        let needs_flush = false;
+        if (info.block) {
+            if (info.blocks) {
+                info.blocks.forEach((block, i) => {
+                    if (i !== index && block) {
+                        group_outros();
+                        transition_out(block, 1, 1, () => {
+                            if (info.blocks[i] === block) {
+                                info.blocks[i] = null;
+                            }
+                        });
+                        check_outros();
+                    }
+                });
+            }
+            else {
+                info.block.d(1);
+            }
+            block.c();
+            transition_in(block, 1);
+            block.m(info.mount(), info.anchor);
+            needs_flush = true;
+        }
+        info.block = block;
+        if (info.blocks)
+            info.blocks[index] = block;
+        if (needs_flush) {
+            flush();
+        }
+    }
+    if (is_promise(promise)) {
+        const current_component = get_current_component();
+        promise.then(value => {
+            set_current_component(current_component);
+            update(info.then, 1, info.value, value);
+            set_current_component(null);
+        }, error => {
+            set_current_component(current_component);
+            update(info.catch, 2, info.error, error);
+            set_current_component(null);
+            if (!info.hasCatch) {
+                throw error;
+            }
+        });
+        // if we previously had a then/catch block, destroy it
+        if (info.current !== info.pending) {
+            update(info.pending, 0);
+            return true;
+        }
+    }
+    else {
+        if (info.current !== info.then) {
+            update(info.then, 1, info.value, promise);
+            return true;
+        }
+        info.resolved = promise;
+    }
+}
+function update_await_block_branch(info, ctx, dirty) {
+    const child_ctx = ctx.slice();
+    const { resolved } = info;
+    if (info.current === info.then) {
+        child_ctx[info.value] = resolved;
+    }
+    if (info.current === info.catch) {
+        child_ctx[info.error] = resolved;
+    }
+    info.block.p(child_ctx, dirty);
+}
+
+const globals = (typeof window !== 'undefined'
+    ? window
+    : typeof globalThis !== 'undefined'
+        ? globalThis
+        : global);
+
+function destroy_block(block, lookup) {
+    block.d(1);
+    lookup.delete(block.key);
+}
+function outro_and_destroy_block(block, lookup) {
+    transition_out(block, 1, 1, () => {
+        lookup.delete(block.key);
+    });
+}
+function fix_and_destroy_block(block, lookup) {
+    block.f();
+    destroy_block(block, lookup);
+}
+function fix_and_outro_and_destroy_block(block, lookup) {
+    block.f();
+    outro_and_destroy_block(block, lookup);
+}
+function update_keyed_each(old_blocks, dirty, get_key, dynamic, ctx, list, lookup, node, destroy, create_each_block, next, get_context) {
+    let o = old_blocks.length;
+    let n = list.length;
+    let i = o;
+    const old_indexes = {};
+    while (i--)
+        old_indexes[old_blocks[i].key] = i;
+    const new_blocks = [];
+    const new_lookup = new Map();
+    const deltas = new Map();
+    i = n;
+    while (i--) {
+        const child_ctx = get_context(ctx, list, i);
+        const key = get_key(child_ctx);
+        let block = lookup.get(key);
+        if (!block) {
+            block = create_each_block(key, child_ctx);
+            block.c();
+        }
+        else if (dynamic) {
+            block.p(child_ctx, dirty);
+        }
+        new_lookup.set(key, new_blocks[i] = block);
+        if (key in old_indexes)
+            deltas.set(key, Math.abs(i - old_indexes[key]));
+    }
+    const will_move = new Set();
+    const did_move = new Set();
+    function insert(block) {
+        transition_in(block, 1);
+        block.m(node, next);
+        lookup.set(block.key, block);
+        next = block.first;
+        n--;
+    }
+    while (o && n) {
+        const new_block = new_blocks[n - 1];
+        const old_block = old_blocks[o - 1];
+        const new_key = new_block.key;
+        const old_key = old_block.key;
+        if (new_block === old_block) {
+            // do nothing
+            next = new_block.first;
+            o--;
+            n--;
+        }
+        else if (!new_lookup.has(old_key)) {
+            // remove old block
+            destroy(old_block, lookup);
+            o--;
+        }
+        else if (!lookup.has(new_key) || will_move.has(new_key)) {
+            insert(new_block);
+        }
+        else if (did_move.has(old_key)) {
+            o--;
+        }
+        else if (deltas.get(new_key) > deltas.get(old_key)) {
+            did_move.add(new_key);
+            insert(new_block);
+        }
+        else {
+            will_move.add(old_key);
+            o--;
+        }
+    }
+    while (o--) {
+        const old_block = old_blocks[o];
+        if (!new_lookup.has(old_block.key))
+            destroy(old_block, lookup);
+    }
+    while (n)
+        insert(new_blocks[n - 1]);
+    return new_blocks;
+}
+function validate_each_keys(ctx, list, get_context, get_key) {
+    const keys = new Set();
+    for (let i = 0; i < list.length; i++) {
+        const key = get_key(get_context(ctx, list, i));
+        if (keys.has(key)) {
+            throw new Error('Cannot have duplicate keys in a keyed each');
+        }
+        keys.add(key);
+    }
+}
+
+function get_spread_update(levels, updates) {
+    const update = {};
+    const to_null_out = {};
+    const accounted_for = { $$scope: 1 };
+    let i = levels.length;
+    while (i--) {
+        const o = levels[i];
+        const n = updates[i];
+        if (n) {
+            for (const key in o) {
+                if (!(key in n))
+                    to_null_out[key] = 1;
+            }
+            for (const key in n) {
+                if (!accounted_for[key]) {
+                    update[key] = n[key];
+                    accounted_for[key] = 1;
+                }
+            }
+            levels[i] = n;
+        }
+        else {
+            for (const key in o) {
+                accounted_for[key] = 1;
+            }
+        }
+    }
+    for (const key in to_null_out) {
+        if (!(key in update))
+            update[key] = undefined;
+    }
+    return update;
+}
+function get_spread_object(spread_props) {
+    return typeof spread_props === 'object' && spread_props !== null ? spread_props : {};
+}
+
+// source: https://html.spec.whatwg.org/multipage/indices.html
+const boolean_attributes = new Set([
+    'allowfullscreen',
+    'allowpaymentrequest',
+    'async',
+    'autofocus',
+    'autoplay',
+    'checked',
+    'controls',
+    'default',
+    'defer',
+    'disabled',
+    'formnovalidate',
+    'hidden',
+    'ismap',
+    'loop',
+    'multiple',
+    'muted',
+    'nomodule',
+    'novalidate',
+    'open',
+    'playsinline',
+    'readonly',
+    'required',
+    'reversed',
+    'selected'
+]);
+
+const invalid_attribute_name_character = /[\s'">/=\u{FDD0}-\u{FDEF}\u{FFFE}\u{FFFF}\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
+// https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
+// https://infra.spec.whatwg.org/#noncharacter
+function spread(args, classes_to_add) {
+    const attributes = Object.assign({}, ...args);
+    if (classes_to_add) {
+        if (attributes.class == null) {
+            attributes.class = classes_to_add;
+        }
+        else {
+            attributes.class += ' ' + classes_to_add;
+        }
+    }
+    let str = '';
+    Object.keys(attributes).forEach(name => {
+        if (invalid_attribute_name_character.test(name))
+            return;
+        const value = attributes[name];
+        if (value === true)
+            str += ' ' + name;
+        else if (boolean_attributes.has(name.toLowerCase())) {
+            if (value)
+                str += ' ' + name;
+        }
+        else if (value != null) {
+            str += ` ${name}="${value}"`;
+        }
+    });
+    return str;
+}
+const escaped = {
+    '"': '&quot;',
+    "'": '&#39;',
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;'
+};
+function escape(html) {
+    return String(html).replace(/["'&<>]/g, match => escaped[match]);
+}
+function escape_attribute_value(value) {
+    return typeof value === 'string' ? escape(value) : value;
+}
+function escape_object(obj) {
+    const result = {};
+    for (const key in obj) {
+        result[key] = escape_attribute_value(obj[key]);
+    }
+    return result;
+}
+function each(items, fn) {
+    let str = '';
+    for (let i = 0; i < items.length; i += 1) {
+        str += fn(items[i], i);
+    }
+    return str;
+}
+const missing_component = {
+    $$render: () => ''
+};
+function validate_component(component, name) {
+    if (!component || !component.$$render) {
+        if (name === 'svelte:component')
+            name += ' this={...}';
+        throw new Error(`<${name}> is not a valid SSR component. You may need to review your build config to ensure that dependencies are compiled, rather than imported as pre-compiled modules`);
+    }
+    return component;
+}
+function debug(file, line, column, values) {
+    console.log(`{@debug} ${file ? file + ' ' : ''}(${line}:${column})`); // eslint-disable-line no-console
+    console.log(values); // eslint-disable-line no-console
+    return '';
+}
+let on_destroy;
+function create_ssr_component(fn) {
+    function $$render(result, props, bindings, slots, context) {
+        const parent_component = current_component;
+        const $$ = {
+            on_destroy,
+            context: new Map(context || (parent_component ? parent_component.$$.context : [])),
+            // these will be immediately discarded
+            on_mount: [],
+            before_update: [],
+            after_update: [],
+            callbacks: blank_object()
+        };
+        set_current_component({ $$ });
+        const html = fn(result, props, bindings, slots);
+        set_current_component(parent_component);
+        return html;
+    }
+    return {
+        render: (props = {}, { $$slots = {}, context = new Map() } = {}) => {
+            on_destroy = [];
+            const result = { title: '', head: '', css: new Set() };
+            const html = $$render(result, props, {}, $$slots, context);
+            run_all(on_destroy);
+            return {
+                html,
+                css: {
+                    code: Array.from(result.css).map(css => css.code).join('\n'),
+                    map: null // TODO
+                },
+                head: result.title + result.head
+            };
+        },
+        $$render
+    };
+}
+function add_attribute(name, value, boolean) {
+    if (value == null || (boolean && !value))
+        return '';
+    return ` ${name}${value === true ? '' : `=${typeof value === 'string' ? JSON.stringify(escape(value)) : `"${value}"`}`}`;
+}
+function add_classes(classes) {
+    return classes ? ` class="${classes}"` : '';
+}
+
+function bind(component, name, callback) {
+    const index = component.$$.props[name];
+    if (index !== undefined) {
+        component.$$.bound[index] = callback;
+        callback(component.$$.ctx[index]);
+    }
+}
+function create_component(block) {
+    block && block.c();
+}
+function claim_component(block, parent_nodes) {
+    block && block.l(parent_nodes);
+}
+function mount_component(component, target, anchor, customElement) {
+    const { fragment, on_mount, on_destroy, after_update } = component.$$;
+    fragment && fragment.m(target, anchor);
+    if (!customElement) {
+        // onMount happens before the initial afterUpdate
+        add_render_callback(() => {
+            const new_on_destroy = on_mount.map(run).filter(is_function);
+            if (on_destroy) {
+                on_destroy.push(...new_on_destroy);
+            }
+            else {
+                // Edge case - component was destroyed immediately,
+                // most likely as a result of a binding initialising
+                run_all(new_on_destroy);
+            }
+            component.$$.on_mount = [];
+        });
+    }
+    after_update.forEach(add_render_callback);
+}
+function destroy_component(component, detaching) {
+    const $$ = component.$$;
+    if ($$.fragment !== null) {
+        run_all($$.on_destroy);
+        $$.fragment && $$.fragment.d(detaching);
+        // TODO null out other refs, including component.$$ (but need to
+        // preserve final state?)
+        $$.on_destroy = $$.fragment = null;
+        $$.ctx = [];
+    }
+}
+function make_dirty(component, i) {
+    if (component.$$.dirty[0] === -1) {
+        dirty_components.push(component);
+        schedule_update();
+        component.$$.dirty.fill(0);
+    }
+    component.$$.dirty[(i / 31) | 0] |= (1 << (i % 31));
+}
+function init(component, options, instance, create_fragment, not_equal, props, append_styles, dirty = [-1]) {
+    const parent_component = current_component;
+    set_current_component(component);
+    const $$ = component.$$ = {
+        fragment: null,
+        ctx: null,
+        // state
+        props,
+        update: noop,
+        not_equal,
+        bound: blank_object(),
+        // lifecycle
+        on_mount: [],
+        on_destroy: [],
+        on_disconnect: [],
+        before_update: [],
+        after_update: [],
+        context: new Map(options.context || (parent_component ? parent_component.$$.context : [])),
+        // everything else
+        callbacks: blank_object(),
+        dirty,
+        skip_bound: false,
+        root: options.target || parent_component.$$.root
+    };
+    append_styles && append_styles($$.root);
+    let ready = false;
+    $$.ctx = instance
+        ? instance(component, options.props || {}, (i, ret, ...rest) => {
+            const value = rest.length ? rest[0] : ret;
+            if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
+                if (!$$.skip_bound && $$.bound[i])
+                    $$.bound[i](value);
+                if (ready)
+                    make_dirty(component, i);
+            }
+            return ret;
+        })
+        : [];
+    $$.update();
+    ready = true;
+    run_all($$.before_update);
+    // `false` as a special case of no DOM component
+    $$.fragment = create_fragment ? create_fragment($$.ctx) : false;
+    if (options.target) {
+        if (options.hydrate) {
+            start_hydrating();
+            const nodes = children(options.target);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            $$.fragment && $$.fragment.l(nodes);
+            nodes.forEach(detach);
+        }
+        else {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            $$.fragment && $$.fragment.c();
+        }
+        if (options.intro)
+            transition_in(component.$$.fragment);
+        mount_component(component, options.target, options.anchor, options.customElement);
+        end_hydrating();
+        flush();
+    }
+    set_current_component(parent_component);
+}
+let SvelteElement;
+if (typeof HTMLElement === 'function') {
+    SvelteElement = class extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({ mode: 'open' });
+        }
+        connectedCallback() {
+            const { on_mount } = this.$$;
+            this.$$.on_disconnect = on_mount.map(run).filter(is_function);
+            // @ts-ignore todo: improve typings
+            for (const key in this.$$.slotted) {
+                // @ts-ignore todo: improve typings
+                this.appendChild(this.$$.slotted[key]);
+            }
+        }
+        attributeChangedCallback(attr, _oldValue, newValue) {
+            this[attr] = newValue;
+        }
+        disconnectedCallback() {
+            run_all(this.$$.on_disconnect);
+        }
+        $destroy() {
+            destroy_component(this, 1);
+            this.$destroy = noop;
+        }
+        $on(type, callback) {
+            // TODO should this delegate to addEventListener?
+            const callbacks = (this.$$.callbacks[type] || (this.$$.callbacks[type] = []));
+            callbacks.push(callback);
+            return () => {
+                const index = callbacks.indexOf(callback);
+                if (index !== -1)
+                    callbacks.splice(index, 1);
+            };
+        }
+        $set($$props) {
+            if (this.$$set && !is_empty($$props)) {
+                this.$$.skip_bound = true;
+                this.$$set($$props);
+                this.$$.skip_bound = false;
+            }
+        }
+    };
+}
+/**
+ * Base class for Svelte components. Used when dev=false.
+ */
+class SvelteComponent {
+    $destroy() {
+        destroy_component(this, 1);
+        this.$destroy = noop;
+    }
+    $on(type, callback) {
+        const callbacks = (this.$$.callbacks[type] || (this.$$.callbacks[type] = []));
+        callbacks.push(callback);
+        return () => {
+            const index = callbacks.indexOf(callback);
+            if (index !== -1)
+                callbacks.splice(index, 1);
+        };
+    }
+    $set($$props) {
+        if (this.$$set && !is_empty($$props)) {
+            this.$$.skip_bound = true;
+            this.$$set($$props);
+            this.$$.skip_bound = false;
+        }
+    }
+}
+
+function dispatch_dev(type, detail) {
+    document.dispatchEvent(custom_event(type, Object.assign({ version: '3.44.2' }, detail), true));
+}
+function append_dev(target, node) {
+    dispatch_dev('SvelteDOMInsert', { target, node });
+    append(target, node);
+}
+function append_hydration_dev(target, node) {
+    dispatch_dev('SvelteDOMInsert', { target, node });
+    append_hydration(target, node);
+}
+function insert_dev(target, node, anchor) {
+    dispatch_dev('SvelteDOMInsert', { target, node, anchor });
+    insert(target, node, anchor);
+}
+function insert_hydration_dev(target, node, anchor) {
+    dispatch_dev('SvelteDOMInsert', { target, node, anchor });
+    insert_hydration(target, node, anchor);
+}
+function detach_dev(node) {
+    dispatch_dev('SvelteDOMRemove', { node });
+    detach(node);
+}
+function detach_between_dev(before, after) {
+    while (before.nextSibling && before.nextSibling !== after) {
+        detach_dev(before.nextSibling);
+    }
+}
+function detach_before_dev(after) {
+    while (after.previousSibling) {
+        detach_dev(after.previousSibling);
+    }
+}
+function detach_after_dev(before) {
+    while (before.nextSibling) {
+        detach_dev(before.nextSibling);
+    }
+}
+function listen_dev(node, event, handler, options, has_prevent_default, has_stop_propagation) {
+    const modifiers = options === true ? ['capture'] : options ? Array.from(Object.keys(options)) : [];
+    if (has_prevent_default)
+        modifiers.push('preventDefault');
+    if (has_stop_propagation)
+        modifiers.push('stopPropagation');
+    dispatch_dev('SvelteDOMAddEventListener', { node, event, handler, modifiers });
+    const dispose = listen(node, event, handler, options);
+    return () => {
+        dispatch_dev('SvelteDOMRemoveEventListener', { node, event, handler, modifiers });
+        dispose();
+    };
+}
+function attr_dev(node, attribute, value) {
+    attr(node, attribute, value);
+    if (value == null)
+        dispatch_dev('SvelteDOMRemoveAttribute', { node, attribute });
+    else
+        dispatch_dev('SvelteDOMSetAttribute', { node, attribute, value });
+}
+function prop_dev(node, property, value) {
+    node[property] = value;
+    dispatch_dev('SvelteDOMSetProperty', { node, property, value });
+}
+function dataset_dev(node, property, value) {
+    node.dataset[property] = value;
+    dispatch_dev('SvelteDOMSetDataset', { node, property, value });
+}
+function set_data_dev(text, data) {
+    data = '' + data;
+    if (text.wholeText === data)
+        return;
+    dispatch_dev('SvelteDOMSetData', { node: text, data });
+    text.data = data;
+}
+function validate_each_argument(arg) {
+    if (typeof arg !== 'string' && !(arg && typeof arg === 'object' && 'length' in arg)) {
+        let msg = '{#each} only iterates over array-like objects.';
+        if (typeof Symbol === 'function' && arg && Symbol.iterator in arg) {
+            msg += ' You can use a spread to convert this iterable into an array.';
+        }
+        throw new Error(msg);
+    }
+}
+function validate_slots(name, slot, keys) {
+    for (const slot_key of Object.keys(slot)) {
+        if (!~keys.indexOf(slot_key)) {
+            console.warn(`<${name}> received an unexpected slot "${slot_key}".`);
+        }
+    }
+}
+/**
+ * Base class for Svelte components with some minor dev-enhancements. Used when dev=true.
+ */
+class SvelteComponentDev extends SvelteComponent {
+    constructor(options) {
+        if (!options || (!options.target && !options.$$inline)) {
+            throw new Error("'target' is a required option");
+        }
+        super();
+    }
+    $destroy() {
+        super.$destroy();
+        this.$destroy = () => {
+            console.warn('Component was already destroyed'); // eslint-disable-line no-console
+        };
+    }
+    $capture_state() { }
+    $inject_state() { }
+}
+/**
+ * Base class to create strongly typed Svelte components.
+ * This only exists for typing purposes and should be used in `.d.ts` files.
+ *
+ * ### Example:
+ *
+ * You have component library on npm called `component-library`, from which
+ * you export a component called `MyComponent`. For Svelte+TypeScript users,
+ * you want to provide typings. Therefore you create a `index.d.ts`:
+ * ```ts
+ * import { SvelteComponentTyped } from "svelte";
+ * export class MyComponent extends SvelteComponentTyped<{foo: string}> {}
+ * ```
+ * Typing this makes it possible for IDEs like VS Code with the Svelte extension
+ * to provide intellisense and to use the component like this in a Svelte file
+ * with TypeScript:
+ * ```svelte
+ * <script lang="ts">
+ * 	import { MyComponent } from "component-library";
+ * </script>
+ * <MyComponent foo={'bar'} />
+ * ```
+ *
+ * #### Why not make this part of `SvelteComponent(Dev)`?
+ * Because
+ * ```ts
+ * class ASubclassOfSvelteComponent extends SvelteComponent<{foo: string}> {}
+ * const component: typeof SvelteComponent = ASubclassOfSvelteComponent;
+ * ```
+ * will throw a type error, so we need to separate the more strictly typed class.
+ */
+class SvelteComponentTyped extends SvelteComponentDev {
+    constructor(options) {
+        super(options);
+    }
+}
+function loop_guard(timeout) {
+    const start = Date.now();
+    return () => {
+        if (Date.now() - start > timeout) {
+            throw new Error('Infinite loop detected');
+        }
+    };
+}
+
+
+
+
 /***/ })
 
 /******/ 	});
@@ -7329,14 +10125,25 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ConnectionHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ConnectionHandler */ "./src/ConnectionHandler.js");
-/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Game */ "./src/Game.js");
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _App_App_svelte__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./App/App.svelte */ "./src/App/App.svelte");
+/* harmony import */ var modern_css_reset__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! modern-css-reset */ "./node_modules/modern-css-reset/dist/reset.min.css");
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./style.css */ "./src/style.css");
+/* harmony import */ var _ConnectionHandler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ConnectionHandler */ "./src/ConnectionHandler.js");
+/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Game */ "./src/Game.js");
 
 
 
-//const game = new Game();
 
-const connectionHandler = new _ConnectionHandler__WEBPACK_IMPORTED_MODULE_0__["default"]();
+ //const game = new Game();
+//const connectionHandler = new ConnectionHandler();
+
+var app = new _App_App_svelte__WEBPACK_IMPORTED_MODULE_0__["default"]({
+  target: document.getElementById('container')
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (app);
 })();
 
 /******/ })()

@@ -1,9 +1,13 @@
+import App from './App/App.svelte';
 import 'modern-css-reset';
 import './style.css';
 
-import ConnectionHandler from "./ConnectionHandler";
 import Game from "./Game";
 
 //const game = new Game();
 
-const connectionHandler = new ConnectionHandler();
+const app = new App({
+  target: document.getElementById('container'),
+});
+
+export default app;

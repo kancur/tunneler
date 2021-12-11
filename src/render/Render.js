@@ -26,8 +26,8 @@ const colors = [
   { r: 243, g: 235, b: 28 }, // tank barrel green
   { r: 255, g: 52, b: 8 }, // projectile light
   { r: 186, g: 0, b: 0 }, // projectile dark
-  { r: 0, g: 0, b: 182 }, // blue base 
-  { r: 0, g: 182, b: 0 }, // green base 
+  { r: 44, g: 44, b: 255 }, // blue base 
+  { r: 44, g: 255, b: 44 }, // green base 
 
 ];
 

@@ -39,10 +39,12 @@ export default class GameMap {
     this.tiles = this.tiles.map((code) => {
       if (code === 0) return Math.random() > 0.5 ? 1 : 2;
     });
-    this.generateStoneBorders(); 
+    this.generateStoneBorders();
     this.tiles = Uint8Array.from(this.tiles);
-    this.prevTankTiles = [];
-    this.activeTank = null;
+    //this.prevTankTiles = [];
+    //this.activeTank = null;
+    this.tanks = [];
+    this.networkTanks = [];
     this.activeProjectiles = new Map();
     this.activeExplosions = new Map();
     this.bases = [];
@@ -52,6 +54,7 @@ export default class GameMap {
 
   init() {
     this.sendDataToServer();
+    
   }
 
   sendDataToServer() {
@@ -60,7 +63,7 @@ export default class GameMap {
       width: this.width,
       height: this.height,
       settings: this.settings,
-   }
+    };
   }
 
   logSize() {
@@ -76,7 +79,7 @@ export default class GameMap {
   }
 
   addTank(tank) {
-    this.activeTank = tank;
+    this.tanks.push(tank);
   }
 
   pushProjectile(projectile) {
@@ -162,25 +165,52 @@ export default class GameMap {
     });
   }
 
-  renderTankToMap() {
-    for (let x = 0; x < this.activeTank.width; x++) {
-      for (let y = 0; y < this.activeTank.height; y++) {
-        const tankTile = this.activeTank.getTile(x, y);
-        if (tankTile !== 0) {
-          this.setTile(x + this.activeTank.x, y + this.activeTank.y, tankTile);
-        } else {
-          //this.setTile(x + tank.x, y + tank.y, 3);
+  renderTanksToMap() {
+    this.tanks.forEach((tank) => {
+      for (let x = 0; x < tank.width; x++) {
+        for (let y = 0; y < tank.height; y++) {
+          const tankTile = tank.getTile(x, y);
+          if (tankTile !== 0) {
+            //console.log('tank tile:', tankTile, 'at xy', x + tank.x, y+tank.y);
+            this.setTile(x + tank.x, y + tank.y, tankTile);
+          } else {
+            //this.setTile(x + tank.x, y + tank.y, 3);
+          }
         }
       }
-    }
+    });
   }
 
   generateStoneBorders() {
     const { maxDepth, maxEdgeLength, maxSteepness } = this.settings.border;
-    const left = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed);
-    const right = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 10);
-    const top = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 22);
-    const bottom = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 35);
+    const left = this.generateForOneSide(
+      this.height,
+      maxDepth,
+      maxEdgeLength,
+      maxSteepness,
+      this.seed
+    );
+    const right = this.generateForOneSide(
+      this.height,
+      maxDepth,
+      maxEdgeLength,
+      maxSteepness,
+      this.seed + 10
+    );
+    const top = this.generateForOneSide(
+      this.width,
+      maxDepth,
+      maxEdgeLength,
+      maxSteepness,
+      this.seed + 22
+    );
+    const bottom = this.generateForOneSide(
+      this.width,
+      maxDepth,
+      maxEdgeLength,
+      maxSteepness,
+      this.seed + 35
+    );
 
     for (let y = 0; y < this.height; y++) {
       // left
@@ -221,7 +251,7 @@ export default class GameMap {
 
   generateForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
     const seededRNG = new SeededRNG(seed);
-    let willKeepDirectionFor = 0; 
+    let willKeepDirectionFor = 0;
     let currentMaxSteepness = 0;
     let currentDistance = 50;
     let grow = true;
@@ -237,11 +267,11 @@ export default class GameMap {
     const getDirectionLength = (maxLength, random) => {
       return Math.floor(random * maxLength);
     };
-    
+
     const getChange = (maxSteepness, random) => {
       return random * maxSteepness;
     };
-    
+
     const getCurrentMaxSteepness = (maxSteepness, random) => {
       return Math.floor(random * maxSteepness) + 1;
     };
@@ -331,7 +361,7 @@ export default class GameMap {
 
   update() {
     this.clearMapBeforeRender();
-    this.renderTankToMap();
+    this.renderTanksToMap();
     this.updateExplosions();
     this.updateProjectiles();
 
@@ -339,5 +369,3 @@ export default class GameMap {
     this.renderExplosionsToMap();
   }
 }
-
-
