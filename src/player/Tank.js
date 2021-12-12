@@ -31,15 +31,14 @@ export default class Tank {
       }
     });
     this.gameMap = map;
-    this.direction = 'up';
+    this.dir = 'up';
+    this.nextDir = 'up';
     this.movementSpeed = 1;
-    //this.x = randomInt(70, map.width - 70);
-    //this.y = randomInt(70, map.height - 70);
     this.x = x;
     this.y = y;
+    this.nextX = x;
+    this.nextY = y;
     this.vector2 = { x: 0, y: -1 };
-    //this._prevX;
-    //this._prevY;
     this._originalWidth = 7;
     this._originalHeight = 7;
     this.width = this._originalWidth;
@@ -49,6 +48,7 @@ export default class Tank {
     this.framesSinceLastShot = 0;
     this.movementSpeed = 1; //pixel per update
     this.readyToMove = false;
+    this.didMove = false;
     // prettier-ignore
     this.tankUp = [
       0,0,0,3,0,0,0,
@@ -105,20 +105,65 @@ export default class Tank {
     this._prevTankShape = null;
     if (isPlayer) {
       this.keyHandler = new KeyHandler();
+    } else {
+      this.keyHandler = null;
     }
   }
 
+  getState() {
+    return {
+      x: this.x,
+      y: this.y,
+      dir: this.dir,
+    };
+  }
 
-
-  updateState(x, y, direction ) {
+  updateState({x, y, dir}) {
+    if (this.isPlayer) return;
     this.x = x;
     this.y = y;
-    this.direction = direction;
-    this.currentTankShape = this.getTankShape(direction);
+    this.dir = dir;
+    this.currentTankShape = this.getTankShape(dir);
+    //this.setVectorByDir(dir);
+  }
+
+  setVectorByDir(dir) {
+    switch (dir) {
+      case 'up':
+        this.vector2 = { x: 0, y: -1 };
+        break;
+      case 'down':
+        this.vector2 = { x: 0, y: 1 };
+        break;
+      case 'left':
+        this.vector2 = { x: -1, y: 0 };
+        break;
+      case 'right':
+        this.vector2 = { x: 1, y: 0 };
+        break;
+      case 'topRight':
+        this.vector2 = { x: 1, y: -1 };
+        break;
+      case 'bottomRight':
+        this.vector2 = { x: 1, y: 1 };
+        break;
+      case 'bottomLeft':
+        this.vector2 = { x: -1, y: 1 };
+        break;
+      case 'topLeft':
+        this.vector2 = { x: -1, y: -1 };
+        break;
+    }
   }
 
   getTile(x, y) {
-    return this.currentTankShape[y * this.width + x];
+    try {
+      const tile = this.currentTankShape[y * this.width + x];
+      return tile
+    } catch (error) {
+      console.log('error --->', x,y)
+      console.log(error)
+    }
   }
 
   getPreviousTankTile(x, y) {
@@ -140,35 +185,28 @@ export default class Tank {
   getTankShape(direction) {
     switch (direction) {
       case 'up':
-        this.direction = 'up';
-        return this.tankUp;    
+        return this.tankUp;
       case 'down':
-        this.direction = 'down';
         return this.tankDown;
       case 'right':
-        this.direction = 'right';
         return this.tankRight;
       case 'left':
-        this.direction = 'left';
         return this.tankLeft;
       case 'topRight':
-        this.direction = 'topRight';
         return this.tankTopRight;
       case 'bottomRight':
-        this.direction = 'bottomRight';
         return this.tankBottomRight;
       case 'bottomLeft':
-        this.direction = 'bottomLeft';
         return this.tankBottomLeft;
       case 'topLeft':
-        this.direction = 'topLeft';
         return this.tankTopLeft;
-      }
+    }
   }
 
   rotateUp() {
     if (this.isLegalMove(this.x, this.y, this.tankUp)) {
-      this.currentTankShape = this.getTankShape('up')
+      this.currentTankShape = this.getTankShape('up');
+      this.dir = 'up';
       this.vector2 = { x: 0, y: -1 };
     } else {
     }
@@ -176,7 +214,8 @@ export default class Tank {
 
   rotateDown() {
     if (this.isLegalMove(this.x, this.y, this.tankDown)) {
-      this.currentTankShape = this.getTankShape('down')
+      this.currentTankShape = this.getTankShape('down');
+      this.dir = 'down';
       this.vector2 = { x: 0, y: 1 };
     } else {
     }
@@ -184,7 +223,8 @@ export default class Tank {
 
   rotateRight() {
     if (this.isLegalMove(this.x, this.y, this.tankRight)) {
-      this.currentTankShape = this.getTankShape('right')
+      this.currentTankShape = this.getTankShape('right');
+      this.dir = 'right';
       this.vector2 = { x: 1, y: 0 };
     } else {
     }
@@ -192,7 +232,8 @@ export default class Tank {
 
   rotateLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankLeft)) {
-      this.currentTankShape = this.getTankShape('left')
+      this.currentTankShape = this.getTankShape('left');
+      this.dir = 'left';
       this.vector2 = { x: -1, y: 0 };
     } else {
     }
@@ -200,28 +241,35 @@ export default class Tank {
 
   rotateTopRight() {
     if (this.isLegalMove(this.x, this.y, this.tankTopRight)) {
-      this.currentTankShape = this.getTankShape('topRight')
+      this.currentTankShape = this.getTankShape('topRight');
+      this.dir = 'topRight';
       this.vector2 = { x: 1, y: -1 };
     } else {
     }
   }
+
   rotateBottomRight() {
     if (this.isLegalMove(this.x, this.y, this.tankBottomRight)) {
-      this.currentTankShape = this.getTankShape('bottomRight')
+      this.currentTankShape = this.getTankShape('bottomRight');
+      this.dir = 'bottomRight';
       this.vector2 = { x: 1, y: 1 };
     } else {
     }
   }
+
   rotateBottomLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankBottomLeft)) {
-      this.currentTankShape = this.getTankShape('bottomLeft')
+      this.currentTankShape = this.getTankShape('bottomLeft');
+      this.dir = 'bottomLeft';
       this.vector2 = { x: -1, y: 1 };
     } else {
     }
   }
+
   rotateTopLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankTopLeft)) {
-      this.currentTankShape = this.getTankShape('topLeft')
+      this.currentTankShape = this.getTankShape('topLeft');
+      this.dir = 'topLeft';
       this.vector2 = { x: -1, y: -1 };
     } else {
     }
@@ -243,7 +291,8 @@ export default class Tank {
   }
 
   moveByVector(vector2) {
-    if (this.readyToMove) {
+    //if (!this.isPlayer) return;
+    if (this.readyToMove || !this.isPlayer) {
       if (
         this.isLegalMove(
           this.x + vector2.x * this.movementSpeed,

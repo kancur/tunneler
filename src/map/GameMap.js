@@ -169,6 +169,7 @@ export default class GameMap {
     this.tanks.forEach((tank) => {
       for (let x = 0; x < tank.width; x++) {
         for (let y = 0; y < tank.height; y++) {
+          //console.log('------------->>> tank tile', tank.getTile(x, y));
           const tankTile = tank.getTile(x, y);
           if (tankTile !== 0) {
             //console.log('tank tile:', tankTile, 'at xy', x + tank.x, y+tank.y);

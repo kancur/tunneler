@@ -14,6 +14,7 @@ const greenTankColors = [8, 7, 13, 9];
 export default class Game {
   constructor(seed, playersData, activePlayerNumber) {
     this.pausedState = {};
+    this.seed = seed;
     this.paused = false;
     this.playerNumber = activePlayerNumber;
     this.playerTankColors = activePlayerNumber === 0 ? blueTankColors : greenTankColors;
@@ -27,7 +28,6 @@ export default class Game {
     this.gameMap = new GameMap(1200, 600, seed);
     this.viewport = new Viewport(this.gameMap);
     this.renderer = new Render(this.viewport);
-
     this.player = new Tank(
       true,
       playersData[activePlayerNumber].x,
@@ -44,7 +44,7 @@ export default class Game {
       this.gameMap,
       ...this.enemyTankColors
     );
-
+    this.enemyTempState = {};
     this.players = [this.player, this.enemy];
 
     this.players.forEach((player) => {
@@ -53,10 +53,7 @@ export default class Game {
     });
 
     connectionHandler.socket.on('stateUpdate', (data) => {
-      const enemyData = data[activePlayerNumber === 0 ? 1 : 0];
-      //console.log(enemyData);
-      if (!enemyData) return;
-      this.enemy.updateState(enemyData.x, enemyData.y, enemyData.dir);
+      this.enemyTempState = data[this.playerNumber === 0 ? 1 : 0];
     });
 
     connectionHandler.socket.on('pausedUpdate', (data) => {
@@ -67,6 +64,10 @@ export default class Game {
     });
     this.init();
     this.gameLoop();
+  }
+
+  flushNetworkStateToGame() {
+    this.enemy.updateState(this.enemyTempState);
   }
 
   init() {
@@ -99,27 +100,28 @@ export default class Game {
 
     const now = Date.now();
     const elapsed = now - this.prevFrameTime;
-    connectionHandler.updateGameState({
-      x: this.player.x,
-      y: this.player.y,
-      dir: this.player.direction,
-      playerNumber: this.playerNumber,
-    });
 
+    this.renderer.render();
+
+    // game update loop
     if (elapsed > this.fpsInterval) {
       this.prevFrameTime = now - (elapsed % this.fpsInterval);
-      this.update();
+      this.flushNetworkStateToGame();
+      
       this.player.update();
-      //this.enemy.update();
+      connectionHandler.updateGameState({
+        playerNumber: this.playerNumber,
+        ...this.player.getState(),
+      });
+      this.enemy.update();
+
       this.gameMap.update();
       this.viewport.update(
         this.player.x - this.viewport.width / 2,
         this.player.y - this.viewport.height / 2
       );
-    }
-  }
 
-  update() {
-    this.renderer.render();
+      
+    }
   }
 }
