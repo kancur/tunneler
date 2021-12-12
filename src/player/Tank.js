@@ -49,6 +49,8 @@ export default class Tank {
     this.framesSinceLastShot = 0;
     this.movementSpeed = 1; //pixel per update
     this.readyToMove = false;
+    this.didShot = false;
+    this.shotNumber = 0;
     // prettier-ignore
     this.tankUp = [
       0,0,0,3,0,0,0,
@@ -108,13 +110,30 @@ export default class Tank {
     }
   }
 
+  resetTemps() {
+    this.didShot = false;
+  }
 
+  getState() {
+    const state = {
+      x: this.x,
+      y: this.y,
+      dir: this.direction,
+      shot: this.didShot,
+    }
+    this.resetTemps();
+    return state;
+  }
 
-  updateState(x, y, direction ) {
+  updateState({x, y, dir, shot}) {
+    this.setVectorByDir(dir);
     this.x = x;
     this.y = y;
-    this.direction = direction;
-    this.currentTankShape = this.getTankShape(direction);
+    this.direction = dir;
+    this.currentTankShape = this.getTankShape(dir);
+    if (shot) {
+      this.shootProjectile();
+    }
   }
 
   getTile(x, y) {
@@ -135,6 +154,35 @@ export default class Tank {
         const currentTile = this.gameMap.getTile(this.x + i, this.y - 1);
       }
     } */
+  }
+
+  setVectorByDir(dir){
+     switch (dir) {
+      case 'up':
+        this.vector2 = { x: 0, y: -1 };
+        break;
+      case 'down':
+        this.vector2 = { x: 0, y: 1 };
+        break;
+      case 'left':
+        this.vector2 = { x: -1, y: 0 };
+        break;
+      case 'right':
+        this.vector2 = { x: 1, y: 0 };
+        break;
+      case 'topRight':
+        this.vector2 = { x: 1, y: -1 };
+        break;
+      case 'topLeft':
+        this.vector2 = { x: -1, y: -1 };
+        break;
+      case 'bottomRight':
+        this.vector2 = { x: 1, y: 1 };
+        break;
+      case 'bottomLeft':
+        this.vector2 = { x: -1, y: 1 };
+        break;
+    }
   }
 
   getTankShape(direction) {
@@ -258,7 +306,9 @@ export default class Tank {
   }
 
   shootProjectile() {
-    this.gameMap.pushProjectile(new Projectile(this.x + 3, this.y + 3, this.vector2));
+    this.shotNumber++;
+    this.gameMap.pushProjectile(new Projectile(this.x + 3, this.y + 3, this.vector2, this.shotNumber));
+    this.didShot = true;
     this.framesSinceLastShot = 0;
   }
 

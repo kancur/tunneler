@@ -2,8 +2,9 @@
 // 11 === projectile dark
 
 export default class Projectile {
-  constructor(x, y, vector2) {
+  constructor(x, y, vector2, number) {
     this.speed = 4; //pixels per update
+    this.number = number;
     this.x = x;
     this.y = y;
     this.tailX = null;

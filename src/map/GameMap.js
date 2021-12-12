@@ -54,7 +54,6 @@ export default class GameMap {
 
   init() {
     this.sendDataToServer();
-    
   }
 
   sendDataToServer() {
@@ -334,9 +333,20 @@ export default class GameMap {
 
       const tailTile = this.getTile(projectile.tailX, projectile.tailY);
       if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
+        const seed = projectile.number;
         this.activeProjectiles.delete(projectile.hash);
-        const explosion = new Explosion(projectile.tailX, projectile.tailY, { x: 0, y: 0 }, 6);
+        const explosion = new Explosion(
+          projectile.tailX,
+          projectile.tailY,
+          { x: 0, y: 0 },
+          6,
+          seed
+          );
         this.activeExplosions.set(explosion.hash, explosion);
+
+        setTimeout(() => {
+          this.activeExplosions.delete(explosion.hash);
+        }, 3000);
       }
 
       // this iterates over hypothetical future path of the projectile
@@ -350,9 +360,20 @@ export default class GameMap {
         };
         const tile = this.getTile(coords.x, coords.y);
         if (PROJECTILE_BLOCKERS_EXCEPT_TANKS.includes(tile)) {
+          const seed = projectile.number;
           this.activeProjectiles.delete(projectile.hash);
-          const explosion = new Explosion(prevCoords.x, prevCoords.y, { x: 0, y: 0 }, 6);
+          const explosion = new Explosion(
+            prevCoords.x,
+            prevCoords.y,
+            { x: 0, y: 0 },
+            6,
+            seed
+          );
           this.activeExplosions.set(explosion.hash, explosion);
+
+          setTimeout(() => {
+            this.activeExplosions.delete(explosion.hash);
+          }, 3000);
           break;
         }
       }

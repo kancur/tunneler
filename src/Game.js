@@ -54,9 +54,8 @@ export default class Game {
 
     connectionHandler.socket.on('stateUpdate', (data) => {
       const enemyData = data[activePlayerNumber === 0 ? 1 : 0];
-      //console.log(enemyData);
       if (!enemyData) return;
-      this.enemy.updateState(enemyData.x, enemyData.y, enemyData.dir);
+      this.enemy.updateState(enemyData);
     });
 
     connectionHandler.socket.on('pausedUpdate', (data) => {
@@ -99,27 +98,19 @@ export default class Game {
 
     const now = Date.now();
     const elapsed = now - this.prevFrameTime;
-    connectionHandler.updateGameState({
-      x: this.player.x,
-      y: this.player.y,
-      dir: this.player.direction,
-      playerNumber: this.playerNumber,
-    });
 
     if (elapsed > this.fpsInterval) {
       this.prevFrameTime = now - (elapsed % this.fpsInterval);
-      this.update();
+
       this.player.update();
+      connectionHandler.updateGameState({ pN: this.playerNumber, ...this.player.getState() });
       //this.enemy.update();
       this.gameMap.update();
       this.viewport.update(
         this.player.x - this.viewport.width / 2,
         this.player.y - this.viewport.height / 2
       );
+      this.renderer.render();
     }
-  }
-
-  update() {
-    this.renderer.render();
   }
 }
