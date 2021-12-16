@@ -27,6 +27,7 @@
   <button on:click={goHome}>Exit game</button>
 </div>
 
+
 <style>
   #create-new-game {
     display: flex;
