@@ -7,7 +7,7 @@ export default class Viewport {
     this.offsetX = 0;
     this.offsetY = 0;
     this.width = 76; // must be a pair number
-    this.height = 71; // must be a pair number
+    this.height = 72; // must be a pair number // original game is 71
     this.update(0, 0);
   }
 
