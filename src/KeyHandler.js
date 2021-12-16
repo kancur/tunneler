@@ -35,10 +35,11 @@ export default class KeyHandler {
         e.preventDefault();
         this.pressedKeys.left = bool;
       }
-      if (key === ' ' || key === 'x') {
+      if (key === ' ' || key === 'x' || key === '0') {
         e.preventDefault();
         this.pressedKeys.shoot = bool;
       }
+
     });
   }
 }
