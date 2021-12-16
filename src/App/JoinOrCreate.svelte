@@ -18,7 +18,8 @@
 <div id="form">
   <h1>Let's play Tunneler</h1>
   <p>Connect to a friend using a code</p>
-  <input bind:value={gameCode} on:input={handleInput} type="text" id="code" placeholder="abc123" />
+  <!-- svelte-ignore a11y-autofocus -->
+  <input autofocus bind:value={gameCode} on:input={handleInput} type="text" id="code" placeholder="abc123" />
   <p>Or create a new game</p>
   <button on:click={createGame}>Create a new game</button>
 </div>
