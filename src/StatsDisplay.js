@@ -3,6 +3,7 @@ const COLORS = {
   darkGray: '#383838',
   yellow: '#f3eb1c',
   cyan: '#28f3f3',
+  black: '#000000',
 };
 
 export default class StatsDisplay {
@@ -26,7 +27,7 @@ export default class StatsDisplay {
     this.canvas.height = 25;
     this.canvas.style.imageRendering = 'pixelated';
     this.canvas.style.backgroundColor = '#656565';
-    this.canvas.style.height = '300px';
+    this.canvas.style.width = '500px';
   }
 
   drawInit() {
@@ -50,7 +51,7 @@ export default class StatsDisplay {
     const width = 52;
 
     this.ctx.fillStyle = COLORS.darkGray;
-    this.ctx.fillRect(this.canvas.width - 6, top, 2, 8); //right
+    this.ctx.fillRect(right, top, 2, 8); //right
     this.ctx.fillStyle = COLORS.lightGray;
     this.ctx.fillRect(left, top, width, 1); //top
     this.ctx.fillRect(left, top, 2, 8); //left
@@ -78,14 +79,15 @@ export default class StatsDisplay {
     this.ctx.fillRect(4,20, 6, 1)
   }
 
-  redrawBars(energy, shield) {
+  redrawBars() {
     this.reDrawBar(COLORS.yellow, 0, this.energy);
-    this.reDrawBar(COLORS.cyan, 11, 100, this.shield);
+    this.reDrawBar(COLORS.cyan, 11, this.shield);
   }
 
   reDrawBar(color, yOffset, percentage) {
+    if (percentage < 0) { percentage = 0}
     const width = Math.floor(44 / 100 * percentage)
-    this.ctx.fillStyle = COLORS.lightGray;
+    this.ctx.fillStyle = COLORS.black;
     this.ctx.fillRect(16, 5 + yOffset, 44, 4);
     this.ctx.fillStyle = color;
     this.ctx.fillRect(16, 5 + yOffset, width, 4);
