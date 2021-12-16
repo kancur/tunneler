@@ -2,8 +2,9 @@ import KeyHandler from './KeyHandler';
 import GameMap from './map/GameMap';
 import { Base } from './player/Base';
 import Tank from './player/Tank';
-import Render from './render/Render';
+import Render from './Render';
 import Viewport from './Viewport';
+import StatsDisplay from './StatsDisplay';
 
 import connectionHandler from './ConnectionHandler';
 import Overlay from './Overlay';
@@ -24,6 +25,7 @@ export default class Game {
     this.fps = 18;
     this.fpsInterval = 1000 / this.fps;
     this.prevFrameTime = Date.now();
+    this.statsDisplay = new StatsDisplay();
     this.gameMap = new GameMap(1200, 600, seed);
     this.viewport = new Viewport(this.gameMap);
     this.renderer = new Render(this.viewport);
