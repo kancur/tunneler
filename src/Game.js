@@ -17,6 +17,7 @@ export default class Game {
     this.pausedState = {};
     this.paused = false;
     this.playerNumber = activePlayerNumber;
+    this.enemyNumber = activePlayerNumber === 0 ? 1 : 0
     this.playerTankColors = activePlayerNumber === 0 ? blueTankColors : greenTankColors;
     this.enemyTankColors = activePlayerNumber === 0 ? greenTankColors : blueTankColors;
 
@@ -36,7 +37,8 @@ export default class Game {
       playersData[activePlayerNumber].y,
       3,
       this.gameMap,
-      ...this.playerTankColors
+      ...this.playerTankColors,
+      this.playerNumber
     );
     this.enemy = new Tank(
       false,
@@ -44,7 +46,8 @@ export default class Game {
       playersData[activePlayerNumber === 0 ? 1 : 0].y,
       3,
       this.gameMap,
-      ...this.enemyTankColors
+      ...this.enemyTankColors,
+      this.enemyNumber
     );
 
     this.players = [this.player, this.enemy];
@@ -113,6 +116,7 @@ export default class Game {
         this.player.y - this.viewport.height / 2
       );
       this.renderer.render();
+      this.statsDisplay.update(this.player.energy, this.player.shield)
     }
   }
 }
