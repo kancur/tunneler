@@ -2,7 +2,6 @@ import { SeededRNG } from "../Helpers";
 
 export default class Particle {
   constructor(x, y, vector2, seed) {
-    console.log(seed)
     this.rng = new SeededRNG(seed);
     this.x = x;
     this.y = y;
