@@ -15,6 +15,12 @@ export default class StatsDisplay {
     this.drawInit();
   }
 
+  update(energy, shield) {
+    this.energy = energy;
+    this.shield = shield;
+    this.redrawBars();
+  }
+
   canvasInit() {
     this.canvas.width = 68;
     this.canvas.height = 25;
@@ -52,7 +58,7 @@ export default class StatsDisplay {
     this.ctx.fillRect(left, top + 7, width, 1); //top
 
     this.drawLetters();
-    this.redrawBars({energy: 100, shield: 100});
+    this.redrawBars();
   }
 
   drawLetters() {
@@ -72,9 +78,9 @@ export default class StatsDisplay {
     this.ctx.fillRect(4,20, 6, 1)
   }
 
-  redrawBars({energy, shield}) {
-    this.reDrawBar(COLORS.yellow, 0, energy);
-    this.reDrawBar(COLORS.cyan, 11, 100, shield);
+  redrawBars(energy, shield) {
+    this.reDrawBar(COLORS.yellow, 0, this.energy);
+    this.reDrawBar(COLORS.cyan, 11, 100, this.shield);
   }
 
   reDrawBar(color, yOffset, percentage) {
