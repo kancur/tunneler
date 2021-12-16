@@ -332,6 +332,7 @@ export default class GameMap {
       projectile.update();
 
       const tailTile = this.getTile(projectile.tailX, projectile.tailY);
+     
       if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
         const seed = projectile.number;
         this.activeProjectiles.delete(projectile.hash);
@@ -349,6 +350,11 @@ export default class GameMap {
         }, 3000);
       }
 
+/*       const projectileTile = this.getTile(projectile.x, projectile.y);
+      if (IMPENETRABLES.includes(projectileTile)) {
+        this.activeProjectiles.delete(projectile.hash);
+      } */
+
       // this iterates over hypothetical future path of the projectile
       // done to handle sub single frame/gameupdate collisions
       for (let i = 0; i < projectile.futurePath.length; i++) {
@@ -359,7 +365,7 @@ export default class GameMap {
           y: coords.y + projectile.vector2.y * -1,
         };
         const tile = this.getTile(coords.x, coords.y);
-        if (PROJECTILE_BLOCKERS_EXCEPT_TANKS.includes(tile)) {
+        if (PROJECTILE_BLOCKERS.includes(tile)) {
           const seed = projectile.number;
           this.activeProjectiles.delete(projectile.hash);
           const explosion = new Explosion(
