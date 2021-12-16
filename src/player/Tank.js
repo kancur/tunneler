@@ -40,6 +40,8 @@ export default class Tank {
     this.vector2 = { x: 0, y: -1 };
     //this._prevX;
     //this._prevY;
+    this.keyState = {};
+    this.nextStates = [];
     this._originalWidth = 7;
     this._originalHeight = 7;
     this.width = this._originalWidth;
@@ -48,8 +50,9 @@ export default class Tank {
     this.base = new Base(this.x - 14, this.y - 14, this.hash, baseColorCode);
     this.framesSinceLastShot = 0;
     this.movementSpeed = 1; //pixel per update
+    this.serverState = null;
     this.readyToMove = false;
-    this.didShot = false;
+    this.didShoot = false;
     this.shotNumber = 0;
     // prettier-ignore
     this.tankUp = [
@@ -111,29 +114,42 @@ export default class Tank {
   }
 
   resetTemps() {
-    this.didShot = false;
+    this.didShoot = false;
   }
 
   getState() {
     const state = {
+      ...this.keyState,
       x: this.x,
       y: this.y,
       dir: this.direction,
-      shot: this.didShot,
+      sn: this.shotNumber,
+    };
+    /*     const state = {
+      x: this.x,
+      y: this.y,
+      dir: this.direction,
+      shoot: this.didShoot,
     }
-    this.resetTemps();
+    this.resetTemps(); */
     return state;
   }
 
-  updateState({x, y, dir, shot}) {
-    this.setVectorByDir(dir);
-    this.x = x;
-    this.y = y;
-    this.direction = dir;
-    this.currentTankShape = this.getTankShape(dir);
-    if (shot) {
-      this.shootProjectile();
+  dumpState() {
+    if (this.serverState) {
+      const { x, y, dir, sn, ...keystate } = this.serverState;
+      this.keyState = keystate;
+      this.x = x;
+      this.y = y;
+      this.shotNumber = sn;
+      this.direction = dir;
+      this.currentTankShape = this.getTankShape(dir);
+      this.setVectorByDir(dir);
     }
+  }
+
+  updateState(state) {
+    this.serverState = state;
   }
 
   getTile(x, y) {
@@ -156,8 +172,8 @@ export default class Tank {
     } */
   }
 
-  setVectorByDir(dir){
-     switch (dir) {
+  setVectorByDir(dir) {
+    switch (dir) {
       case 'up':
         this.vector2 = { x: 0, y: -1 };
         break;
@@ -189,7 +205,7 @@ export default class Tank {
     switch (direction) {
       case 'up':
         this.direction = 'up';
-        return this.tankUp;    
+        return this.tankUp;
       case 'down':
         this.direction = 'down';
         return this.tankDown;
@@ -211,12 +227,12 @@ export default class Tank {
       case 'topLeft':
         this.direction = 'topLeft';
         return this.tankTopLeft;
-      }
+    }
   }
 
   rotateUp() {
     if (this.isLegalMove(this.x, this.y, this.tankUp)) {
-      this.currentTankShape = this.getTankShape('up')
+      this.currentTankShape = this.getTankShape('up');
       this.vector2 = { x: 0, y: -1 };
     } else {
     }
@@ -224,7 +240,7 @@ export default class Tank {
 
   rotateDown() {
     if (this.isLegalMove(this.x, this.y, this.tankDown)) {
-      this.currentTankShape = this.getTankShape('down')
+      this.currentTankShape = this.getTankShape('down');
       this.vector2 = { x: 0, y: 1 };
     } else {
     }
@@ -232,7 +248,7 @@ export default class Tank {
 
   rotateRight() {
     if (this.isLegalMove(this.x, this.y, this.tankRight)) {
-      this.currentTankShape = this.getTankShape('right')
+      this.currentTankShape = this.getTankShape('right');
       this.vector2 = { x: 1, y: 0 };
     } else {
     }
@@ -240,7 +256,7 @@ export default class Tank {
 
   rotateLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankLeft)) {
-      this.currentTankShape = this.getTankShape('left')
+      this.currentTankShape = this.getTankShape('left');
       this.vector2 = { x: -1, y: 0 };
     } else {
     }
@@ -248,28 +264,28 @@ export default class Tank {
 
   rotateTopRight() {
     if (this.isLegalMove(this.x, this.y, this.tankTopRight)) {
-      this.currentTankShape = this.getTankShape('topRight')
+      this.currentTankShape = this.getTankShape('topRight');
       this.vector2 = { x: 1, y: -1 };
     } else {
     }
   }
   rotateBottomRight() {
     if (this.isLegalMove(this.x, this.y, this.tankBottomRight)) {
-      this.currentTankShape = this.getTankShape('bottomRight')
+      this.currentTankShape = this.getTankShape('bottomRight');
       this.vector2 = { x: 1, y: 1 };
     } else {
     }
   }
   rotateBottomLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankBottomLeft)) {
-      this.currentTankShape = this.getTankShape('bottomLeft')
+      this.currentTankShape = this.getTankShape('bottomLeft');
       this.vector2 = { x: -1, y: 1 };
     } else {
     }
   }
   rotateTopLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankTopLeft)) {
-      this.currentTankShape = this.getTankShape('topLeft')
+      this.currentTankShape = this.getTankShape('topLeft');
       this.vector2 = { x: -1, y: -1 };
     } else {
     }
@@ -305,22 +321,37 @@ export default class Tank {
     }
   }
 
-  shootProjectile() {
-    this.shotNumber++;
-    this.gameMap.pushProjectile(new Projectile(this.x + 3, this.y + 3, this.vector2, this.shotNumber));
-    this.didShot = true;
+  shootProjectile(shotNumber) {
+    this.gameMap.pushProjectile(new Projectile(this.x + 3, this.y + 3, this.vector2, shotNumber));
+    this.didShoot = true;
     this.framesSinceLastShot = 0;
   }
 
   update() {
-    if (!this.isPlayer) return;
+    if (!this.isPlayer) {
+      this.dumpState();
+    }
     this.framesSinceLastShot += 1;
-
-    const { up, down, right, left, shoot } = this.keyHandler.pressedKeys;
+    let up,
+      down,
+      right,
+      left,
+      shoot = null;
+    if (this.isPlayer) {
+      ({ up, down, right, left, shoot } = this.keyHandler.pressedKeys);
+      this.keyState = this.keyHandler.pressedKeys;
+    } else {
+      //({ up, down, right, left, shoot } = this.keyState);
+      ({ shoot } = this.keyState);
+    }
 
     if (shoot && this.framesSinceLastShot >= 2) {
-      this.shootProjectile();
+      if (this.isPlayer) {
+        this.shotNumber += 1;
+      }
+      this.shootProjectile(this.shotNumber);
     }
+    //this.keyState = {};
 
     // duplicate rotations are to handle an edge case where the first rotation failed due to costraints
     // the tank is allowed to "reverse" but should immediately rotate to the correct orientation in the same gameupdate
