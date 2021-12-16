@@ -5,12 +5,14 @@
   import Game from './Game.svelte';
   import { setContext } from 'svelte';
 
-
   let gameInitData = {};
 
-  connectionHandler.socket.on('joined', ({playerNumber}) => gameInitData.playerNumber = playerNumber);
+  connectionHandler.socket.on(
+    'joined',
+    ({ playerNumber }) => (gameInitData.playerNumber = playerNumber)
+  );
   connectionHandler.socket.on('gameInitialization', (data) => {
-    gameInitData = {...gameInitData, ...data};
+    gameInitData = { ...gameInitData, ...data };
     console.log(gameInitData);
     route = 'game';
   });
@@ -32,6 +34,7 @@
   {:else if route === 'game'}
     <Game {gameInitData} />
   {/if}
+  <canvas id="gamestats" />
 </div>
 
 <style>
