@@ -34,7 +34,7 @@ const colors = [
 export default class Render {
   constructor(viewport) {
     this.viewport = viewport;
-    this.canvas = document.querySelector('canvas');
+    this.canvas = document.querySelector('#gamecanvas');
     this.canvas.width = viewport.width;
     this.canvas.height = viewport.height;
     this.ctx = this.canvas.getContext('2d');
