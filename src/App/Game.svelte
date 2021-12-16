@@ -7,7 +7,6 @@
   const { connectionHandler } = getContext('connectionHandler');
 
   function startGame() {
-    console.log('starting game with data',gameInitData)
     const game = new Game(gameInitData.seed, gameInitData.players, gameInitData.playerNumber)
   }
 
@@ -16,4 +15,4 @@
 	});
 </script>
 
-<canvas />
+<canvas id="gamecanvas"/>
