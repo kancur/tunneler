@@ -104,7 +104,7 @@ export default class Game {
 
       this.player.update();
       connectionHandler.updateGameState({ pN: this.playerNumber, ...this.player.getState() });
-      //this.enemy.update();
+      this.enemy.update();
       this.gameMap.update();
       this.viewport.update(
         this.player.x - this.viewport.width / 2,
