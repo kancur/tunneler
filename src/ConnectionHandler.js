@@ -3,7 +3,7 @@ const equal = require('fast-deep-equal');
 
 class ConnectionHandler {
   constructor() {
-    this.socket = io('http://192.168.0.24:3100');
+    this.socket = io('http://192.168.0.200:3100');
     this.socket.on('init', (msg) => console.log(msg));
 
     this.seed = null;
@@ -16,7 +16,7 @@ class ConnectionHandler {
   }
 
   updateGameState(state) {
-    if (equal(this.previousSentState, state)) return;
+    //if (equal(this.previousSentState, state)) return;
     this.socket.emit('updateGameState', state);
     this.previousSentState = state;
   }
