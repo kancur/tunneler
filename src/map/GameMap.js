@@ -81,6 +81,10 @@ export default class GameMap {
     this.tanks.push(tank);
   }
 
+  getTankByPlayerNumber(number) {
+    return this.tanks.find((tank) => tank.playerNumber === number);
+  }
+
   pushProjectile(projectile) {
     this.activeProjectiles.set(projectile.hash, projectile);
   }
@@ -332,7 +336,7 @@ export default class GameMap {
       projectile.update();
 
       const tailTile = this.getTile(projectile.tailX, projectile.tailY);
-     
+
       if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
         const seed = projectile.number;
         this.activeProjectiles.delete(projectile.hash);
@@ -342,7 +346,7 @@ export default class GameMap {
           { x: 0, y: 0 },
           6,
           seed
-          );
+        );
         this.activeExplosions.set(explosion.hash, explosion);
 
         setTimeout(() => {
@@ -350,7 +354,7 @@ export default class GameMap {
         }, 3000);
       }
 
-/*       const projectileTile = this.getTile(projectile.x, projectile.y);
+      /*       const projectileTile = this.getTile(projectile.x, projectile.y);
       if (IMPENETRABLES.includes(projectileTile)) {
         this.activeProjectiles.delete(projectile.hash);
       } */
@@ -365,16 +369,26 @@ export default class GameMap {
           y: coords.y + projectile.vector2.y * -1,
         };
         const tile = this.getTile(coords.x, coords.y);
-        if (PROJECTILE_BLOCKERS.includes(tile)) {
+
+        const projectileOwnerTank = this.getTankByPlayerNumber(projectile.playerNumber);
+        const activeBlockers = [...projectileOwnerTank.impenetrables, 1, 2];
+
+        if (activeBlockers.includes(tile)) {
+          if (this.tanks[0])
+            if (
+              this.tanks[0].projectileBlockers.includes(tile) &&
+              projectile.playerNumber !== this.tanks[0].playerNumber
+            ) {
+              this.tanks[0].receiveHit();
+            } else if (
+              this.tanks[1].projectileBlockers.includes(tile) &&
+              projectile.playerNumber !== this.tanks[0].playerNumber
+            ) {
+              this.tanks[1].receiveHit();
+            }
           const seed = projectile.number;
           this.activeProjectiles.delete(projectile.hash);
-          const explosion = new Explosion(
-            prevCoords.x,
-            prevCoords.y,
-            { x: 0, y: 0 },
-            6,
-            seed
-          );
+          const explosion = new Explosion(prevCoords.x, prevCoords.y, { x: 0, y: 0 }, 6, seed);
           this.activeExplosions.set(explosion.hash, explosion);
 
           setTimeout(() => {
