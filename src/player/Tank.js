@@ -18,19 +18,24 @@ export default class Tank {
     lightColorCode,
     darkColorCode,
     baseColorCode,
-    barelColorCode
+    barelColorCode,
+    playerNumber
   ) {
     this.isPlayer = isPlayer;
     this.isNetworkUpdated = true;
     this.lightColor = lightColorCode;
     this.darkColor = darkColorCode;
     this.barelColor = barelColorCode;
+    this.projectileBlockers = [lightColorCode, darkColorCode, barelColorCode];
     this.impenetrables = IMPENETRABLES.filter((code) => {
       if (code !== this.lightColor && code !== this.darkColor && code !== this.barelColor) {
         return true;
       }
     });
+    this.playerNumber = playerNumber;
     this.gameMap = map;
+    this.energy = 100;
+    this.shield = 100;
     this.direction = 'up';
     this.movementSpeed = 1;
     //this.x = randomInt(70, map.width - 70);
@@ -146,6 +151,16 @@ export default class Tank {
       this.currentTankShape = this.getTankShape(dir);
       this.setVectorByDir(dir);
     }
+  }
+
+  receiveShield(amount) {
+    this.shield += amount;
+    if (this.shield >= 100) this.shield = 100;
+  }
+
+  receiveHit() {
+    this.shield -= 15;
+    if (this.shield <= 0) this.shield = 0;
   }
 
   updateState(state) {
@@ -322,7 +337,9 @@ export default class Tank {
   }
 
   shootProjectile(shotNumber) {
-    this.gameMap.pushProjectile(new Projectile(this.x + 3, this.y + 3, this.vector2, shotNumber));
+    this.gameMap.pushProjectile(
+      new Projectile(this.x + 3, this.y + 3, this.vector2, shotNumber, this.playerNumber)
+    );
     this.didShoot = true;
     this.framesSinceLastShot = 0;
   }
