@@ -6,8 +6,8 @@ export default class Viewport {
     this.view = [];
     this.offsetX = 0;
     this.offsetY = 0;
-    this.width = 72; // must be a pair number
-    this.height = 76; // must be a pair number
+    this.width = 76; // must be a pair number
+    this.height = 71; // must be a pair number
     this.update(0, 0);
   }
 
