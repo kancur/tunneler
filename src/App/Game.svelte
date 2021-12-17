@@ -16,3 +16,9 @@
 </script>
 
 <canvas id="gamecanvas"/>
+
+<style>
+  #gamecanvas {
+    width: 500px;
+  }
+</style>
