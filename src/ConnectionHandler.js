@@ -16,7 +16,7 @@ class ConnectionHandler {
   }
 
   updateGameState(state) {
-    //if (equal(this.previousSentState, state)) return;
+    if (equal(this.previousSentState, state)) return;
     this.socket.emit('updateGameState', state);
     this.previousSentState = state;
   }

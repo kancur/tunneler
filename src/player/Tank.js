@@ -27,11 +27,8 @@ export default class Tank {
     this.darkColor = darkColorCode;
     this.barelColor = barelColorCode;
     this.projectileBlockers = [lightColorCode, darkColorCode, barelColorCode];
-    this.impenetrables = IMPENETRABLES.filter((code) => {
-      if (code !== this.lightColor && code !== this.darkColor && code !== this.barelColor) {
-        return true;
-      }
-    });
+    // impenetrables except the tank itself (and except ground)
+    this.impenetrables = IMPENETRABLES.filter((code) => (code !== this.lightColor && code !== this.darkColor && code !== this.barelColor));
     this.playerNumber = playerNumber;
     this.gameMap = map;
     this.energy = 100;
@@ -45,6 +42,8 @@ export default class Tank {
     this.vector2 = { x: 0, y: -1 };
     //this._prevX;
     //this._prevY;
+    this.isInAnyBase = true;
+    this.energyTimeout = null;
     this.keyState = {};
     this.nextStates = [];
     this._originalWidth = 7;
@@ -85,7 +84,6 @@ export default class Tank {
     this.tankDown = this.tankUp.slice().reverse();
     this.tankRight = get90degRotatedOriginalShape(this.tankUp, this._originalWidth);
     this.tankLeft = this.tankRight.slice().reverse();
-
     // prettier-ignore
     this.tankTopRight = [
       0,0,0,1,0,0,0,
@@ -115,11 +113,12 @@ export default class Tank {
     this._prevTankShape = null;
     if (isPlayer) {
       this.keyHandler = new KeyHandler();
+      this.drawEnergy();
     }
   }
 
   resetTemps() {
-    this.didShoot = false;
+    this.keyState = {};
   }
 
   getState() {
@@ -150,18 +149,33 @@ export default class Tank {
       this.direction = dir;
       this.currentTankShape = this.getTankShape(dir);
       this.setVectorByDir(dir);
+      //console.log('dumped keystate', this.keyState);
+      this.serverState = null;
     }
   }
 
+  drawEnergy(amount = 0.017) {
+    this.energy -= amount;
+    if (this.energy <= 0) {
+      this.energy = 0;
+    }
+  }
+
+  receiveEnergy(amount) {
+    this.energy += amount;
+    if (this.energy >= 100) this.energy = 100;
+  }
+
+  receiveHit() { // drawShield
+    this.shield -= 15;
+    if (this.shield <= 0) this.shield = 0;
+  }
+ 
   receiveShield(amount) {
     this.shield += amount;
     if (this.shield >= 100) this.shield = 100;
   }
 
-  receiveHit() {
-    this.shield -= 15;
-    if (this.shield <= 0) this.shield = 0;
-  }
 
   updateState(state) {
     this.serverState = state;
@@ -219,34 +233,27 @@ export default class Tank {
   getTankShape(direction) {
     switch (direction) {
       case 'up':
-        this.direction = 'up';
         return this.tankUp;
       case 'down':
-        this.direction = 'down';
         return this.tankDown;
       case 'right':
-        this.direction = 'right';
         return this.tankRight;
       case 'left':
-        this.direction = 'left';
         return this.tankLeft;
       case 'topRight':
-        this.direction = 'topRight';
         return this.tankTopRight;
       case 'bottomRight':
-        this.direction = 'bottomRight';
         return this.tankBottomRight;
       case 'bottomLeft':
-        this.direction = 'bottomLeft';
         return this.tankBottomLeft;
       case 'topLeft':
-        this.direction = 'topLeft';
         return this.tankTopLeft;
     }
   }
 
   rotateUp() {
     if (this.isLegalMove(this.x, this.y, this.tankUp)) {
+      this.direction = 'up';
       this.currentTankShape = this.getTankShape('up');
       this.vector2 = { x: 0, y: -1 };
     } else {
@@ -255,6 +262,7 @@ export default class Tank {
 
   rotateDown() {
     if (this.isLegalMove(this.x, this.y, this.tankDown)) {
+      this.direction = 'down';
       this.currentTankShape = this.getTankShape('down');
       this.vector2 = { x: 0, y: 1 };
     } else {
@@ -263,6 +271,7 @@ export default class Tank {
 
   rotateRight() {
     if (this.isLegalMove(this.x, this.y, this.tankRight)) {
+      this.direction = 'right';
       this.currentTankShape = this.getTankShape('right');
       this.vector2 = { x: 1, y: 0 };
     } else {
@@ -271,6 +280,7 @@ export default class Tank {
 
   rotateLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankLeft)) {
+      this.direction = 'left';
       this.currentTankShape = this.getTankShape('left');
       this.vector2 = { x: -1, y: 0 };
     } else {
@@ -279,6 +289,7 @@ export default class Tank {
 
   rotateTopRight() {
     if (this.isLegalMove(this.x, this.y, this.tankTopRight)) {
+      this.direction = 'topRight';
       this.currentTankShape = this.getTankShape('topRight');
       this.vector2 = { x: 1, y: -1 };
     } else {
@@ -286,6 +297,7 @@ export default class Tank {
   }
   rotateBottomRight() {
     if (this.isLegalMove(this.x, this.y, this.tankBottomRight)) {
+      this.direction = 'bottomRight';
       this.currentTankShape = this.getTankShape('bottomRight');
       this.vector2 = { x: 1, y: 1 };
     } else {
@@ -293,6 +305,7 @@ export default class Tank {
   }
   rotateBottomLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankBottomLeft)) {
+      this.direction = 'bottomLeft';
       this.currentTankShape = this.getTankShape('bottomLeft');
       this.vector2 = { x: -1, y: 1 };
     } else {
@@ -300,6 +313,7 @@ export default class Tank {
   }
   rotateTopLeft() {
     if (this.isLegalMove(this.x, this.y, this.tankTopLeft)) {
+      this.direction = 'topLeft';
       this.currentTankShape = this.getTankShape('topLeft');
       this.vector2 = { x: -1, y: -1 };
     } else {
@@ -345,15 +359,19 @@ export default class Tank {
   }
 
   update() {
+    this.resetTemps();
+
     if (!this.isPlayer) {
       this.dumpState();
     }
     this.framesSinceLastShot += 1;
+
     let up,
       down,
       right,
       left,
       shoot = null;
+      
     if (this.isPlayer) {
       ({ up, down, right, left, shoot } = this.keyHandler.pressedKeys);
       this.keyState = this.keyHandler.pressedKeys;
@@ -365,10 +383,16 @@ export default class Tank {
     if (shoot && this.framesSinceLastShot >= 2) {
       if (this.isPlayer) {
         this.shotNumber += 1;
+        if (!this.isInAnyBase) {
+          this.drawEnergy(1);
+        }
       }
       this.shootProjectile(this.shotNumber);
     }
-    //this.keyState = {};
+
+    if (this.isPlayer && !this.isInAnyBase) {
+      this.drawEnergy();
+    }
 
     // duplicate rotations are to handle an edge case where the first rotation failed due to costraints
     // the tank is allowed to "reverse" but should immediately rotate to the correct orientation in the same gameupdate

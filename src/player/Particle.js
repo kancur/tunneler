@@ -1,13 +1,13 @@
 import { SeededRNG } from "../Helpers";
 
 export default class Particle {
-  constructor(x, y, vector2, seed) {
+  constructor(x, y, vector2, seed, lifeSpan) {
     this.rng = new SeededRNG(seed);
     this.x = x;
     this.y = y;
     this.vector2 = vector2;
     this.hash = Math.random().toString(36).slice(2);
-    this.life = 3;
+    this.life = lifeSpan;
   }
 
   update() {

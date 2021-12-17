@@ -17,7 +17,7 @@ export default class Game {
     this.pausedState = {};
     this.paused = false;
     this.playerNumber = activePlayerNumber;
-    this.enemyNumber = activePlayerNumber === 0 ? 1 : 0
+    this.enemyNumber = activePlayerNumber === 0 ? 1 : 0;
     this.playerTankColors = activePlayerNumber === 0 ? blueTankColors : greenTankColors;
     this.enemyTankColors = activePlayerNumber === 0 ? greenTankColors : blueTankColors;
 
@@ -51,6 +51,7 @@ export default class Game {
     );
 
     this.players = [this.player, this.enemy];
+    this.bases = [this.player.base, this.enemy.base];
 
     this.players.forEach((player) => {
       this.gameMap.addTank(player);
@@ -91,6 +92,20 @@ export default class Game {
     connectionHandler.updatePausedState({ paused: false, playerNumber: this.playerNumber });
   }
 
+  isInBase(tank) {
+    for (let i = 0; i < this.bases.length; i++) {
+      const base = this.bases[i];
+      if (tank.x >= base.x && tank.x < base.x + base.width - tank.width) {
+        // assumes that tank is square
+        if (tank.y >= base.y && tank.y <= base.y + base.height - tank.width) {
+          // assumes that tank is square
+          return i; // 0 for player, 1 for enemy base
+        }
+      }
+    }
+    return -1; // -1 for not in base
+  }
+
   gameLoop() {
     window.requestAnimationFrame(this.gameLoop.bind(this));
     this.paused = this.isAnyPaused();
@@ -107,6 +122,20 @@ export default class Game {
     if (elapsed > this.fpsInterval) {
       this.prevFrameTime = now - (elapsed % this.fpsInterval);
 
+      const baseIndex = this.isInBase(this.player);
+      if (baseIndex >= 0) {
+        this.player.isInAnyBase = true;
+      } else {
+        this.player.isInAnyBase = false;
+      }
+
+      if (baseIndex === 0) { // player in home base
+        this.player.receiveEnergy(0.7); 
+        this.player.receiveShield(0.35);
+      } else if (baseIndex === 1) {
+        this.player.receiveEnergy(0.27); // player in enemy base
+      }
+
       this.player.update();
       connectionHandler.updateGameState({ pN: this.playerNumber, ...this.player.getState() });
       this.enemy.update();
@@ -116,7 +145,7 @@ export default class Game {
         this.player.y - this.viewport.height / 2
       );
       this.renderer.render();
-      this.statsDisplay.update(this.player.energy, this.player.shield)
+      this.statsDisplay.update(this.player.energy, this.player.shield);
     }
   }
 }

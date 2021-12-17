@@ -186,28 +186,28 @@ export default class GameMap {
 
   generateStoneBorders() {
     const { maxDepth, maxEdgeLength, maxSteepness } = this.settings.border;
-    const left = this.generateForOneSide(
+    const left = this.generateBordersForOneSide(
       this.height,
       maxDepth,
       maxEdgeLength,
       maxSteepness,
       this.seed
     );
-    const right = this.generateForOneSide(
+    const right = this.generateBordersForOneSide(
       this.height,
       maxDepth,
       maxEdgeLength,
       maxSteepness,
-      this.seed + 10
+      this.seed + 10 // random but consistent (within clients) seed
     );
-    const top = this.generateForOneSide(
+    const top = this.generateBordersForOneSide(
       this.width,
       maxDepth,
       maxEdgeLength,
       maxSteepness,
       this.seed + 22
     );
-    const bottom = this.generateForOneSide(
+    const bottom = this.generateBordersForOneSide(
       this.width,
       maxDepth,
       maxEdgeLength,
@@ -252,7 +252,7 @@ export default class GameMap {
     }
   }
 
-  generateForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
+  generateBordersForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
     const seededRNG = new SeededRNG(seed);
     let willKeepDirectionFor = 0;
     let currentMaxSteepness = 0;
@@ -282,7 +282,7 @@ export default class GameMap {
     for (let col = 0; col < edgeLength; col++) {
       if (willKeepDirectionFor <= 0) {
         //grow = !grow;
-        grow = seededRNG.get() < 0.5;
+        grow = seededRNG.get() < 0.5; // grow or shrink seeded pseudorandom switcher
         currentMaxSteepness = getCurrentMaxSteepness(maxSteepness, seededRNG.get());
         willKeepDirectionFor = getDirectionLength(maxEdgeLength, seededRNG.get());
       }
@@ -318,7 +318,7 @@ export default class GameMap {
       explosion.particles.forEach((particle) => {
         particle.update();
         const underlyingTile = this.getTile(particle.x, particle.y);
-        if (IMPENETRABLES.includes(underlyingTile)) {
+        if (IMPENETRABLES_EXCEPT_TANKS.includes(underlyingTile)) {
           explosion.particles.delete(particle.hash);
         }
         if (particle.life === 0) {
@@ -337,6 +337,7 @@ export default class GameMap {
 
       const tailTile = this.getTile(projectile.tailX, projectile.tailY);
 
+      // can maybe be merged into the next function checking the hypothetical future path
       if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
         const seed = projectile.number;
         this.activeProjectiles.delete(projectile.hash);
@@ -354,11 +355,6 @@ export default class GameMap {
         }, 3000);
       }
 
-      /*       const projectileTile = this.getTile(projectile.x, projectile.y);
-      if (IMPENETRABLES.includes(projectileTile)) {
-        this.activeProjectiles.delete(projectile.hash);
-      } */
-
       // this iterates over hypothetical future path of the projectile
       // done to handle sub single frame/gameupdate collisions
       for (let i = 0; i < projectile.futurePath.length; i++) {
@@ -371,24 +367,47 @@ export default class GameMap {
         const tile = this.getTile(coords.x, coords.y);
 
         const projectileOwnerTank = this.getTankByPlayerNumber(projectile.playerNumber);
+
+        // active blockers are impenetrables except for the owner tank
+        // adding 1 and 2 (ground)
         const activeBlockers = [...projectileOwnerTank.impenetrables, 1, 2];
 
+        let explosionLifeSpan = 3;
+        let explosionParticleNumber = 6;
+
+        // check if the projectile is colliding with anything except the owner tank
         if (activeBlockers.includes(tile)) {
-          if (this.tanks[0])
-            if (
-              this.tanks[0].projectileBlockers.includes(tile) &&
-              projectile.playerNumber !== this.tanks[0].playerNumber
-            ) {
-              this.tanks[0].receiveHit();
-            } else if (
-              this.tanks[1].projectileBlockers.includes(tile) &&
-              projectile.playerNumber !== this.tanks[0].playerNumber
-            ) {
-              this.tanks[1].receiveHit();
-            }
+          // check if the tank on index 0 is the one that was hit
+          // and
+          // check if the projectile was not fired by the same tank
+          // this has to be done because projectile actually starts in part of the tank (barel)
+          // as in the original game
+          if (
+            this.tanks[0].projectileBlockers.includes(tile) 
+            //projectile.playerNumber !== this.tanks[0].playerNumber
+          ) {
+            this.tanks[0].receiveHit();
+            explosionLifeSpan = 7;
+            explosionParticleNumber = 14;
+          } else if (
+            this.tanks[1].projectileBlockers.includes(tile)
+            //projectile.playerNumber !== this.tanks[0].playerNumber
+          ) {
+            this.tanks[1].receiveHit();
+            explosionLifeSpan = 7;
+            explosionParticleNumber = 14;
+          }
           const seed = projectile.number;
           this.activeProjectiles.delete(projectile.hash);
-          const explosion = new Explosion(prevCoords.x, prevCoords.y, { x: 0, y: 0 }, 6, seed);
+          // consider adding a delay to the explosion
+          const explosion = new Explosion(
+            prevCoords.x,
+            prevCoords.y,
+            { x: 0, y: 0 },
+            explosionParticleNumber,
+            seed,
+            explosionLifeSpan
+          );
           this.activeExplosions.set(explosion.hash, explosion);
 
           setTimeout(() => {
