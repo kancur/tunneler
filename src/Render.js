@@ -46,7 +46,6 @@ export default class Render {
   }
 
   init() {
-    this.canvas.style.height = '500px';
     this.canvas.style.imageRendering = 'pixelated';
   }
 
