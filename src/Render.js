@@ -39,17 +39,30 @@ export default class Render {
     this.canvas.height = viewport.height;
     this.ctx = this.canvas.getContext('2d');
     this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-
     this.pixels = this.imageData.data;
+    this.showStatic = true;
 
     this.init();
   }
 
   init() {
     this.canvas.style.imageRendering = 'pixelated';
+    this.canvas.style.backgroundColor = 'black';
   }
 
   render() {
+    if (this.showStatic) {
+      for (let i = 0; i < this.viewport.height * this.viewport.width; i++) {
+        const offset = i * 4;
+        this.pixels[offset] = Math.floor(Math.random() * 255);
+        this.pixels[offset + 1] = Math.floor(Math.random() * 255);
+        this.pixels[offset + 2] = Math.floor(Math.random() * 255);
+        this.pixels[offset + 3] = Math.floor(Math.random() * 100) + 155;
+      }
+      this.flushPixels();
+      return;
+    }
+
     for (let y = 0; y < this.viewport.height; y++) {
       for (let x = 0; x < this.viewport.width; x++) {
         const offset = y * this.viewport.width * 4 + x * 4;
@@ -61,7 +74,6 @@ export default class Render {
         this.pixels[offset + 3] = 255;
       }
     }
-
     this.flushPixels();
   }
 

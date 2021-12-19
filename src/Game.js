@@ -16,12 +16,18 @@ export default class Game {
   constructor(seed, playersData, activePlayerNumber) {
     this.pausedState = {};
     this.paused = false;
+    this.currentRound = 1;
+    this.roundSwitching = false;
+    this.maxRounds = 5;
     this.playerNumber = activePlayerNumber;
     this.enemyNumber = activePlayerNumber === 0 ? 1 : 0;
     this.playerTankColors = activePlayerNumber === 0 ? blueTankColors : greenTankColors;
     this.enemyTankColors = activePlayerNumber === 0 ? greenTankColors : blueTankColors;
 
-    this.overlay = new Overlay();
+    this.overlay = new Overlay(
+      'The other player has minimized the game. Please wait till he opens the window again.'
+    );
+    this.midRoundOverlay = new Overlay();
 
     this.fps = 18;
     this.fpsInterval = 1000 / this.fps;
@@ -30,6 +36,8 @@ export default class Game {
     this.gameMap = new GameMap(1200, 600, seed);
     this.viewport = new Viewport(this.gameMap);
     this.renderer = new Render(this.viewport);
+    this.playerScore = 0;
+    this.enemyScore = 0;
 
     this.player = new Tank(
       true,
@@ -65,7 +73,6 @@ export default class Game {
     });
 
     connectionHandler.socket.on('pausedUpdate', (data) => {
-      console.log(data);
       if (data) {
         this.pausedState = data;
       }
@@ -106,6 +113,44 @@ export default class Game {
     return -1; // -1 for not in base
   }
 
+  async endRound() {
+    let counter = 3;
+    this.midRoundOverlay.setText(`Round ${this.currentRound} over! Next round in ${counter} seconds...`);
+    this.midRoundOverlay.show();
+
+    const countdown = () =>
+      new Promise((resolve) => {
+        const interval = setInterval(() => {
+          counter -= 1;
+          this.midRoundOverlay.setText(`Round ${this.currentRound} over! Next round in ${counter} seconds...`);
+          if (counter === 0) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 1000);
+      });
+    await countdown();
+    this.midRoundOverlay.hide();
+    this.player.reset();
+    this.enemy.reset();
+    this.roundSwitching = false;
+    this.currentRound++;
+  }
+
+  isAnyTankDead() {
+    return this.player.isDead || this.enemy.isDead;
+  }
+
+  shouldShowStatic() {
+    if (this.player.energy < 20) {
+      if (Math.random() * 20 > this.player.energy + 3) {
+        this.renderer.showStatic = true;
+        return;
+      }
+    }
+    this.renderer.showStatic = false;
+  }
+
   gameLoop() {
     window.requestAnimationFrame(this.gameLoop.bind(this));
     this.paused = this.isAnyPaused();
@@ -119,7 +164,10 @@ export default class Game {
     const now = Date.now();
     const elapsed = now - this.prevFrameTime;
 
+    // --------------------------------
     if (elapsed > this.fpsInterval) {
+      // fps limited gameloop starts here
+
       this.prevFrameTime = now - (elapsed % this.fpsInterval);
 
       const baseIndex = this.isInBase(this.player);
@@ -129,14 +177,31 @@ export default class Game {
         this.player.isInAnyBase = false;
       }
 
-      if (baseIndex === 0) { // player in home base
-        this.player.receiveEnergy(0.7); 
+      if (baseIndex === 0) {
+        // player in home base
+        this.player.receiveEnergy(0.7);
         this.player.receiveShield(0.35);
       } else if (baseIndex === 1) {
         this.player.receiveEnergy(0.27); // player in enemy base
       }
 
+      if (this.isAnyTankDead()) {
+        if (this.roundSwitching === false) {
+          if (this.player.isDead) {
+            this.playerScore += 1;
+          }
+          if (this.enemy.isDead) {
+            this.enemyScore += 1;
+          }
+          setTimeout(() => {
+            this.endRound();
+          }, 2000);
+        }
+        this.roundSwitching = true;
+      }
+
       this.player.update();
+      this.shouldShowStatic();
       connectionHandler.updateGameState({ pN: this.playerNumber, ...this.player.getState() });
       this.enemy.update();
       this.gameMap.update();

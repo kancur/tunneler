@@ -39,7 +39,6 @@ export default class KeyHandler {
         e.preventDefault();
         this.pressedKeys.shoot = bool;
       }
-
     });
   }
 }

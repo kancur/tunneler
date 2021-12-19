@@ -170,10 +170,15 @@ export default class GameMap {
 
   renderTanksToMap() {
     this.tanks.forEach((tank) => {
+      if (tank.isRenderedDead) return;
+
       for (let x = 0; x < tank.width; x++) {
         for (let y = 0; y < tank.height; y++) {
-          const tankTile = tank.getTile(x, y);
+          let tankTile = tank.getTile(x, y);
           if (tankTile !== 0) {
+            if (tank.isDead) {
+              tankTile = 3;
+            }
             //console.log('tank tile:', tankTile, 'at xy', x + tank.x, y+tank.y);
             this.setTile(x + tank.x, y + tank.y, tankTile);
           } else {
@@ -181,6 +186,8 @@ export default class GameMap {
           }
         }
       }
+
+      if (tank.isDead) tank.isRenderedDead = true;
     });
   }
 
@@ -369,7 +376,7 @@ export default class GameMap {
         const projectileOwnerTank = this.getTankByPlayerNumber(projectile.playerNumber);
 
         // active blockers are impenetrables except for the owner tank
-        // adding 1 and 2 (ground)
+        // with added 1 and 2 (ground)
         const activeBlockers = [...projectileOwnerTank.impenetrables, 1, 2];
 
         let explosionLifeSpan = 3;
@@ -392,8 +399,9 @@ export default class GameMap {
           } else if (
             this.tanks[1].projectileBlockers.includes(tile)
             //projectile.playerNumber !== this.tanks[0].playerNumber
-          ) {
-            this.tanks[1].receiveHit();
+            ) {
+              // the network tank (on index 1) should not receive hit, it will get network updated
+            //this.tanks[1].receiveHit();
             explosionLifeSpan = 7;
             explosionParticleNumber = 14;
           }
@@ -418,9 +426,30 @@ export default class GameMap {
       }
     });
   }
+   
+  checkIfTanksExploded() {
+    this.tanks.forEach((tank) => {
+      if (tank.isDead && !tank.isExploded) {
+        const explosion = new Explosion(
+          tank.x,
+          tank.y,
+          { x: 0, y: 0 },
+          24,
+          144,
+          18
+        );
+        this.activeExplosions.set(explosion.hash, explosion);
+        tank.isExploded = true;
+        setTimeout(() => {
+          this.activeExplosions.delete(explosion.hash);
+        }, 2000);
+      }
+    })
+  }
 
   update() {
     this.clearMapBeforeRender();
+    this.checkIfTanksExploded();
     this.renderTanksToMap();
     this.updateExplosions();
     this.updateProjectiles();

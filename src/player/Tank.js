@@ -22,7 +22,6 @@ export default class Tank {
     playerNumber
   ) {
     this.isPlayer = isPlayer;
-    this.isNetworkUpdated = true;
     this.lightColor = lightColorCode;
     this.darkColor = darkColorCode;
     this.barelColor = barelColorCode;
@@ -32,6 +31,9 @@ export default class Tank {
     this.playerNumber = playerNumber;
     this.gameMap = map;
     this.energy = 100;
+    this.isDead = false;
+    this.isExploded = false;
+    this.isRenderedDead = false;
     this.shield = 100;
     this.direction = 'up';
     this.movementSpeed = 1;
@@ -40,12 +42,10 @@ export default class Tank {
     this.x = x;
     this.y = y;
     this.vector2 = { x: 0, y: -1 };
-    //this._prevX;
-    //this._prevY;
+    this.originalX = x;
+    this.originalY = y;
     this.isInAnyBase = true;
-    this.energyTimeout = null;
     this.keyState = {};
-    this.nextStates = [];
     this._originalWidth = 7;
     this._originalHeight = 7;
     this.width = this._originalWidth;
@@ -56,7 +56,6 @@ export default class Tank {
     this.movementSpeed = 1; //pixel per update
     this.serverState = null;
     this.readyToMove = false;
-    this.didShoot = false;
     this.shotNumber = 0;
     // prettier-ignore
     this.tankUp = [
@@ -117,6 +116,28 @@ export default class Tank {
     }
   }
 
+  reset() {
+    this.isDead = false;
+    this.isExploded = false;
+    this.isRenderedDead = false;
+    this.isInAnyBase = true;
+    this.energy = 100;
+    this.shield = 100;
+    this.direction = 'up';
+    this.x = this.originalX
+    this.y = this.originalY
+    this.isInAnyBase = true;
+    this.keyState = {};
+    this.framesSinceLastShot = 0;
+    this.serverState = null;
+    this.shotNumber = 0;
+    this.currentTankShape = this.tankUp;
+  }
+
+  die() {
+    this.isDead = true;
+  }
+
   resetTemps() {
     this.keyState = {};
   }
@@ -128,6 +149,8 @@ export default class Tank {
       y: this.y,
       dir: this.direction,
       sn: this.shotNumber,
+      e: this.energy,
+      s: this.shield,
     };
     /*     const state = {
       x: this.x,
@@ -141,12 +164,15 @@ export default class Tank {
 
   dumpState() {
     if (this.serverState) {
-      const { x, y, dir, sn, ...keystate } = this.serverState;
+      //console.log('dumping state', this.serverState)
+      const { x, y, dir, sn, e, s, ...keystate } = this.serverState;
       this.keyState = keystate;
       this.x = x;
       this.y = y;
       this.shotNumber = sn;
       this.direction = dir;
+      this.energy = (e === null) ? 100 : e;
+      this.shield = (s === null) ? 100 : s; 
       this.currentTankShape = this.getTankShape(dir);
       this.setVectorByDir(dir);
       //console.log('dumped keystate', this.keyState);
@@ -155,13 +181,14 @@ export default class Tank {
   }
 
   drawEnergy(amount = 0.017) {
-    this.energy -= amount;
+    this.energy = Math.round((this.energy - amount) * 100) / 100;
     if (this.energy <= 0) {
       this.energy = 0;
     }
   }
 
   receiveEnergy(amount) {
+    if (this.energy === 0) return;
     this.energy += amount;
     if (this.energy >= 100) this.energy = 100;
   }
@@ -172,6 +199,7 @@ export default class Tank {
   }
  
   receiveShield(amount) {
+    if (this.shield === 0) return;
     this.shield += amount;
     if (this.shield >= 100) this.shield = 100;
   }
@@ -354,16 +382,24 @@ export default class Tank {
     this.gameMap.pushProjectile(
       new Projectile(this.x + 3, this.y + 3, this.vector2, shotNumber, this.playerNumber)
     );
-    this.didShoot = true;
     this.framesSinceLastShot = 0;
   }
 
   update() {
     this.resetTemps();
+    if (this.isDead) return;
+
 
     if (!this.isPlayer) {
       this.dumpState();
     }
+
+    
+    if (this.shield <= 0 || this.energy <= 0) {
+      this.die();
+    }
+
+
     this.framesSinceLastShot += 1;
 
     let up,
