@@ -18,7 +18,7 @@
 <canvas id="gamecanvas"/>
 
 <style>
-  #gamecanvas {
+  /* #gamecanvas {
     width: 500px;
-  }
+  } */
 </style>
