@@ -5,6 +5,7 @@ import Tank from './player/Tank';
 import Render from './Render';
 import Viewport from './Viewport';
 import StatsDisplay from './StatsDisplay';
+import { delay } from './Helpers';
 
 import connectionHandler from './ConnectionHandler';
 import Overlay from './Overlay';
@@ -17,7 +18,8 @@ export default class Game {
     this.pausedState = {};
     this.paused = false;
     this.currentRound = 1;
-    this.roundSwitching = false;
+    this.isRoundSwitching = false;
+    this.isGameloopSuspended = false;
     this.maxRounds = 5;
     this.playerNumber = activePlayerNumber;
     this.enemyNumber = activePlayerNumber === 0 ? 1 : 0;
@@ -28,6 +30,7 @@ export default class Game {
       'The other player has minimized the game. Please wait till he opens the window again.'
     );
     this.midRoundOverlay = new Overlay();
+    this.finalOverlay = new Overlay();
 
     this.fps = 18;
     this.fpsInterval = 1000 / this.fps;
@@ -69,6 +72,7 @@ export default class Game {
     connectionHandler.socket.on('stateUpdate', (data) => {
       const enemyData = data[activePlayerNumber === 0 ? 1 : 0];
       if (!enemyData) return;
+      console.log('enemyServerShield', enemyData.s);
       this.enemy.updateState(enemyData);
     });
 
@@ -113,7 +117,32 @@ export default class Game {
     return -1; // -1 for not in base
   }
 
+  async endGame() {
+    this.isGameloopSuspended = true;
+    this.renderer.setMapMode();
+    this.renderer.render();
+    let message = "It's a draw."
+    if (this.playerScore > this.enemyScore) {
+      message = `You won! Your score: ${this.playerScore} | Enemy's score: ${this.enemyScore}`
+    } else {
+      message = `You lost! Your score: ${this.playerScore} | Enemy's score: ${this.enemyScore}`
+    }
+    this.finalOverlay.setText(message)
+    this.finalOverlay.show();
+    await delay(5000);
+    this.finalOverlay.hide();
+  }
+
   async endRound() {
+    connectionHandler.nextRound();
+    this.player.reset();
+    this.enemy.reset();
+
+    if (this.currentRound === this.maxRounds) {
+      await this.endGame();
+      return;
+    }
+    this.isGameloopSuspended = true;
     let counter = 3;
     this.midRoundOverlay.setText(`Round ${this.currentRound} over! Next round in ${counter} seconds...`);
     this.midRoundOverlay.show();
@@ -124,17 +153,16 @@ export default class Game {
           counter -= 1;
           this.midRoundOverlay.setText(`Round ${this.currentRound} over! Next round in ${counter} seconds...`);
           if (counter === 0) {
-            clearInterval(interval);
             resolve();
+            clearInterval(interval);
           }
         }, 1000);
       });
     await countdown();
     this.midRoundOverlay.hide();
-    this.player.reset();
-    this.enemy.reset();
-    this.roundSwitching = false;
     this.currentRound++;
+    this.isRoundSwitching = false;   
+    this.isGameloopSuspended = false;
   }
 
   isAnyTankDead() {
@@ -153,6 +181,7 @@ export default class Game {
 
   gameLoop() {
     window.requestAnimationFrame(this.gameLoop.bind(this));
+
     this.paused = this.isAnyPaused();
     if (this.paused) {
       this.overlay.show();
@@ -160,13 +189,17 @@ export default class Game {
     } else {
       this.overlay.hide();
     }
-
+    
     const now = Date.now();
     const elapsed = now - this.prevFrameTime;
-
+    
     // --------------------------------
     if (elapsed > this.fpsInterval) {
       // fps limited gameloop starts here
+      if(this.isGameloopSuspended) {
+        this.enemy.update(); // we need fresh network state
+        return;
+      };
 
       this.prevFrameTime = now - (elapsed % this.fpsInterval);
 
@@ -177,6 +210,9 @@ export default class Game {
         this.player.isInAnyBase = false;
       }
 
+      //
+      // recharging energy and shield
+      //
       if (baseIndex === 0) {
         // player in home base
         this.player.receiveEnergy(0.7);
@@ -185,20 +221,31 @@ export default class Game {
         this.player.receiveEnergy(0.27); // player in enemy base
       }
 
+      //
+      // handling dead tanks
+      //
       if (this.isAnyTankDead()) {
-        if (this.roundSwitching === false) {
+        if (this.isRoundSwitching === false) {
+          console.log('some tank is dead, round switching is false')
+          console.log('is player dead', this.player.isDead)
+          console.log('is enemy dead', this.enemy.isDead)
+          this.isRoundSwitching = true;
+
           if (this.player.isDead) {
-            this.playerScore += 1;
-          }
-          if (this.enemy.isDead) {
             this.enemyScore += 1;
           }
+          if (this.enemy.isDead) {
+            this.playerScore += 1;
+          }
+
+          console.log('scores', this.enemyScore, this.playerScore)
           setTimeout(() => {
+            console.log('timeout set')
             this.endRound();
-          }, 2000);
+          }, 1500);
         }
-        this.roundSwitching = true;
       }
+
 
       this.player.update();
       this.shouldShowStatic();

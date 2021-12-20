@@ -1,3 +1,5 @@
+import { median } from './Helpers';
+
 // 0 === stone
 // 1 && 2 === ground
 // 3 === empty cell
@@ -37,12 +39,49 @@ export default class Render {
     this.canvas = document.querySelector('#gamecanvas');
     this.canvas.width = viewport.width;
     this.canvas.height = viewport.height;
+    this.canvas.style.width = '500px';
     this.ctx = this.canvas.getContext('2d');
     this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     this.pixels = this.imageData.data;
-    this.showStatic = true;
-
+    this.showStatic = false;
+    this.showMap = false;
+    this.isMapRendered = false;
+    this.resetRatios();
     this.init();
+  }
+
+  setMapMode() {
+    // fit window size but keep aspect ratio
+    this.canvas.height = window.innerHeight > this.viewport.gameMap.height ? this.viewport.gameMap.height : window.innerHeight;
+    const width = this.canvas.height * this.viewport.gameMap.width / this.viewport.gameMap.height;
+    if (width > window.innerWidth) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = this.canvas.width * this.viewport.gameMap.height / this.viewport.gameMap.width;
+    } else {
+      this.canvas.width = width;
+    }
+
+    this.canvas.style.width = '';
+    this.resetRatios();
+    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    this.pixels = this.imageData.data;
+    this.showMap = true;
+  }
+  
+  setNormalMode() {
+    this.canvas.width = viewport.width;
+    this.canvas.height = viewport.height;
+    this.canvas.style.width = '500px';
+    this.resetRatios();
+    this.ctx = this.canvas.getContext('2d');
+    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    this.pixels = this.imageData.data;
+    this.isMapRendered = false;
+  }
+  
+  resetRatios() {
+    this.ratioX = this.viewport.gameMap.width / this.canvas.width;
+    this.ratioY = this.viewport.gameMap.height / this.canvas.height;
   }
 
   init() {
@@ -50,7 +89,58 @@ export default class Render {
     this.canvas.style.backgroundColor = 'black';
   }
 
+  getMapTile(x, y) {
+    const finalX = (x) => Math.floor(x * this.ratioX);
+    const finalY = (y) => Math.floor(y * this.ratioY);
+
+    if (this.ratioX === 1 && this.ratioY === 1) {
+      const tile =  this.viewport.gameMap.getTile(x,y);
+      return tile
+    }
+
+    const tiles = [];
+
+    for (let i = finalX(x - 1); i < finalX(x); i++) {
+      for (let j = finalY(y - 1); j < finalY(y); j++) {
+        tiles.push(this.viewport.gameMap.getTile(i, j));
+      }
+    }
+    const calculateTile = () => {    
+      const isBaseSomewhere = tiles.includes(12) ? 12 : tiles.includes(13) ? 13 : null;
+
+      if (isBaseSomewhere) {
+        return isBaseSomewhere;
+      } else {
+        return Math.floor(median(tiles));
+      }
+    };
+
+    return calculateTile();
+  }
+
   render() {
+    if (this.showMap && this.isMapRendered) return;
+
+    if (this.showMap) {
+      this.setMapMode();
+      for (let y = 0; y < this.canvas.height; y++) {
+        for (let x = 0; x < this.canvas.width; x++) {
+          const offset = y * this.canvas.width * 4 + x * 4;
+
+          const currentTile = this.getMapTile(x, y);
+          //const currentTile = this.viewport.gameMap.getTile(x,y)
+
+          this.pixels[offset] = colors[currentTile].r;
+          this.pixels[offset + 1] = colors[currentTile].g;
+          this.pixels[offset + 2] = colors[currentTile].b;
+          this.pixels[offset + 3] = 255;
+        }
+      }
+      this.flushPixels();
+      this.isMapRendered = true;
+      return;
+    }
+
     if (this.showStatic) {
       for (let i = 0; i < this.viewport.height * this.viewport.width; i++) {
         const offset = i * 4;

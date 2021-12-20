@@ -93,8 +93,6 @@ export default class GameMap {
     console.log('tiles:', this.tiles);
   }
 
-  isDirt(x, y, x2, y2) {}
-
   getTile(x, y) {
     if (x >= this.width) return 0;
     if (x < 0) return 0;
