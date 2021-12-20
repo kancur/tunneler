@@ -1,6 +1,17 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/@babel/runtime/regenerator/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/@babel/runtime/regenerator/index.js ***!
+  \**********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(/*! regenerator-runtime */ "./node_modules/regenerator-runtime/runtime.js");
+
+
+/***/ }),
+
 /***/ "./node_modules/@socket.io/component-emitter/index.js":
 /*!************************************************************!*\
   !*** ./node_modules/@socket.io/component-emitter/index.js ***!
@@ -196,36 +207,61 @@ Emitter.prototype.hasListeners = function(event){
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ConnectionHandler)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var _require = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/build/cjs/index.js"),
     io = _require.io;
 
+var equal = __webpack_require__(/*! fast-deep-equal */ "./node_modules/fast-deep-equal/index.js");
+
 var ConnectionHandler = /*#__PURE__*/function () {
   function ConnectionHandler() {
-    _classCallCheck(this, ConnectionHandler);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, ConnectionHandler);
 
-    this.socket = io("http://localhost:3100");
-    this.socket.on('init', this.handleInit); //this.socket.on('gamestate', this.handleGameState)
+    //this.socket = io('http://192.168.0.200:3100');
+    this.socket = io('https://tunneler-server.herokuapp.com/');
+    this.socket.on('init', function (msg) {
+      return console.log(msg);
+    });
+    this.seed = null;
+    this.code = null;
+    this.previousSentState = {};
   }
 
-  _createClass(ConnectionHandler, [{
-    key: "handleInit",
-    value: function handleInit(data) {
-      console.log(data);
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(ConnectionHandler, [{
+    key: "startNewGame",
+    value: function startNewGame() {
+      this.socket.emit('createGame');
+    }
+  }, {
+    key: "nextRound",
+    value: function nextRound() {
+      this.socket.emit('nextRound');
+    }
+  }, {
+    key: "updateGameState",
+    value: function updateGameState(state) {
+      if (equal(this.previousSentState, state)) return;
+      this.socket.emit('updateGameState', state);
+      this.previousSentState = state;
+    }
+  }, {
+    key: "updatePausedState",
+    value: function updatePausedState(state) {
+      this.socket.emit('updatePausedState', state);
     }
   }]);
 
   return ConnectionHandler;
 }();
 
-
+var connectionHandler = new ConnectionHandler();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (connectionHandler);
 
 /***/ }),
 
@@ -240,61 +276,366 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Game)
 /* harmony export */ });
-/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./KeyHandler */ "./src/KeyHandler.js");
-/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./map/GameMap */ "./src/map/GameMap.js");
-/* harmony import */ var _player_Base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./player/Base */ "./src/player/Base.js");
-/* harmony import */ var _player_Tank__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./player/Tank */ "./src/player/Tank.js");
-/* harmony import */ var _render_Render__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./render/Render */ "./src/render/Render.js");
-/* harmony import */ var _Viewport__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Viewport */ "./src/Viewport.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_construct__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/construct */ "./node_modules/@babel/runtime/helpers/esm/construct.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./KeyHandler */ "./src/KeyHandler.js");
+/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./map/GameMap */ "./src/map/GameMap.js");
+/* harmony import */ var _player_Base__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./player/Base */ "./src/player/Base.js");
+/* harmony import */ var _player_Tank__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./player/Tank */ "./src/player/Tank.js");
+/* harmony import */ var _Render__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Render */ "./src/Render.js");
+/* harmony import */ var _Viewport__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Viewport */ "./src/Viewport.js");
+/* harmony import */ var _StatsDisplay__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./StatsDisplay */ "./src/StatsDisplay.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
+/* harmony import */ var _ConnectionHandler__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./ConnectionHandler */ "./src/ConnectionHandler.js");
+/* harmony import */ var _Overlay__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Overlay */ "./src/Overlay.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 
 
 
 
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+
+
+
+
+
+
+
+
+
+var blueTankColors = [5, 4, 12, 6];
+var greenTankColors = [8, 7, 13, 9];
 
 var Game = /*#__PURE__*/function () {
-  function Game() {
-    _classCallCheck(this, Game);
+  function Game(seed, playersData, activePlayerNumber) {
+    var _this = this;
 
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_4__["default"])(this, Game);
+
+    this.pausedState = {};
+    this.paused = false;
+    this.currentRound = 1;
+    this.isRoundSwitching = false;
+    this.isGameloopSuspended = false;
+    this.maxRounds = 5;
+    this.playerNumber = activePlayerNumber;
+    this.enemyNumber = activePlayerNumber === 0 ? 1 : 0;
+    this.playerTankColors = activePlayerNumber === 0 ? blueTankColors : greenTankColors;
+    this.enemyTankColors = activePlayerNumber === 0 ? greenTankColors : blueTankColors;
+    this.overlay = new _Overlay__WEBPACK_IMPORTED_MODULE_16__["default"]('The other player has minimized the game. Please wait till he opens the window again.');
+    this.midRoundOverlay = new _Overlay__WEBPACK_IMPORTED_MODULE_16__["default"]();
+    this.finalOverlay = new _Overlay__WEBPACK_IMPORTED_MODULE_16__["default"]();
     this.fps = 18;
     this.fpsInterval = 1000 / this.fps;
     this.prevFrameTime = Date.now();
-    this.gameMap = new _map_GameMap__WEBPACK_IMPORTED_MODULE_1__["default"](1200, 600, Math.random());
-    this.viewport = new _Viewport__WEBPACK_IMPORTED_MODULE_5__["default"](this.gameMap);
-    this.renderer = new _render_Render__WEBPACK_IMPORTED_MODULE_4__["default"](this.viewport);
-    this.player = new _player_Tank__WEBPACK_IMPORTED_MODULE_3__["default"](3, this.gameMap, 5, 4, 12, 6);
-    this.gameMap.addTank(this.player);
-    this.gameMap.addBase(this.player.base);
+    this.statsDisplay = new _StatsDisplay__WEBPACK_IMPORTED_MODULE_13__["default"]();
+    this.gameMap = new _map_GameMap__WEBPACK_IMPORTED_MODULE_8__["default"](1200, 600, seed);
+    this.viewport = new _Viewport__WEBPACK_IMPORTED_MODULE_12__["default"](this.gameMap);
+    this.renderer = new _Render__WEBPACK_IMPORTED_MODULE_11__["default"](this.viewport);
+    this.playerScore = 0;
+    this.enemyScore = 0;
+    this.player = (0,_babel_runtime_helpers_construct__WEBPACK_IMPORTED_MODULE_2__["default"])(_player_Tank__WEBPACK_IMPORTED_MODULE_10__["default"], [true, playersData[activePlayerNumber].x, playersData[activePlayerNumber].y, 3, this.gameMap].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(this.playerTankColors), [this.playerNumber]));
+    this.enemy = (0,_babel_runtime_helpers_construct__WEBPACK_IMPORTED_MODULE_2__["default"])(_player_Tank__WEBPACK_IMPORTED_MODULE_10__["default"], [false, playersData[activePlayerNumber === 0 ? 1 : 0].x, playersData[activePlayerNumber === 0 ? 1 : 0].y, 3, this.gameMap].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_3__["default"])(this.enemyTankColors), [this.enemyNumber]));
+    this.players = [this.player, this.enemy];
+    this.bases = [this.player.base, this.enemy.base];
+    this.players.forEach(function (player) {
+      _this.gameMap.addTank(player);
+
+      _this.gameMap.addBase(player.base);
+    });
+    _ConnectionHandler__WEBPACK_IMPORTED_MODULE_15__["default"].socket.on('stateUpdate', function (data) {
+      var enemyData = data[activePlayerNumber === 0 ? 1 : 0];
+      if (!enemyData) return;
+      console.log('enemyServerShield', enemyData.s);
+
+      _this.enemy.updateState(enemyData);
+    });
+    _ConnectionHandler__WEBPACK_IMPORTED_MODULE_15__["default"].socket.on('pausedUpdate', function (data) {
+      if (data) {
+        _this.pausedState = data;
+      }
+    });
+    this.init();
     this.gameLoop();
   }
 
-  _createClass(Game, [{
-    key: "gameLoop",
-    value: function gameLoop() {
-      window.requestAnimationFrame(this.gameLoop.bind(this));
-      var now = Date.now();
-      var elapsed = now - this.prevFrameTime;
-
-      if (elapsed > this.fpsInterval) {
-        this.prevFrameTime = now - elapsed % this.fpsInterval;
-        this.update();
-        this.player.update();
-        this.gameMap.renderTankToMap(this.player);
-        this.gameMap.update();
-        this.viewport.update(this.player.x - this.viewport.width / 2, this.player.y - this.viewport.height / 2);
-      }
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_5__["default"])(Game, [{
+    key: "init",
+    value: function init() {
+      window.addEventListener('blur', this.handleFocusLost.bind(this));
+      window.addEventListener('focus', this.handleFocus.bind(this));
     }
   }, {
-    key: "update",
-    value: function update() {
-      this.renderer.render();
+    key: "isAnyPaused",
+    value: function isAnyPaused() {
+      var _this2 = this;
+
+      var objectKeys = Object.keys(this.pausedState);
+      if (objectKeys.length === 0) return false;
+      return objectKeys.some(function (key) {
+        return _this2.pausedState[key] === true;
+      });
+    }
+  }, {
+    key: "handleFocusLost",
+    value: function handleFocusLost() {
+      _ConnectionHandler__WEBPACK_IMPORTED_MODULE_15__["default"].updatePausedState({
+        paused: true,
+        playerNumber: this.playerNumber
+      });
+    }
+  }, {
+    key: "handleFocus",
+    value: function handleFocus() {
+      _ConnectionHandler__WEBPACK_IMPORTED_MODULE_15__["default"].updatePausedState({
+        paused: false,
+        playerNumber: this.playerNumber
+      });
+    }
+  }, {
+    key: "isInBase",
+    value: function isInBase(tank) {
+      for (var i = 0; i < this.bases.length; i++) {
+        var base = this.bases[i];
+
+        if (tank.x >= base.x && tank.x < base.x + base.width - tank.width) {
+          // assumes that tank is square
+          if (tank.y >= base.y && tank.y <= base.y + base.height - tank.width) {
+            // assumes that tank is square
+            return i; // 0 for player, 1 for enemy base
+          }
+        }
+      }
+
+      return -1; // -1 for not in base
+    }
+  }, {
+    key: "endGame",
+    value: function () {
+      var _endGame = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee() {
+        var message;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                this.isGameloopSuspended = true;
+                this.renderer.setMapMode();
+                this.renderer.render();
+                message = "It's a draw.";
+
+                if (this.playerScore > this.enemyScore) {
+                  message = "You won! Your score: ".concat(this.playerScore, " | Enemy's score: ").concat(this.enemyScore);
+                } else {
+                  message = "You lost! Your score: ".concat(this.playerScore, " | Enemy's score: ").concat(this.enemyScore);
+                }
+
+                this.finalOverlay.setText(message);
+                this.finalOverlay.show();
+                _context.next = 9;
+                return (0,_Helpers__WEBPACK_IMPORTED_MODULE_14__.delay)(5000);
+
+              case 9:
+                this.finalOverlay.hide();
+
+              case 10:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function endGame() {
+        return _endGame.apply(this, arguments);
+      }
+
+      return endGame;
+    }()
+  }, {
+    key: "endRound",
+    value: function () {
+      var _endRound = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee2() {
+        var _this3 = this;
+
+        var counter, countdown;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _ConnectionHandler__WEBPACK_IMPORTED_MODULE_15__["default"].nextRound();
+                this.player.reset();
+                this.enemy.reset();
+
+                if (!(this.currentRound === this.maxRounds)) {
+                  _context2.next = 7;
+                  break;
+                }
+
+                _context2.next = 6;
+                return this.endGame();
+
+              case 6:
+                return _context2.abrupt("return");
+
+              case 7:
+                this.isGameloopSuspended = true;
+                counter = 3;
+                this.midRoundOverlay.setText("Round ".concat(this.currentRound, " over! Next round in ").concat(counter, " seconds..."));
+                this.midRoundOverlay.show();
+
+                countdown = function countdown() {
+                  return new Promise(function (resolve) {
+                    var interval = setInterval(function () {
+                      counter -= 1;
+
+                      _this3.midRoundOverlay.setText("Round ".concat(_this3.currentRound, " over! Next round in ").concat(counter, " seconds..."));
+
+                      if (counter === 0) {
+                        resolve();
+                        clearInterval(interval);
+                      }
+                    }, 1000);
+                  });
+                };
+
+                _context2.next = 14;
+                return countdown();
+
+              case 14:
+                this.midRoundOverlay.hide();
+                this.currentRound++;
+                this.isRoundSwitching = false;
+                this.isGameloopSuspended = false;
+
+              case 18:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function endRound() {
+        return _endRound.apply(this, arguments);
+      }
+
+      return endRound;
+    }()
+  }, {
+    key: "isAnyTankDead",
+    value: function isAnyTankDead() {
+      return this.player.isDead || this.enemy.isDead;
+    }
+  }, {
+    key: "shouldShowStatic",
+    value: function shouldShowStatic() {
+      if (this.player.energy < 20) {
+        if (Math.random() * 20 > this.player.energy + 3) {
+          this.renderer.showStatic = true;
+          return;
+        }
+      }
+
+      this.renderer.showStatic = false;
+    }
+  }, {
+    key: "gameLoop",
+    value: function gameLoop() {
+      var _this4 = this;
+
+      window.requestAnimationFrame(this.gameLoop.bind(this));
+      this.paused = this.isAnyPaused();
+
+      if (this.paused) {
+        this.overlay.show();
+        return;
+      } else {
+        this.overlay.hide();
+      }
+
+      var now = Date.now();
+      var elapsed = now - this.prevFrameTime; // --------------------------------
+
+      if (elapsed > this.fpsInterval) {
+        // fps limited gameloop starts here
+        if (this.isGameloopSuspended) {
+          this.enemy.update(); // we need fresh network state
+
+          return;
+        }
+
+        ;
+        this.prevFrameTime = now - elapsed % this.fpsInterval;
+        var baseIndex = this.isInBase(this.player);
+
+        if (baseIndex >= 0) {
+          this.player.isInAnyBase = true;
+        } else {
+          this.player.isInAnyBase = false;
+        } //
+        // recharging energy and shield
+        //
+
+
+        if (baseIndex === 0) {
+          // player in home base
+          this.player.receiveEnergy(0.7);
+          this.player.receiveShield(0.35);
+        } else if (baseIndex === 1) {
+          this.player.receiveEnergy(0.27); // player in enemy base
+        } //
+        // handling dead tanks
+        //
+
+
+        if (this.isAnyTankDead()) {
+          if (this.isRoundSwitching === false) {
+            console.log('some tank is dead, round switching is false');
+            console.log('is player dead', this.player.isDead);
+            console.log('is enemy dead', this.enemy.isDead);
+            this.isRoundSwitching = true;
+
+            if (this.player.isDead) {
+              this.enemyScore += 1;
+            }
+
+            if (this.enemy.isDead) {
+              this.playerScore += 1;
+            }
+
+            console.log('scores', this.enemyScore, this.playerScore);
+            setTimeout(function () {
+              console.log('timeout set');
+
+              _this4.endRound();
+            }, 1500);
+          }
+        }
+
+        this.player.update();
+        this.shouldShowStatic();
+        _ConnectionHandler__WEBPACK_IMPORTED_MODULE_15__["default"].updateGameState(_objectSpread({
+          pN: this.playerNumber
+        }, this.player.getState()));
+        this.enemy.update();
+        this.gameMap.update();
+        this.viewport.update(this.player.x - this.viewport.width / 2, this.player.y - this.viewport.height / 2);
+        this.renderer.render();
+        this.statsDisplay.update(this.player.energy, this.player.shield);
+      }
     }
   }]);
 
@@ -315,13 +656,16 @@ var Game = /*#__PURE__*/function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "randomInt": () => (/* binding */ randomInt),
-/* harmony export */   "SeededRNG": () => (/* binding */ SeededRNG)
+/* harmony export */   "SeededRNG": () => (/* binding */ SeededRNG),
+/* harmony export */   "median": () => (/* binding */ median),
+/* harmony export */   "delay": () => (/* binding */ delay)
 /* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var seedrandom = __webpack_require__(/*! seedrandom */ "./node_modules/seedrandom/index.js");
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -330,25 +674,40 @@ var SeededRNG = /*#__PURE__*/function () {
   function SeededRNG() {
     var seed = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
-    _classCallCheck(this, SeededRNG);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, SeededRNG);
 
     this.seed = seed;
+    this.rng = seedrandom(seed);
   }
 
-  _createClass(SeededRNG, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(SeededRNG, [{
     key: "get",
-    value: function get(min, max) {
-      max = max || 1;
-      min = min || 0;
-      this.seed = (this.seed * 9301 + 49297) % 233280;
-      var rnd = this.seed / 233280;
-      this.seed += 1;
-      return min + rnd * (max - min);
+    value: function get() {
+      var min = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var max = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+      return this.rng() * (max - min) + min;
     }
   }]);
 
   return SeededRNG;
 }();
+function median(numbers) {
+  var sorted = numbers.slice().sort(function (a, b) {
+    return a - b;
+  });
+  var middle = Math.floor(sorted.length / 2);
+
+  if (sorted.length % 2 === 0) {
+    return (sorted[middle - 1] + sorted[middle]) / 2;
+  }
+
+  return sorted[middle];
+}
+var delay = function delay(ms) {
+  return new Promise(function (res) {
+    return setTimeout(res, ms);
+  });
+};
 
 /***/ }),
 
@@ -363,15 +722,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ KeyHandler)
 /* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var KeyHandler = /*#__PURE__*/function () {
   function KeyHandler() {
-    _classCallCheck(this, KeyHandler);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, KeyHandler);
 
     this.pressedKeys = {
       down: false,
@@ -383,7 +741,7 @@ var KeyHandler = /*#__PURE__*/function () {
     this.init();
   }
 
-  _createClass(KeyHandler, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(KeyHandler, [{
     key: "init",
     value: function init() {
       this.attachListener('keydown', true);
@@ -394,26 +752,31 @@ var KeyHandler = /*#__PURE__*/function () {
     value: function attachListener(event, bool) {
       var _this = this;
 
-      document.addEventListener(event, function (_ref) {
-        var key = _ref.key;
+      document.addEventListener(event, function (e) {
+        var key = e.key;
 
         if (key === 'ArrowUp') {
+          e.preventDefault();
           _this.pressedKeys.up = bool;
         }
 
         if (key === 'ArrowDown') {
+          e.preventDefault();
           _this.pressedKeys.down = bool;
         }
 
         if (key === 'ArrowRight') {
+          e.preventDefault();
           _this.pressedKeys.right = bool;
         }
 
         if (key === 'ArrowLeft') {
+          e.preventDefault();
           _this.pressedKeys.left = bool;
         }
 
-        if (key === ' ' || key === 'x') {
+        if (key === ' ' || key === 'x' || key === '0') {
+          e.preventDefault();
           _this.pressedKeys.shoot = bool;
         }
       });
@@ -421,6 +784,468 @@ var KeyHandler = /*#__PURE__*/function () {
   }]);
 
   return KeyHandler;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/Overlay.js":
+/*!************************!*\
+  !*** ./src/Overlay.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Overlay)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+
+
+
+var Overlay = /*#__PURE__*/function () {
+  function Overlay(text) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Overlay);
+
+    this.body = document.querySelector('body');
+    this.overlay = document.createElement('div');
+    this.overlay.style.display = 'none';
+    this.overlay.classList.add('overlay');
+    this.heading = document.createElement('h1');
+    this.heading.textContent = text;
+    this.overlay.appendChild(this.heading);
+    this.body.appendChild(this.overlay);
+  }
+
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Overlay, [{
+    key: "setText",
+    value: function setText(text) {
+      this.heading.textContent = text;
+    }
+  }, {
+    key: "show",
+    value: function show() {
+      this.overlay.style.display = 'flex';
+    }
+  }, {
+    key: "hide",
+    value: function hide() {
+      this.overlay.style.display = 'none';
+    }
+  }]);
+
+  return Overlay;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/Render.js":
+/*!***********************!*\
+  !*** ./src/Render.js ***!
+  \***********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Render)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Helpers */ "./src/Helpers.js");
+
+
+ // 0 === stone
+// 1 && 2 === ground
+// 3 === empty cell
+// 4 === tank tracks blue
+// 5 === tank body blue
+// 6 === barel tank blue
+// 7 === tank tracks green
+// 8 === tank body green
+// 9 === barel tank green
+// 10 === projectile light
+// 11 === projectile dark
+// 12 === blue base
+// 13 === green base
+// prettier-ignore
+
+var colors = [{
+  r: 154,
+  g: 154,
+  b: 154
+}, // stone
+{
+  r: 186,
+  g: 89,
+  b: 4
+}, // ground 1
+{
+  r: 195,
+  g: 121,
+  b: 48
+}, // ground 2
+{
+  r: 0,
+  g: 0,
+  b: 0
+}, // empty cell (black)
+{
+  r: 0,
+  g: 0,
+  b: 182
+}, // tank tracks blue
+{
+  r: 44,
+  g: 44,
+  b: 255
+}, // tank body blue
+{
+  r: 243,
+  g: 235,
+  b: 28
+}, // tank barrel blue
+{
+  r: 0,
+  g: 182,
+  b: 0
+}, // tank tracks green
+{
+  r: 44,
+  g: 255,
+  b: 44
+}, // tank body green
+{
+  r: 243,
+  g: 235,
+  b: 28
+}, // tank barrel green
+{
+  r: 255,
+  g: 52,
+  b: 8
+}, // projectile light
+{
+  r: 186,
+  g: 0,
+  b: 0
+}, // projectile dark
+{
+  r: 44,
+  g: 44,
+  b: 255
+}, // blue base 
+{
+  r: 44,
+  g: 255,
+  b: 44
+} // green base 
+];
+
+var Render = /*#__PURE__*/function () {
+  function Render(viewport) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Render);
+
+    this.viewport = viewport;
+    this.canvas = document.querySelector('#gamecanvas');
+    this.canvas.width = viewport.width;
+    this.canvas.height = viewport.height;
+    this.canvas.style.width = '500px';
+    this.ctx = this.canvas.getContext('2d');
+    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    this.pixels = this.imageData.data;
+    this.showStatic = false;
+    this.showMap = false;
+    this.isMapRendered = false;
+    this.resetRatios();
+    this.init();
+  }
+
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Render, [{
+    key: "setMapMode",
+    value: function setMapMode() {
+      // fit window size but keep aspect ratio
+      this.canvas.height = window.innerHeight > this.viewport.gameMap.height ? this.viewport.gameMap.height : window.innerHeight;
+      var width = this.canvas.height * this.viewport.gameMap.width / this.viewport.gameMap.height;
+
+      if (width > window.innerWidth) {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = this.canvas.width * this.viewport.gameMap.height / this.viewport.gameMap.width;
+      } else {
+        this.canvas.width = width;
+      }
+
+      this.canvas.style.width = '';
+      this.resetRatios();
+      this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+      this.pixels = this.imageData.data;
+      this.showMap = true;
+    }
+  }, {
+    key: "setNormalMode",
+    value: function setNormalMode() {
+      this.canvas.width = viewport.width;
+      this.canvas.height = viewport.height;
+      this.canvas.style.width = '500px';
+      this.resetRatios();
+      this.ctx = this.canvas.getContext('2d');
+      this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+      this.pixels = this.imageData.data;
+      this.isMapRendered = false;
+    }
+  }, {
+    key: "resetRatios",
+    value: function resetRatios() {
+      this.ratioX = this.viewport.gameMap.width / this.canvas.width;
+      this.ratioY = this.viewport.gameMap.height / this.canvas.height;
+    }
+  }, {
+    key: "init",
+    value: function init() {
+      this.canvas.style.imageRendering = 'pixelated';
+      this.canvas.style.backgroundColor = 'black';
+    }
+  }, {
+    key: "getMapTile",
+    value: function getMapTile(x, y) {
+      var _this = this;
+
+      var finalX = function finalX(x) {
+        return Math.floor(x * _this.ratioX);
+      };
+
+      var finalY = function finalY(y) {
+        return Math.floor(y * _this.ratioY);
+      };
+
+      if (this.ratioX === 1 && this.ratioY === 1) {
+        var tile = this.viewport.gameMap.getTile(x, y);
+        return tile;
+      }
+
+      var tiles = [];
+
+      for (var i = finalX(x - 1); i < finalX(x); i++) {
+        for (var j = finalY(y - 1); j < finalY(y); j++) {
+          tiles.push(this.viewport.gameMap.getTile(i, j));
+        }
+      }
+
+      var calculateTile = function calculateTile() {
+        var isBaseSomewhere = tiles.includes(12) ? 12 : tiles.includes(13) ? 13 : null;
+
+        if (isBaseSomewhere) {
+          return isBaseSomewhere;
+        } else {
+          return Math.floor((0,_Helpers__WEBPACK_IMPORTED_MODULE_2__.median)(tiles));
+        }
+      };
+
+      return calculateTile();
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      if (this.showMap && this.isMapRendered) return;
+
+      if (this.showMap) {
+        this.setMapMode();
+
+        for (var y = 0; y < this.canvas.height; y++) {
+          for (var x = 0; x < this.canvas.width; x++) {
+            var offset = y * this.canvas.width * 4 + x * 4;
+            var currentTile = this.getMapTile(x, y); //const currentTile = this.viewport.gameMap.getTile(x,y)
+
+            this.pixels[offset] = colors[currentTile].r;
+            this.pixels[offset + 1] = colors[currentTile].g;
+            this.pixels[offset + 2] = colors[currentTile].b;
+            this.pixels[offset + 3] = 255;
+          }
+        }
+
+        this.flushPixels();
+        this.isMapRendered = true;
+        return;
+      }
+
+      if (this.showStatic) {
+        for (var i = 0; i < this.viewport.height * this.viewport.width; i++) {
+          var _offset = i * 4;
+
+          this.pixels[_offset] = Math.floor(Math.random() * 255);
+          this.pixels[_offset + 1] = Math.floor(Math.random() * 255);
+          this.pixels[_offset + 2] = Math.floor(Math.random() * 255);
+          this.pixels[_offset + 3] = Math.floor(Math.random() * 100) + 155;
+        }
+
+        this.flushPixels();
+        return;
+      }
+
+      for (var _y = 0; _y < this.viewport.height; _y++) {
+        for (var _x = 0; _x < this.viewport.width; _x++) {
+          var _offset2 = _y * this.viewport.width * 4 + _x * 4;
+
+          var _currentTile = this.viewport.getTile(_x, _y);
+
+          this.pixels[_offset2] = colors[_currentTile].r;
+          this.pixels[_offset2 + 1] = colors[_currentTile].g;
+          this.pixels[_offset2 + 2] = colors[_currentTile].b;
+          this.pixels[_offset2 + 3] = 255;
+        }
+      }
+
+      this.flushPixels();
+    }
+  }, {
+    key: "flushPixels",
+    value: function flushPixels() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.putImageData(this.imageData, 0, 0);
+    }
+  }]);
+
+  return Render;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/StatsDisplay.js":
+/*!*****************************!*\
+  !*** ./src/StatsDisplay.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ StatsDisplay)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+
+
+var COLORS = {
+  lightGray: '#747474',
+  darkGray: '#383838',
+  yellow: '#f3eb1c',
+  cyan: '#28f3f3',
+  black: '#000000'
+};
+
+var StatsDisplay = /*#__PURE__*/function () {
+  function StatsDisplay() {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, StatsDisplay);
+
+    this.energy = 100;
+    this.shield = 100;
+    this.canvas = document.querySelector('#gamestats');
+    this.ctx = this.canvas.getContext('2d');
+    this.canvasInit();
+    this.drawInit();
+  }
+
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(StatsDisplay, [{
+    key: "update",
+    value: function update(energy, shield) {
+      this.energy = energy;
+      this.shield = shield;
+      this.redrawBars();
+    }
+  }, {
+    key: "canvasInit",
+    value: function canvasInit() {
+      this.canvas.width = 68;
+      this.canvas.height = 25;
+      this.canvas.style.imageRendering = 'pixelated';
+      this.canvas.style.backgroundColor = '#656565';
+      this.canvas.style.width = '500px';
+    }
+  }, {
+    key: "drawInit",
+    value: function drawInit() {
+      // main rectangle
+      this.ctx.fillStyle = COLORS.darkGray;
+      this.ctx.fillRect(this.canvas.width - 2, 0, 2, this.canvas.height); //right
+
+      this.ctx.fillStyle = COLORS.lightGray;
+      this.ctx.fillRect(0, 0, this.canvas.width, 1); //top
+
+      this.ctx.fillRect(0, 0, 2, this.canvas.height); //left
+
+      this.ctx.fillStyle = COLORS.darkGray;
+      this.ctx.fillRect(0, this.canvas.height - 1, this.canvas.width, 1); //bottom
+
+      this.drawInnerRectangle(0);
+      this.drawInnerRectangle(11);
+    }
+  }, {
+    key: "drawInnerRectangle",
+    value: function drawInnerRectangle(yOffset) {
+      var right = this.canvas.width - 6;
+      var left = 12;
+      var top = 3 + yOffset;
+      var width = 52;
+      this.ctx.fillStyle = COLORS.darkGray;
+      this.ctx.fillRect(right, top, 2, 8); //right
+
+      this.ctx.fillStyle = COLORS.lightGray;
+      this.ctx.fillRect(left, top, width, 1); //top
+
+      this.ctx.fillRect(left, top, 2, 8); //left
+
+      this.ctx.fillStyle = COLORS.darkGray;
+      this.ctx.fillRect(left, top + 7, width, 1); //top
+
+      this.drawLetters();
+      this.redrawBars();
+    }
+  }, {
+    key: "drawLetters",
+    value: function drawLetters() {
+      // Energy
+      this.ctx.fillStyle = COLORS.yellow;
+      this.ctx.fillRect(4, 5, 6, 1);
+      this.ctx.fillRect(4, 7, 6, 1);
+      this.ctx.fillRect(4, 9, 6, 1);
+      this.ctx.fillRect(4, 5, 1, 5); // Shield
+
+      this.ctx.fillStyle = COLORS.cyan;
+      this.ctx.fillRect(4, 16, 6, 1);
+      this.ctx.fillRect(4, 16, 1, 3);
+      this.ctx.fillRect(4, 18, 6, 1);
+      this.ctx.fillRect(9, 18, 1, 3);
+      this.ctx.fillRect(4, 20, 6, 1);
+    }
+  }, {
+    key: "redrawBars",
+    value: function redrawBars() {
+      this.reDrawBar(COLORS.yellow, 0, this.energy);
+      this.reDrawBar(COLORS.cyan, 11, this.shield);
+    }
+  }, {
+    key: "reDrawBar",
+    value: function reDrawBar(color, yOffset, percentage) {
+      if (percentage < 0) {
+        percentage = 0;
+      }
+
+      var width = Math.floor(44 / 100 * percentage);
+      this.ctx.fillStyle = COLORS.black;
+      this.ctx.fillRect(16, 5 + yOffset, 44, 4);
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(16, 5 + yOffset, width, 4);
+    }
+  }]);
+
+  return StatsDisplay;
 }();
 
 
@@ -438,29 +1263,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Viewport)
 /* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 // original game 72px * 76px visible map per player
 var Viewport = /*#__PURE__*/function () {
   function Viewport(gameMap, width, height) {
-    _classCallCheck(this, Viewport);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Viewport);
 
     this.gameMap = gameMap;
     this.view = [];
     this.offsetX = 0;
     this.offsetY = 0;
-    this.width = 72; // must be a pair number
+    this.width = 76; // must be a pair number
 
-    this.height = 76; // must be a pair number
+    this.height = 72; // must be a pair number // original game is 71
 
     this.update(0, 0);
   }
 
-  _createClass(Viewport, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Viewport, [{
     key: "update",
     value: function update(offsetX, offsetY) {
       this.offsetX = offsetX;
@@ -495,13 +1319,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "IMPENETRABLES_EXCEPT_TANKS": () => (/* binding */ IMPENETRABLES_EXCEPT_TANKS),
 /* harmony export */   "default": () => (/* binding */ GameMap)
 /* harmony export */ });
-/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
-/* harmony import */ var _player_Explosion__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../player/Explosion */ "./src/player/Explosion.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
+/* harmony import */ var _player_Explosion__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../player/Explosion */ "./src/player/Explosion.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 // 1200 * 600 map size probably default
 
@@ -530,7 +1354,7 @@ var GameMap = /*#__PURE__*/function () {
     var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
     var seed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
 
-    _classCallCheck(this, GameMap);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, GameMap);
 
     this.settings = {
       border: {
@@ -549,16 +1373,18 @@ var GameMap = /*#__PURE__*/function () {
       if (code === 0) return Math.random() > 0.5 ? 1 : 2;
     });
     this.generateStoneBorders();
-    this.tiles = Uint8Array.from(this.tiles);
-    this.prevTankTiles = [];
-    this.activeTank = null;
+    this.tiles = Uint8Array.from(this.tiles); //this.prevTankTiles = [];
+    //this.activeTank = null;
+
+    this.tanks = [];
+    this.networkTanks = [];
     this.activeProjectiles = new Map();
     this.activeExplosions = new Map();
     this.bases = [];
     this.init();
   }
 
-  _createClass(GameMap, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(GameMap, [{
     key: "init",
     value: function init() {
       this.sendDataToServer();
@@ -590,7 +1416,14 @@ var GameMap = /*#__PURE__*/function () {
   }, {
     key: "addTank",
     value: function addTank(tank) {
-      this.activeTank = tank;
+      this.tanks.push(tank);
+    }
+  }, {
+    key: "getTankByPlayerNumber",
+    value: function getTankByPlayerNumber(number) {
+      return this.tanks.find(function (tank) {
+        return tank.playerNumber === number;
+      });
     }
   }, {
     key: "pushProjectile",
@@ -602,9 +1435,6 @@ var GameMap = /*#__PURE__*/function () {
     value: function logTiles() {
       console.log('tiles:', this.tiles);
     }
-  }, {
-    key: "isDirt",
-    value: function isDirt(x, y, x2, y2) {}
   }, {
     key: "getTile",
     value: function getTile(x, y) {
@@ -698,18 +1528,31 @@ var GameMap = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "renderTankToMap",
-    value: function renderTankToMap() {
-      for (var x = 0; x < this.activeTank.width; x++) {
-        for (var y = 0; y < this.activeTank.height; y++) {
-          var tankTile = this.activeTank.getTile(x, y);
+    key: "renderTanksToMap",
+    value: function renderTanksToMap() {
+      var _this4 = this;
 
-          if (tankTile !== 0) {
-            this.setTile(x + this.activeTank.x, y + this.activeTank.y, tankTile);
-          } else {//this.setTile(x + tank.x, y + tank.y, 3);
+      this.tanks.forEach(function (tank) {
+        if (tank.isRenderedDead) return;
+
+        for (var x = 0; x < tank.width; x++) {
+          for (var y = 0; y < tank.height; y++) {
+            var tankTile = tank.getTile(x, y);
+
+            if (tankTile !== 0) {
+              if (tank.isDead) {
+                tankTile = 3;
+              } //console.log('tank tile:', tankTile, 'at xy', x + tank.x, y+tank.y);
+
+
+              _this4.setTile(x + tank.x, y + tank.y, tankTile);
+            } else {//this.setTile(x + tank.x, y + tank.y, 3);
+            }
           }
         }
-      }
+
+        if (tank.isDead) tank.isRenderedDead = true;
+      });
     }
   }, {
     key: "generateStoneBorders",
@@ -718,10 +1561,11 @@ var GameMap = /*#__PURE__*/function () {
           maxDepth = _this$settings$border.maxDepth,
           maxEdgeLength = _this$settings$border.maxEdgeLength,
           maxSteepness = _this$settings$border.maxSteepness;
-      var left = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed);
-      var right = this.generateForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 10);
-      var top = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 22);
-      var bottom = this.generateForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 35);
+      var left = this.generateBordersForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed);
+      var right = this.generateBordersForOneSide(this.height, maxDepth, maxEdgeLength, maxSteepness, this.seed + 10 // random but consistent (within clients) seed
+      );
+      var top = this.generateBordersForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 22);
+      var bottom = this.generateBordersForOneSide(this.width, maxDepth, maxEdgeLength, maxSteepness, this.seed + 35);
 
       for (var y = 0; y < this.height; y++) {
         // left
@@ -764,9 +1608,9 @@ var GameMap = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "generateForOneSide",
-    value: function generateForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
-      var seededRNG = new _Helpers__WEBPACK_IMPORTED_MODULE_0__.SeededRNG(seed);
+    key: "generateBordersForOneSide",
+    value: function generateBordersForOneSide(edgeLength, maxDepth, maxEdgeLength, maxSteepness, seed) {
+      var seededRNG = new _Helpers__WEBPACK_IMPORTED_MODULE_3__.SeededRNG(seed);
       var willKeepDirectionFor = 0;
       var currentMaxSteepness = 0;
       var currentDistance = 50;
@@ -795,7 +1639,8 @@ var GameMap = /*#__PURE__*/function () {
       for (var col = 0; col < edgeLength; col++) {
         if (willKeepDirectionFor <= 0) {
           //grow = !grow;
-          grow = seededRNG.get() < 0.5;
+          grow = seededRNG.get() < 0.5; // grow or shrink seeded pseudorandom switcher
+
           currentMaxSteepness = getCurrentMaxSteepness(maxSteepness, seededRNG.get());
           willKeepDirectionFor = getDirectionLength(maxEdgeLength, seededRNG.get());
         }
@@ -829,15 +1674,15 @@ var GameMap = /*#__PURE__*/function () {
   }, {
     key: "updateExplosions",
     value: function updateExplosions() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.activeExplosions.forEach(function (explosion) {
         explosion.particles.forEach(function (particle) {
           particle.update();
 
-          var underlyingTile = _this4.getTile(particle.x, particle.y);
+          var underlyingTile = _this5.getTile(particle.x, particle.y);
 
-          if (IMPENETRABLES.includes(underlyingTile)) {
+          if (IMPENETRABLES_EXCEPT_TANKS.includes(underlyingTile)) {
             explosion.particles["delete"](particle.hash);
           }
 
@@ -845,7 +1690,7 @@ var GameMap = /*#__PURE__*/function () {
             explosion.particles["delete"](particle.hash);
           }
 
-          if (!_this4.isInBounds(particle.x, particle.y)) {
+          if (!_this5.isInBounds(particle.x, particle.y)) {
             explosion.particles["delete"](particle.hash);
           }
         });
@@ -854,22 +1699,29 @@ var GameMap = /*#__PURE__*/function () {
   }, {
     key: "updateProjectiles",
     value: function updateProjectiles() {
-      var _this5 = this;
+      var _this6 = this;
 
       this.activeProjectiles.forEach(function (projectile) {
         projectile.update();
 
-        var tailTile = _this5.getTile(projectile.tailX, projectile.tailY);
+        var tailTile = _this6.getTile(projectile.tailX, projectile.tailY); // can maybe be merged into the next function checking the hypothetical future path
+
 
         if (IMPENETRABLES_EXCEPT_TANKS.includes(tailTile)) {
-          _this5.activeProjectiles["delete"](projectile.hash);
+          var seed = projectile.number;
 
-          var explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_1__["default"](projectile.tailX, projectile.tailY, {
+          _this6.activeProjectiles["delete"](projectile.hash);
+
+          var explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_4__["default"](projectile.tailX, projectile.tailY, {
             x: 0,
             y: 0
-          }, 6);
+          }, 6, seed);
 
-          _this5.activeExplosions.set(explosion.hash, explosion);
+          _this6.activeExplosions.set(explosion.hash, explosion);
+
+          setTimeout(function () {
+            _this6.activeExplosions["delete"](explosion.hash);
+          }, 3000);
         } // this iterates over hypothetical future path of the projectile
         // done to handle sub single frame/gameupdate collisions
 
@@ -882,20 +1734,78 @@ var GameMap = /*#__PURE__*/function () {
             y: coords.y + projectile.vector2.y * -1
           };
 
-          var tile = _this5.getTile(coords.x, coords.y);
+          var tile = _this6.getTile(coords.x, coords.y);
 
-          if (PROJECTILE_BLOCKERS_EXCEPT_TANKS.includes(tile)) {
-            _this5.activeProjectiles["delete"](projectile.hash);
+          var projectileOwnerTank = _this6.getTankByPlayerNumber(projectile.playerNumber); // active blockers are impenetrables except for the owner tank
+          // with added 1 and 2 (ground)
 
-            var _explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_1__["default"](prevCoords.x, prevCoords.y, {
-              x: 0,
-              y: 0
-            }, 6);
 
-            _this5.activeExplosions.set(_explosion.hash, _explosion);
+          var activeBlockers = [].concat((0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(projectileOwnerTank.impenetrables), [1, 2]);
+          var explosionLifeSpan = 3;
+          var explosionParticleNumber = 6; // check if the projectile is colliding with anything except the owner tank
 
-            break;
+          if (activeBlockers.includes(tile)) {
+            var _ret = function () {
+              // check if the tank on index 0 is the one that was hit
+              // and
+              // check if the projectile was not fired by the same tank
+              // this has to be done because projectile actually starts in part of the tank (barel)
+              // as in the original game
+              if (_this6.tanks[0].projectileBlockers.includes(tile) //projectile.playerNumber !== this.tanks[0].playerNumber
+              ) {
+                _this6.tanks[0].receiveHit();
+
+                explosionLifeSpan = 7;
+                explosionParticleNumber = 14;
+              } else if (_this6.tanks[1].projectileBlockers.includes(tile) //projectile.playerNumber !== this.tanks[0].playerNumber
+              ) {
+                // the network tank (on index 1) should not receive hit, it will get network updated
+                //this.tanks[1].receiveHit();
+                explosionLifeSpan = 7;
+                explosionParticleNumber = 14;
+              }
+
+              var seed = projectile.number;
+
+              _this6.activeProjectiles["delete"](projectile.hash); // consider adding a delay to the explosion
+
+
+              var explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_4__["default"](prevCoords.x, prevCoords.y, {
+                x: 0,
+                y: 0
+              }, explosionParticleNumber, seed, explosionLifeSpan);
+
+              _this6.activeExplosions.set(explosion.hash, explosion);
+
+              setTimeout(function () {
+                _this6.activeExplosions["delete"](explosion.hash);
+              }, 3000);
+              return "break";
+            }();
+
+            if (_ret === "break") break;
           }
+        }
+      });
+    }
+  }, {
+    key: "checkIfTanksExploded",
+    value: function checkIfTanksExploded() {
+      var _this7 = this;
+
+      this.tanks.forEach(function (tank) {
+        if (tank.isDead && !tank.isExploded) {
+          var explosion = new _player_Explosion__WEBPACK_IMPORTED_MODULE_4__["default"](tank.x, tank.y, {
+            x: 0,
+            y: 0
+          }, 24, 144, 18);
+
+          _this7.activeExplosions.set(explosion.hash, explosion);
+
+          tank.isExploded = true;
+          setTimeout(function () {
+            _this7.activeExplosions["delete"](explosion.hash);
+          }, 2000);
         }
       });
     }
@@ -903,7 +1813,8 @@ var GameMap = /*#__PURE__*/function () {
     key: "update",
     value: function update() {
       this.clearMapBeforeRender();
-      this.renderTankToMap();
+      this.checkIfTanksExploded();
+      this.renderTanksToMap();
       this.updateExplosions();
       this.updateProjectiles();
       this.renderProjectilesToMap();
@@ -929,15 +1840,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Base": () => (/* binding */ Base)
 /* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var Base = /*#__PURE__*/function () {
   function Base(x, y, playerHash, colorCode) {
-    _classCallCheck(this, Base);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Base);
 
     this.x = x;
     this.y = y;
@@ -952,7 +1861,7 @@ var Base = /*#__PURE__*/function () {
     this.drawShapePerimeter();
   }
 
-  _createClass(Base, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Base, [{
     key: "getTile",
     value: function getTile(x, y) {
       return this.shape[x + y * this.width];
@@ -990,41 +1899,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Explosion)
 /* harmony export */ });
-/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Particle */ "./src/player/Particle.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _Particle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Particle */ "./src/player/Particle.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 
 
 var Explosion = /*#__PURE__*/function () {
-  function Explosion(x, y, vector2, numberOfParticles) {
-    _classCallCheck(this, Explosion);
+  function Explosion(x, y, vector2) {
+    var numberOfParticles = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 6;
+    var seed = arguments.length > 4 ? arguments[4] : undefined;
+    var lifeSpan = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 3;
+
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Explosion);
+
+    this.seed = seed * numberOfParticles; // needed so the seeds in individual particles are different on explosion
 
     this.x = x;
     this.y = y;
     this.vector2 = vector2;
     this.numberOfParticles = numberOfParticles;
+    this.lifeSpan = lifeSpan;
     this.particles = new Map();
     this.hash = Math.random().toString(36).slice(2);
     this.init();
   }
 
-  _createClass(Explosion, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Explosion, [{
     key: "init",
     value: function init() {
       for (var i = 0; i < this.numberOfParticles; i++) {
-        var particle = new _Particle__WEBPACK_IMPORTED_MODULE_0__["default"](this.x, this.y, this.vector2);
+        var particle = new _Particle__WEBPACK_IMPORTED_MODULE_2__["default"](this.x, this.y, this.vector2, this.seed + i, this.lifeSpan);
         this.particles.set(particle.hash, particle);
       }
     }
     /*   update(){
-        this.particles.forEach((particle) => {
-          particle.update();
-        })
-      } */
+      this.particles.forEach((particle) => {
+        particle.update();
+      })
+    } */
 
   }]);
 
@@ -1054,38 +1968,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Particle)
 /* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 var Particle = /*#__PURE__*/function () {
-  function Particle(x, y, vector2) {
-    _classCallCheck(this, Particle);
+  function Particle(x, y, vector2, seed, lifeSpan) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Particle);
 
+    this.rng = new _Helpers__WEBPACK_IMPORTED_MODULE_2__.SeededRNG(seed);
     this.x = x;
     this.y = y;
     this.vector2 = vector2;
     this.hash = Math.random().toString(36).slice(2);
-    this.life = 3;
+    this.life = lifeSpan;
   }
 
-  _createClass(Particle, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Particle, [{
     key: "update",
     value: function update() {
       if (this.life === 0) return;
 
       if (this.vector2.x !== 0) {
-        this.x += this.vector2.x * Math.floor(Math.random() * 3);
+        this.x += this.vector2.x * Math.floor(this.rng.get(0, 3));
       } else {
-        this.x += Math.floor(Math.random() * 3) - 1;
+        this.x += Math.floor(this.rng.get(0, 3)) - 1;
       }
 
       if (this.vector2.y !== 0) {
-        this.y += this.vector2.y * Math.floor(Math.random() * 3);
+        this.y += this.vector2.y * Math.floor(this.rng.get(0, 3));
       } else {
-        this.y += Math.floor(Math.random() * 3) - 1;
+        this.y += Math.floor(this.rng.get(0, 3)) - 1;
       }
 
       this.life -= 1;
@@ -1110,32 +2026,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Projectile)
 /* harmony export */ });
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 // 10 === projectile light
 // 11 === projectile dark
 var Projectile = /*#__PURE__*/function () {
-  function Projectile(x, y, vector2) {
-    _classCallCheck(this, Projectile);
+  function Projectile(x, y, vector2, number, playerNumber) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Projectile);
 
+    this.playerNumber = playerNumber;
     this.speed = 4; //pixels per update
 
+    this.number = number;
     this.x = x;
     this.y = y;
     this.tailX = null;
@@ -1145,14 +2052,14 @@ var Projectile = /*#__PURE__*/function () {
     this.hash = Math.random().toString(36).slice(2);
   }
 
-  _createClass(Projectile, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Projectile, [{
     key: "calculateFuturePath",
     value: function calculateFuturePath() {
       this.futurePath = [];
 
       for (var i = 0; i < 4; i++) {
         var _getNextSteps = getNextSteps(this.x, this.y, this.vector2, i),
-            _getNextSteps2 = _slicedToArray(_getNextSteps, 2),
+            _getNextSteps2 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_getNextSteps, 2),
             x = _getNextSteps2[0],
             y = _getNextSteps2[1];
 
@@ -1167,13 +2074,13 @@ var Projectile = /*#__PURE__*/function () {
     value: function update() {
       var _getNextSteps3 = getNextSteps(this.x, this.y, this.vector2, this.speed);
 
-      var _getNextSteps4 = _slicedToArray(_getNextSteps3, 2);
+      var _getNextSteps4 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_getNextSteps3, 2);
 
       this.x = _getNextSteps4[0];
       this.y = _getNextSteps4[1];
 
       var _getNextSteps5 = getNextSteps(this.x, this.y, this.vector2, -1),
-          _getNextSteps6 = _slicedToArray(_getNextSteps5, 2),
+          _getNextSteps6 = (0,_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_getNextSteps5, 2),
           tailX = _getNextSteps6[0],
           tailY = _getNextSteps6[1];
 
@@ -1208,16 +2115,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Tank)
 /* harmony export */ });
-/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
-/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../KeyHandler */ "./src/KeyHandler.js");
-/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../map/GameMap */ "./src/map/GameMap.js");
-/* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Base */ "./src/player/Base.js");
-/* harmony import */ var _Projectile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Projectile */ "./src/player/Projectile.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+/* harmony import */ var _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _Helpers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Helpers */ "./src/Helpers.js");
+/* harmony import */ var _KeyHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../KeyHandler */ "./src/KeyHandler.js");
+/* harmony import */ var _map_GameMap__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../map/GameMap */ "./src/map/GameMap.js");
+/* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Base */ "./src/player/Base.js");
+/* harmony import */ var _Projectile__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Projectile */ "./src/player/Projectile.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+var _excluded = ["x", "y", "dir", "sn", "e", "s"];
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 // 1 for tank tracks
 // 2 for tank body
@@ -1229,39 +2144,53 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var Tank = /*#__PURE__*/function () {
-  function Tank(colorOffset, map, lightColorCode, darkColorCode, baseColorCode, barelColorCode) {
+  function Tank(isPlayer, x, y, colorOffset, map, lightColorCode, darkColorCode, baseColorCode, barelColorCode, playerNumber) {
     var _this = this;
 
-    _classCallCheck(this, Tank);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__["default"])(this, Tank);
 
+    this.isPlayer = isPlayer;
     this.lightColor = lightColorCode;
     this.darkColor = darkColorCode;
     this.barelColor = barelColorCode;
-    this.impenetrables = _map_GameMap__WEBPACK_IMPORTED_MODULE_2__.IMPENETRABLES.filter(function (code) {
+    this.projectileBlockers = [lightColorCode, darkColorCode, barelColorCode]; // impenetrables except the tank itself (and except ground)
+
+    this.impenetrables = _map_GameMap__WEBPACK_IMPORTED_MODULE_6__.IMPENETRABLES.filter(function (code) {
       return code !== _this.lightColor && code !== _this.darkColor && code !== _this.barelColor;
     });
+    this.playerNumber = playerNumber;
     this.gameMap = map;
+    this.energy = 100;
+    this.isDead = false;
+    this.isExploded = false;
+    this.isRenderedDead = false;
+    this.shield = 100;
+    this.direction = 'up';
     this.movementSpeed = 1; //this.x = randomInt(70, map.width - 70);
     //this.y = randomInt(70, map.height - 70);
 
-    this.x = 50;
-    this.y = 50;
+    this.x = x;
+    this.y = y;
     this.vector2 = {
       x: 0,
       y: -1
     };
-    this._prevX;
-    this._prevY;
+    this.originalX = x;
+    this.originalY = y;
+    this.isInAnyBase = true;
+    this.keyState = {};
     this._originalWidth = 7;
     this._originalHeight = 7;
     this.width = this._originalWidth;
     this.height = this._originalHeight;
     this.hash = Math.random().toString(36).slice(2);
-    this.base = new _Base__WEBPACK_IMPORTED_MODULE_3__.Base(this.x - 14, this.y - 14, this.hash, baseColorCode);
+    this.base = new _Base__WEBPACK_IMPORTED_MODULE_7__.Base(this.x - 14, this.y - 14, this.hash, baseColorCode);
     this.framesSinceLastShot = 0;
     this.movementSpeed = 1; //pixel per update
 
-    this.readyToMove = false; // prettier-ignore
+    this.serverState = null;
+    this.readyToMove = false;
+    this.shotNumber = 0; // prettier-ignore
 
     this.tankUp = [0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 3, 0, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 2, 2, 1, 0, 0, 1, 2, 2, 2, 1, 0, 0, 1, 0, 0, 0, 1, 0].map(function (x) {
       if (x === 1) {
@@ -1273,7 +2202,7 @@ var Tank = /*#__PURE__*/function () {
       }
 
       if (x === 3) {
-        return 6;
+        return _this.barelColor;
       }
 
       return 0;
@@ -1283,17 +2212,147 @@ var Tank = /*#__PURE__*/function () {
     this.tankLeft = this.tankRight.slice().reverse(); // prettier-ignore
 
     this.tankTopRight = [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 2, 0, 3, 0, 0, 1, 2, 2, 3, 0, 0, 1, 2, 2, 3, 2, 2, 1, 0, 0, 2, 2, 2, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0].map(function (x) {
-      return x !== 0 ? x + colorOffset : 0;
+      if (x === 1) {
+        return _this.darkColor;
+      }
+
+      if (x === 2) {
+        return _this.lightColor;
+      }
+
+      if (x === 3) {
+        return _this.barelColor;
+      }
+
+      return 0;
     });
     this.tankBottomRight = get90degRotatedOriginalShape(this.tankTopRight, this._originalHeight);
     this.tankBottomLeft = get90degRotatedOriginalShape(this.tankBottomRight, this._originalHeight);
     this.tankTopLeft = get90degRotatedOriginalShape(this.tankBottomLeft, this._originalHeight);
     this.currentTankShape = this.tankUp;
     this._prevTankShape = null;
-    this.keyHandler = new _KeyHandler__WEBPACK_IMPORTED_MODULE_1__["default"]();
+
+    if (isPlayer) {
+      this.keyHandler = new _KeyHandler__WEBPACK_IMPORTED_MODULE_5__["default"]();
+      this.drawEnergy();
+    }
   }
 
-  _createClass(Tank, [{
+  (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__["default"])(Tank, [{
+    key: "reset",
+    value: function reset() {
+      this.isDead = false;
+      this.isExploded = false;
+      this.isRenderedDead = false;
+      this.isInAnyBase = true;
+      this.energy = 100;
+      this.shield = 100;
+      this.direction = 'up';
+      this.x = this.originalX;
+      this.y = this.originalY;
+      this.isInAnyBase = true;
+      this.keyState = {};
+      this.framesSinceLastShot = 0;
+      this.serverState = null;
+      this.shotNumber = 0;
+      this.currentTankShape = this.tankUp;
+    }
+  }, {
+    key: "die",
+    value: function die() {
+      this.isDead = true;
+    }
+  }, {
+    key: "resetTemps",
+    value: function resetTemps() {
+      this.keyState = {};
+    }
+  }, {
+    key: "getState",
+    value: function getState() {
+      var state = _objectSpread(_objectSpread({}, this.keyState), {}, {
+        x: this.x,
+        y: this.y,
+        dir: this.direction,
+        sn: this.shotNumber,
+        e: this.energy,
+        s: this.shield
+      });
+      /*     const state = {
+        x: this.x,
+        y: this.y,
+        dir: this.direction,
+        shoot: this.didShoot,
+      }
+      this.resetTemps(); */
+
+
+      return state;
+    }
+  }, {
+    key: "dumpState",
+    value: function dumpState() {
+      if (this.serverState) {
+        //console.log('dumping state', this.serverState)
+        var _this$serverState = this.serverState,
+            x = _this$serverState.x,
+            y = _this$serverState.y,
+            dir = _this$serverState.dir,
+            sn = _this$serverState.sn,
+            e = _this$serverState.e,
+            s = _this$serverState.s,
+            keystate = (0,_babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__["default"])(_this$serverState, _excluded);
+
+        this.keyState = keystate;
+        this.x = x;
+        this.y = y;
+        this.shotNumber = sn;
+        this.direction = dir;
+        this.energy = e === null ? 100 : e;
+        this.shield = s === null ? 100 : s;
+        this.currentTankShape = this.getTankShape(dir);
+        this.setVectorByDir(dir); //console.log('dumped keystate', this.keyState);
+
+        this.serverState = null;
+      }
+    }
+  }, {
+    key: "drawEnergy",
+    value: function drawEnergy() {
+      var amount = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.017;
+      this.energy = Math.round((this.energy - amount) * 100) / 100;
+
+      if (this.energy <= 0) {
+        this.energy = 0;
+      }
+    }
+  }, {
+    key: "receiveEnergy",
+    value: function receiveEnergy(amount) {
+      if (this.energy === 0) return;
+      this.energy += amount;
+      if (this.energy >= 100) this.energy = 100;
+    }
+  }, {
+    key: "receiveHit",
+    value: function receiveHit() {
+      // drawShield
+      this.shield -= 15;
+      if (this.shield <= 0) this.shield = 0;
+    }
+  }, {
+    key: "receiveShield",
+    value: function receiveShield(amount) {
+      if (this.shield === 0) return;
+      this.shield += amount;
+      if (this.shield >= 100) this.shield = 100;
+    }
+  }, {
+    key: "updateState",
+    value: function updateState(state) {
+      this.serverState = state;
+    }
+  }, {
     key: "getTile",
     value: function getTile(x, y) {
       return this.currentTankShape[y * this.width + x];
@@ -1318,10 +2377,101 @@ var Tank = /*#__PURE__*/function () {
       } */
     }
   }, {
+    key: "setVectorByDir",
+    value: function setVectorByDir(dir) {
+      switch (dir) {
+        case 'up':
+          this.vector2 = {
+            x: 0,
+            y: -1
+          };
+          break;
+
+        case 'down':
+          this.vector2 = {
+            x: 0,
+            y: 1
+          };
+          break;
+
+        case 'left':
+          this.vector2 = {
+            x: -1,
+            y: 0
+          };
+          break;
+
+        case 'right':
+          this.vector2 = {
+            x: 1,
+            y: 0
+          };
+          break;
+
+        case 'topRight':
+          this.vector2 = {
+            x: 1,
+            y: -1
+          };
+          break;
+
+        case 'topLeft':
+          this.vector2 = {
+            x: -1,
+            y: -1
+          };
+          break;
+
+        case 'bottomRight':
+          this.vector2 = {
+            x: 1,
+            y: 1
+          };
+          break;
+
+        case 'bottomLeft':
+          this.vector2 = {
+            x: -1,
+            y: 1
+          };
+          break;
+      }
+    }
+  }, {
+    key: "getTankShape",
+    value: function getTankShape(direction) {
+      switch (direction) {
+        case 'up':
+          return this.tankUp;
+
+        case 'down':
+          return this.tankDown;
+
+        case 'right':
+          return this.tankRight;
+
+        case 'left':
+          return this.tankLeft;
+
+        case 'topRight':
+          return this.tankTopRight;
+
+        case 'bottomRight':
+          return this.tankBottomRight;
+
+        case 'bottomLeft':
+          return this.tankBottomLeft;
+
+        case 'topLeft':
+          return this.tankTopLeft;
+      }
+    }
+  }, {
     key: "rotateUp",
     value: function rotateUp() {
       if (this.isLegalMove(this.x, this.y, this.tankUp)) {
-        this.currentTankShape = this.tankUp;
+        this.direction = 'up';
+        this.currentTankShape = this.getTankShape('up');
         this.vector2 = {
           x: 0,
           y: -1
@@ -1332,7 +2482,8 @@ var Tank = /*#__PURE__*/function () {
     key: "rotateDown",
     value: function rotateDown() {
       if (this.isLegalMove(this.x, this.y, this.tankDown)) {
-        this.currentTankShape = this.tankDown;
+        this.direction = 'down';
+        this.currentTankShape = this.getTankShape('down');
         this.vector2 = {
           x: 0,
           y: 1
@@ -1343,7 +2494,8 @@ var Tank = /*#__PURE__*/function () {
     key: "rotateRight",
     value: function rotateRight() {
       if (this.isLegalMove(this.x, this.y, this.tankRight)) {
-        this.currentTankShape = this.tankRight;
+        this.direction = 'right';
+        this.currentTankShape = this.getTankShape('right');
         this.vector2 = {
           x: 1,
           y: 0
@@ -1354,7 +2506,8 @@ var Tank = /*#__PURE__*/function () {
     key: "rotateLeft",
     value: function rotateLeft() {
       if (this.isLegalMove(this.x, this.y, this.tankLeft)) {
-        this.currentTankShape = this.tankLeft;
+        this.direction = 'left';
+        this.currentTankShape = this.getTankShape('left');
         this.vector2 = {
           x: -1,
           y: 0
@@ -1365,7 +2518,8 @@ var Tank = /*#__PURE__*/function () {
     key: "rotateTopRight",
     value: function rotateTopRight() {
       if (this.isLegalMove(this.x, this.y, this.tankTopRight)) {
-        this.currentTankShape = this.tankTopRight;
+        this.direction = 'topRight';
+        this.currentTankShape = this.getTankShape('topRight');
         this.vector2 = {
           x: 1,
           y: -1
@@ -1376,7 +2530,8 @@ var Tank = /*#__PURE__*/function () {
     key: "rotateBottomRight",
     value: function rotateBottomRight() {
       if (this.isLegalMove(this.x, this.y, this.tankBottomRight)) {
-        this.currentTankShape = this.tankBottomRight;
+        this.direction = 'bottomRight';
+        this.currentTankShape = this.getTankShape('bottomRight');
         this.vector2 = {
           x: 1,
           y: 1
@@ -1387,7 +2542,8 @@ var Tank = /*#__PURE__*/function () {
     key: "rotateBottomLeft",
     value: function rotateBottomLeft() {
       if (this.isLegalMove(this.x, this.y, this.tankBottomLeft)) {
-        this.currentTankShape = this.tankBottomLeft;
+        this.direction = 'bottomLeft';
+        this.currentTankShape = this.getTankShape('bottomLeft');
         this.vector2 = {
           x: -1,
           y: 1
@@ -1398,7 +2554,8 @@ var Tank = /*#__PURE__*/function () {
     key: "rotateTopLeft",
     value: function rotateTopLeft() {
       if (this.isLegalMove(this.x, this.y, this.tankTopLeft)) {
-        this.currentTankShape = this.tankTopLeft;
+        this.direction = 'topLeft';
+        this.currentTankShape = this.getTankShape('topLeft');
         this.vector2 = {
           x: -1,
           y: -1
@@ -1414,7 +2571,7 @@ var Tank = /*#__PURE__*/function () {
           if (shape[j * this.width + i] !== 0) {
             var underlyingTile = this.gameMap.getTile(x + i, y + j);
 
-            if (_map_GameMap__WEBPACK_IMPORTED_MODULE_2__.IMPENETRABLES_EXCEPT_TANKS.includes(underlyingTile)) {
+            if (this.impenetrables.includes(underlyingTile)) {
               return false;
             }
           }
@@ -1435,23 +2592,58 @@ var Tank = /*#__PURE__*/function () {
     }
   }, {
     key: "shootProjectile",
-    value: function shootProjectile() {
-      this.gameMap.pushProjectile(new _Projectile__WEBPACK_IMPORTED_MODULE_4__["default"](this.x + 3, this.y + 3, this.vector2));
+    value: function shootProjectile(shotNumber) {
+      this.gameMap.pushProjectile(new _Projectile__WEBPACK_IMPORTED_MODULE_8__["default"](this.x + 3, this.y + 3, this.vector2, shotNumber, this.playerNumber));
       this.framesSinceLastShot = 0;
     }
   }, {
     key: "update",
     value: function update() {
+      this.resetTemps();
+      if (this.isDead) return;
+
+      if (!this.isPlayer) {
+        this.dumpState();
+      }
+
+      if (this.shield <= 0 || this.energy <= 0) {
+        this.die();
+      }
+
       this.framesSinceLastShot += 1;
-      var _this$keyHandler$pres = this.keyHandler.pressedKeys,
-          up = _this$keyHandler$pres.up,
-          down = _this$keyHandler$pres.down,
-          right = _this$keyHandler$pres.right,
-          left = _this$keyHandler$pres.left,
-          shoot = _this$keyHandler$pres.shoot;
+      var up,
+          down,
+          right,
+          left,
+          shoot = null;
+
+      if (this.isPlayer) {
+        var _this$keyHandler$pres = this.keyHandler.pressedKeys;
+        up = _this$keyHandler$pres.up;
+        down = _this$keyHandler$pres.down;
+        right = _this$keyHandler$pres.right;
+        left = _this$keyHandler$pres.left;
+        shoot = _this$keyHandler$pres.shoot;
+        this.keyState = this.keyHandler.pressedKeys;
+      } else {
+        //({ up, down, right, left, shoot } = this.keyState);
+        shoot = this.keyState.shoot;
+      }
 
       if (shoot && this.framesSinceLastShot >= 2) {
-        this.shootProjectile();
+        if (this.isPlayer) {
+          this.shotNumber += 1;
+
+          if (!this.isInAnyBase) {
+            this.drawEnergy(1);
+          }
+        }
+
+        this.shootProjectile(this.shotNumber);
+      }
+
+      if (this.isPlayer && !this.isInAnyBase) {
+        this.drawEnergy();
       } // duplicate rotations are to handle an edge case where the first rotation failed due to costraints
       // the tank is allowed to "reverse" but should immediately rotate to the correct orientation in the same gameupdate
 
@@ -1538,160 +2730,6 @@ function get90degRotatedOriginalShape(matrix, width) {
 
   return rotatedTank;
 }
-
-/***/ }),
-
-/***/ "./src/render/Render.js":
-/*!******************************!*\
-  !*** ./src/render/Render.js ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Render)
-/* harmony export */ });
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-// 0 === stone
-// 1 && 2 === ground
-// 3 === empty cell
-// 4 === tank tracks blue
-// 5 === tank body blue
-// 6 === barel tank blue
-// 7 === tank tracks green
-// 8 === tank body green
-// 9 === barel tank green
-// 10 === projectile light
-// 11 === projectile dark
-// 12 === blue base
-// 13 === green base
-// prettier-ignore
-var colors = [{
-  r: 154,
-  g: 154,
-  b: 154
-}, // stone
-{
-  r: 186,
-  g: 89,
-  b: 4
-}, // ground 1
-{
-  r: 195,
-  g: 121,
-  b: 48
-}, // ground 2
-{
-  r: 0,
-  g: 0,
-  b: 0
-}, // empty cell (black)
-{
-  r: 0,
-  g: 0,
-  b: 182
-}, // tank tracks blue
-{
-  r: 44,
-  g: 44,
-  b: 255
-}, // tank body blue
-{
-  r: 243,
-  g: 235,
-  b: 28
-}, // tank barrel blue
-{
-  r: 0,
-  g: 182,
-  b: 0
-}, // tank tracks green
-{
-  r: 44,
-  g: 255,
-  b: 44
-}, // tank body green
-{
-  r: 243,
-  g: 235,
-  b: 28
-}, // tank barrel green
-{
-  r: 255,
-  g: 52,
-  b: 8
-}, // projectile light
-{
-  r: 186,
-  g: 0,
-  b: 0
-}, // projectile dark
-{
-  r: 0,
-  g: 0,
-  b: 182
-}, // blue base 
-{
-  r: 0,
-  g: 182,
-  b: 0
-} // green base 
-];
-
-var Render = /*#__PURE__*/function () {
-  function Render(viewport) {
-    _classCallCheck(this, Render);
-
-    this.viewport = viewport;
-    this.canvas = document.querySelector('canvas');
-    this.canvas.width = viewport.width;
-    this.canvas.height = viewport.height;
-    this.ctx = this.canvas.getContext('2d');
-    this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-    this.pixels = this.imageData.data;
-    this.init();
-  }
-
-  _createClass(Render, [{
-    key: "init",
-    value: function init() {
-      this.canvas.style.height = '500px';
-      this.canvas.style.imageRendering = 'pixelated';
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      for (var y = 0; y < this.viewport.height; y++) {
-        for (var x = 0; x < this.viewport.width; x++) {
-          var offset = y * this.viewport.width * 4 + x * 4;
-          var currentTile = this.viewport.getTile(x, y);
-          this.pixels[offset] = colors[currentTile].r;
-          this.pixels[offset + 1] = colors[currentTile].g;
-          this.pixels[offset + 2] = colors[currentTile].b;
-          this.pixels[offset + 3] = 255;
-        }
-      }
-
-      this.flushPixels();
-    }
-  }, {
-    key: "flushPixels",
-    value: function flushPixels() {
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.putImageData(this.imageData, 0, 0);
-    }
-  }]);
-
-  return Render;
-}();
-
-
 
 /***/ }),
 
@@ -2591,6 +3629,63 @@ function plural(ms, msAbs, n, name) {
 
 /***/ }),
 
+/***/ "./node_modules/fast-deep-equal/index.js":
+/*!***********************************************!*\
+  !*** ./node_modules/fast-deep-equal/index.js ***!
+  \***********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+// do not edit .js files directly - edit src/index.jst
+
+
+
+module.exports = function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+
+    var length, i, keys;
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (!equal(a[i], b[i])) return false;
+      return true;
+    }
+
+
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;)
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = length; i-- !== 0;) {
+      var key = keys[i];
+
+      if (!equal(a[key], b[key])) return false;
+    }
+
+    return true;
+  }
+
+  // true if both NaN, false otherwise
+  return a!==a && b!==b;
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/has-cors/index.js":
 /*!****************************************!*\
   !*** ./node_modules/has-cors/index.js ***!
@@ -2765,6 +3860,1800 @@ function queryKey(uri, query) {
 
     return data;
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/regenerator-runtime/runtime.js ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var runtime = (function (exports) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  exports.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  define(Gp, "constructor", GeneratorFunctionPrototype);
+  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      define(prototype, method, function(arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  exports.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  exports.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  exports.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return PromiseImpl.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return PromiseImpl.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function(error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  });
+  exports.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    if (PromiseImpl === void 0) PromiseImpl = Promise;
+
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList),
+      PromiseImpl
+    );
+
+    return exports.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  define(Gp, toStringTagSymbol, "Generator");
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  define(Gp, iteratorSymbol, function() {
+    return this;
+  });
+
+  define(Gp, "toString", function() {
+    return "[object Generator]";
+  });
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  exports.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+   true ? module.exports : 0
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/seedrandom/index.js ***!
+  \******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// A library of seedable RNGs implemented in Javascript.
+//
+// Usage:
+//
+// var seedrandom = require('seedrandom');
+// var random = seedrandom(1); // or any seed.
+// var x = random();       // 0 <= x < 1.  Every bit is random.
+// var x = random.quick(); // 0 <= x < 1.  32 bits of randomness.
+
+// alea, a 53-bit multiply-with-carry generator by Johannes Baagøe.
+// Period: ~2^116
+// Reported to pass all BigCrush tests.
+var alea = __webpack_require__(/*! ./lib/alea */ "./node_modules/seedrandom/lib/alea.js");
+
+// xor128, a pure xor-shift generator by George Marsaglia.
+// Period: 2^128-1.
+// Reported to fail: MatrixRank and LinearComp.
+var xor128 = __webpack_require__(/*! ./lib/xor128 */ "./node_modules/seedrandom/lib/xor128.js");
+
+// xorwow, George Marsaglia's 160-bit xor-shift combined plus weyl.
+// Period: 2^192-2^32
+// Reported to fail: CollisionOver, SimpPoker, and LinearComp.
+var xorwow = __webpack_require__(/*! ./lib/xorwow */ "./node_modules/seedrandom/lib/xorwow.js");
+
+// xorshift7, by François Panneton and Pierre L'ecuyer, takes
+// a different approach: it adds robustness by allowing more shifts
+// than Marsaglia's original three.  It is a 7-shift generator
+// with 256 bits, that passes BigCrush with no systmatic failures.
+// Period 2^256-1.
+// No systematic BigCrush failures reported.
+var xorshift7 = __webpack_require__(/*! ./lib/xorshift7 */ "./node_modules/seedrandom/lib/xorshift7.js");
+
+// xor4096, by Richard Brent, is a 4096-bit xor-shift with a
+// very long period that also adds a Weyl generator. It also passes
+// BigCrush with no systematic failures.  Its long period may
+// be useful if you have many generators and need to avoid
+// collisions.
+// Period: 2^4128-2^32.
+// No systematic BigCrush failures reported.
+var xor4096 = __webpack_require__(/*! ./lib/xor4096 */ "./node_modules/seedrandom/lib/xor4096.js");
+
+// Tyche-i, by Samuel Neves and Filipe Araujo, is a bit-shifting random
+// number generator derived from ChaCha, a modern stream cipher.
+// https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
+// Period: ~2^127
+// No systematic BigCrush failures reported.
+var tychei = __webpack_require__(/*! ./lib/tychei */ "./node_modules/seedrandom/lib/tychei.js");
+
+// The original ARC4-based prng included in this library.
+// Period: ~2^1600
+var sr = __webpack_require__(/*! ./seedrandom */ "./node_modules/seedrandom/seedrandom.js");
+
+sr.alea = alea;
+sr.xor128 = xor128;
+sr.xorwow = xorwow;
+sr.xorshift7 = xorshift7;
+sr.xor4096 = xor4096;
+sr.tychei = tychei;
+
+module.exports = sr;
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/lib/alea.js":
+/*!*********************************************!*\
+  !*** ./node_modules/seedrandom/lib/alea.js ***!
+  \*********************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
+// http://baagoe.com/en/RandomMusings/javascript/
+// https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
+// Original work is under MIT license -
+
+// Copyright (C) 2010 by Johannes Baagøe <baagoe@baagoe.org>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+
+
+(function(global, module, define) {
+
+function Alea(seed) {
+  var me = this, mash = Mash();
+
+  me.next = function() {
+    var t = 2091639 * me.s0 + me.c * 2.3283064365386963e-10; // 2^-32
+    me.s0 = me.s1;
+    me.s1 = me.s2;
+    return me.s2 = t - (me.c = t | 0);
+  };
+
+  // Apply the seeding algorithm from Baagoe.
+  me.c = 1;
+  me.s0 = mash(' ');
+  me.s1 = mash(' ');
+  me.s2 = mash(' ');
+  me.s0 -= mash(seed);
+  if (me.s0 < 0) { me.s0 += 1; }
+  me.s1 -= mash(seed);
+  if (me.s1 < 0) { me.s1 += 1; }
+  me.s2 -= mash(seed);
+  if (me.s2 < 0) { me.s2 += 1; }
+  mash = null;
+}
+
+function copy(f, t) {
+  t.c = f.c;
+  t.s0 = f.s0;
+  t.s1 = f.s1;
+  t.s2 = f.s2;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new Alea(seed),
+      state = opts && opts.state,
+      prng = xg.next;
+  prng.int32 = function() { return (xg.next() * 0x100000000) | 0; }
+  prng.double = function() {
+    return prng() + (prng() * 0x200000 | 0) * 1.1102230246251565e-16; // 2^-53
+  };
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+function Mash() {
+  var n = 0xefc8249d;
+
+  var mash = function(data) {
+    data = String(data);
+    for (var i = 0; i < data.length; i++) {
+      n += data.charCodeAt(i);
+      var h = 0.02519603282416938 * n;
+      n = h >>> 0;
+      h -= n;
+      h *= n;
+      n = h >>> 0;
+      h -= n;
+      n += h * 0x100000000; // 2^32
+    }
+    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+  };
+
+  return mash;
+}
+
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.alea = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/lib/tychei.js":
+/*!***********************************************!*\
+  !*** ./node_modules/seedrandom/lib/tychei.js ***!
+  \***********************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "Tyche-i" prng algorithm by
+// Samuel Neves and Filipe Araujo.
+// See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var b = me.b, c = me.c, d = me.d, a = me.a;
+    b = (b << 25) ^ (b >>> 7) ^ c;
+    c = (c - d) | 0;
+    d = (d << 24) ^ (d >>> 8) ^ a;
+    a = (a - b) | 0;
+    me.b = b = (b << 20) ^ (b >>> 12) ^ c;
+    me.c = c = (c - d) | 0;
+    me.d = (d << 16) ^ (c >>> 16) ^ a;
+    return me.a = (a - b) | 0;
+  };
+
+  /* The following is non-inverted tyche, which has better internal
+   * bit diffusion, but which is about 25% slower than tyche-i in JS.
+  me.next = function() {
+    var a = me.a, b = me.b, c = me.c, d = me.d;
+    a = (me.a + me.b | 0) >>> 0;
+    d = me.d ^ a; d = d << 16 ^ d >>> 16;
+    c = me.c + d | 0;
+    b = me.b ^ c; b = b << 12 ^ d >>> 20;
+    me.a = a = a + b | 0;
+    d = d ^ a; me.d = d = d << 8 ^ d >>> 24;
+    me.c = c = c + d | 0;
+    b = b ^ c;
+    return me.b = (b << 7 ^ b >>> 25);
+  }
+  */
+
+  me.a = 0;
+  me.b = 0;
+  me.c = 2654435769 | 0;
+  me.d = 1367130551;
+
+  if (seed === Math.floor(seed)) {
+    // Integer seed.
+    me.a = (seed / 0x100000000) | 0;
+    me.b = seed | 0;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 20; k++) {
+    me.b ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.a = f.a;
+  t.b = f.b;
+  t.c = f.c;
+  t.d = f.d;
+  return t;
+};
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.tychei = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/lib/xor128.js":
+/*!***********************************************!*\
+  !*** ./node_modules/seedrandom/lib/xor128.js ***!
+  \***********************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xor128" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+
+  // Set up generator function.
+  me.next = function() {
+    var t = me.x ^ (me.x << 11);
+    me.x = me.y;
+    me.y = me.z;
+    me.z = me.w;
+    return me.w ^= (me.w >>> 19) ^ t ^ (t >>> 8);
+  };
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xor128 = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/lib/xor4096.js":
+/*!************************************************!*\
+  !*** ./node_modules/seedrandom/lib/xor4096.js ***!
+  \************************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
+//
+// This fast non-cryptographic random number generator is designed for
+// use in Monte-Carlo algorithms. It combines a long-period xorshift
+// generator with a Weyl generator, and it passes all common batteries
+// of stasticial tests for randomness while consuming only a few nanoseconds
+// for each prng generated.  For background on the generator, see Brent's
+// paper: "Some long-period random number generators using shifts and xors."
+// http://arxiv.org/pdf/1004.3115v1.pdf
+//
+// Usage:
+//
+// var xor4096 = require('xor4096');
+// random = xor4096(1);                        // Seed with int32 or string.
+// assert.equal(random(), 0.1520436450538547); // (0, 1) range, 53 bits.
+// assert.equal(random.int32(), 1806534897);   // signed int32, 32 bits.
+//
+// For nonzero numeric keys, this impelementation provides a sequence
+// identical to that by Brent's xorgens 3 implementaion in C.  This
+// implementation also provides for initalizing the generator with
+// string seeds, or for saving and restoring the state of the generator.
+//
+// On Chrome, this prng benchmarks about 2.1 times slower than
+// Javascript's built-in Math.random().
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    var w = me.w,
+        X = me.X, i = me.i, t, v;
+    // Update Weyl generator.
+    me.w = w = (w + 0x61c88647) | 0;
+    // Update xor generator.
+    v = X[(i + 34) & 127];
+    t = X[i = ((i + 1) & 127)];
+    v ^= v << 13;
+    t ^= t << 17;
+    v ^= v >>> 15;
+    t ^= t >>> 12;
+    // Update Xor generator array state.
+    v = X[i] = v ^ t;
+    me.i = i;
+    // Result is the combination.
+    return (v + (w ^ (w >>> 16))) | 0;
+  };
+
+  function init(me, seed) {
+    var t, v, i, j, w, X = [], limit = 128;
+    if (seed === (seed | 0)) {
+      // Numeric seeds initialize v, which is used to generates X.
+      v = seed;
+      seed = null;
+    } else {
+      // String seeds are mixed into v and X one character at a time.
+      seed = seed + '\0';
+      v = 0;
+      limit = Math.max(limit, seed.length);
+    }
+    // Initialize circular array and weyl value.
+    for (i = 0, j = -32; j < limit; ++j) {
+      // Put the unicode characters into the array, and shuffle them.
+      if (seed) v ^= seed.charCodeAt((j + 32) % seed.length);
+      // After 32 shuffles, take v as the starting w value.
+      if (j === 0) w = v;
+      v ^= v << 10;
+      v ^= v >>> 15;
+      v ^= v << 4;
+      v ^= v >>> 13;
+      if (j >= 0) {
+        w = (w + 0x61c88647) | 0;     // Weyl.
+        t = (X[j & 127] ^= (v + w));  // Combine xor and weyl to init array.
+        i = (0 == t) ? i + 1 : 0;     // Count zeroes.
+      }
+    }
+    // We have detected all zeroes; make the key nonzero.
+    if (i >= 128) {
+      X[(seed && seed.length || 0) & 127] = -1;
+    }
+    // Run the generator 512 times to further mix the state before using it.
+    // Factoring this as a function slows the main generator, so it is just
+    // unrolled here.  The weyl generator is not advanced while warming up.
+    i = 127;
+    for (j = 4 * 128; j > 0; --j) {
+      v = X[(i + 34) & 127];
+      t = X[i = ((i + 1) & 127)];
+      v ^= v << 13;
+      t ^= t << 17;
+      v ^= v >>> 15;
+      t ^= t >>> 12;
+      X[i] = v ^ t;
+    }
+    // Storing state as object members is faster than using closure variables.
+    me.w = w;
+    me.X = X;
+    me.i = i;
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.i = f.i;
+  t.w = f.w;
+  t.X = f.X.slice();
+  return t;
+};
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.X) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xor4096 = impl;
+}
+
+})(
+  this,                                     // window object or global
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/lib/xorshift7.js":
+/*!**************************************************!*\
+  !*** ./node_modules/seedrandom/lib/xorshift7.js ***!
+  \**************************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorshift7" algorithm by
+// François Panneton and Pierre L'ecuyer:
+// "On the Xorgshift Random Number Generators"
+// http://saluc.engr.uconn.edu/refs/crypto/rng/panneton05onthexorshift.pdf
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    // Update xor generator.
+    var X = me.x, i = me.i, t, v, w;
+    t = X[i]; t ^= (t >>> 7); v = t ^ (t << 24);
+    t = X[(i + 1) & 7]; v ^= t ^ (t >>> 10);
+    t = X[(i + 3) & 7]; v ^= t ^ (t >>> 3);
+    t = X[(i + 4) & 7]; v ^= t ^ (t << 7);
+    t = X[(i + 7) & 7]; t = t ^ (t << 13); v ^= t ^ (t << 9);
+    X[i] = v;
+    me.i = (i + 1) & 7;
+    return v;
+  };
+
+  function init(me, seed) {
+    var j, w, X = [];
+
+    if (seed === (seed | 0)) {
+      // Seed state array using a 32-bit integer.
+      w = X[0] = seed;
+    } else {
+      // Seed state using a string.
+      seed = '' + seed;
+      for (j = 0; j < seed.length; ++j) {
+        X[j & 7] = (X[j & 7] << 15) ^
+            (seed.charCodeAt(j) + X[(j + 1) & 7] << 13);
+      }
+    }
+    // Enforce an array length of 8, not all zeroes.
+    while (X.length < 8) X.push(0);
+    for (j = 0; j < 8 && X[j] === 0; ++j);
+    if (j == 8) w = X[7] = -1; else w = X[j];
+
+    me.x = X;
+    me.i = 0;
+
+    // Discard an initial 256 values.
+    for (j = 256; j > 0; --j) {
+      me.next();
+    }
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.x = f.x.slice();
+  t.i = f.i;
+  return t;
+}
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.x) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xorshift7 = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/lib/xorwow.js":
+/*!***********************************************!*\
+  !*** ./node_modules/seedrandom/lib/xorwow.js ***!
+  \***********************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorwow" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var t = (me.x ^ (me.x >>> 2));
+    me.x = me.y; me.y = me.z; me.z = me.w; me.w = me.v;
+    return (me.d = (me.d + 362437 | 0)) +
+       (me.v = (me.v ^ (me.v << 4)) ^ (t ^ (t << 1))) | 0;
+  };
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+  me.v = 0;
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    if (k == strseed.length) {
+      me.d = me.x << 10 ^ me.x >>> 4;
+    }
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  t.v = f.v;
+  t.d = f.d;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xorwow = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/seedrandom/seedrandom.js":
+/*!***********************************************!*\
+  !*** ./node_modules/seedrandom/seedrandom.js ***!
+  \***********************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*
+Copyright 2019 David Bau.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+(function (global, pool, math) {
+//
+// The following constants are related to IEEE 754 limits.
+//
+
+var width = 256,        // each RC4 output is 0 <= x < 256
+    chunks = 6,         // at least six RC4 outputs for each double
+    digits = 52,        // there are 52 significant digits in a double
+    rngname = 'random', // rngname: name for Math.random and Math.seedrandom
+    startdenom = math.pow(width, chunks),
+    significance = math.pow(2, digits),
+    overflow = significance * 2,
+    mask = width - 1,
+    nodecrypto;         // node.js crypto module, initialized at the bottom.
+
+//
+// seedrandom()
+// This is the seedrandom function described above.
+//
+function seedrandom(seed, options, callback) {
+  var key = [];
+  options = (options == true) ? { entropy: true } : (options || {});
+
+  // Flatten the seed string or build one from local entropy if needed.
+  var shortseed = mixkey(flatten(
+    options.entropy ? [seed, tostring(pool)] :
+    (seed == null) ? autoseed() : seed, 3), key);
+
+  // Use the seed to initialize an ARC4 generator.
+  var arc4 = new ARC4(key);
+
+  // This function returns a random double in [0, 1) that contains
+  // randomness in every bit of the mantissa of the IEEE 754 value.
+  var prng = function() {
+    var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
+        d = startdenom,                 //   and denominator d = 2 ^ 48.
+        x = 0;                          //   and no 'extra last byte'.
+    while (n < significance) {          // Fill up all significant digits by
+      n = (n + x) * width;              //   shifting numerator and
+      d *= width;                       //   denominator and generating a
+      x = arc4.g(1);                    //   new least-significant-byte.
+    }
+    while (n >= overflow) {             // To avoid rounding up, before adding
+      n /= 2;                           //   last byte, shift everything
+      d /= 2;                           //   right using integer math until
+      x >>>= 1;                         //   we have exactly the desired bits.
+    }
+    return (n + x) / d;                 // Form the number within [0, 1).
+  };
+
+  prng.int32 = function() { return arc4.g(4) | 0; }
+  prng.quick = function() { return arc4.g(4) / 0x100000000; }
+  prng.double = prng;
+
+  // Mix the randomness into accumulated entropy.
+  mixkey(tostring(arc4.S), pool);
+
+  // Calling convention: what to return as a function of prng, seed, is_math.
+  return (options.pass || callback ||
+      function(prng, seed, is_math_call, state) {
+        if (state) {
+          // Load the arc4 state from the given state if it has an S array.
+          if (state.S) { copy(state, arc4); }
+          // Only provide the .state method if requested via options.state.
+          prng.state = function() { return copy(arc4, {}); }
+        }
+
+        // If called as a method of Math (Math.seedrandom()), mutate
+        // Math.random because that is how seedrandom.js has worked since v1.0.
+        if (is_math_call) { math[rngname] = prng; return seed; }
+
+        // Otherwise, it is a newer calling convention, so return the
+        // prng directly.
+        else return prng;
+      })(
+  prng,
+  shortseed,
+  'global' in options ? options.global : (this == math),
+  options.state);
+}
+
+//
+// ARC4
+//
+// An ARC4 implementation.  The constructor takes a key in the form of
+// an array of at most (width) integers that should be 0 <= x < (width).
+//
+// The g(count) method returns a pseudorandom integer that concatenates
+// the next (count) outputs from ARC4.  Its return value is a number x
+// that is in the range 0 <= x < (width ^ count).
+//
+function ARC4(key) {
+  var t, keylen = key.length,
+      me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
+
+  // The empty key [] is treated as [0].
+  if (!keylen) { key = [keylen++]; }
+
+  // Set up S using the standard key scheduling algorithm.
+  while (i < width) {
+    s[i] = i++;
+  }
+  for (i = 0; i < width; i++) {
+    s[i] = s[j = mask & (j + key[i % keylen] + (t = s[i]))];
+    s[j] = t;
+  }
+
+  // The "g" method returns the next (count) outputs as one number.
+  (me.g = function(count) {
+    // Using instance members instead of closure state nearly doubles speed.
+    var t, r = 0,
+        i = me.i, j = me.j, s = me.S;
+    while (count--) {
+      t = s[i = mask & (i + 1)];
+      r = r * width + s[mask & ((s[i] = s[j = mask & (j + t)]) + (s[j] = t))];
+    }
+    me.i = i; me.j = j;
+    return r;
+    // For robust unpredictability, the function call below automatically
+    // discards an initial batch of values.  This is called RC4-drop[256].
+    // See http://google.com/search?q=rsa+fluhrer+response&btnI
+  })(width);
+}
+
+//
+// copy()
+// Copies internal state of ARC4 to or from a plain object.
+//
+function copy(f, t) {
+  t.i = f.i;
+  t.j = f.j;
+  t.S = f.S.slice();
+  return t;
+};
+
+//
+// flatten()
+// Converts an object tree to nested arrays of strings.
+//
+function flatten(obj, depth) {
+  var result = [], typ = (typeof obj), prop;
+  if (depth && typ == 'object') {
+    for (prop in obj) {
+      try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
+    }
+  }
+  return (result.length ? result : typ == 'string' ? obj : obj + '\0');
+}
+
+//
+// mixkey()
+// Mixes a string seed into a key that is an array of integers, and
+// returns a shortened string seed that is equivalent to the result key.
+//
+function mixkey(seed, key) {
+  var stringseed = seed + '', smear, j = 0;
+  while (j < stringseed.length) {
+    key[mask & j] =
+      mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
+  }
+  return tostring(key);
+}
+
+//
+// autoseed()
+// Returns an object for autoseeding, using window.crypto and Node crypto
+// module if available.
+//
+function autoseed() {
+  try {
+    var out;
+    if (nodecrypto && (out = nodecrypto.randomBytes)) {
+      // The use of 'out' to remember randomBytes makes tight minified code.
+      out = out(width);
+    } else {
+      out = new Uint8Array(width);
+      (global.crypto || global.msCrypto).getRandomValues(out);
+    }
+    return tostring(out);
+  } catch (e) {
+    var browser = global.navigator,
+        plugins = browser && browser.plugins;
+    return [+new Date, global, plugins, global.screen, tostring(pool)];
+  }
+}
+
+//
+// tostring()
+// Converts an array of charcodes to a string
+//
+function tostring(a) {
+  return String.fromCharCode.apply(0, a);
+}
+
+//
+// When seedrandom.js is loaded, we immediately mix a few bits
+// from the built-in RNG into the entropy pool.  Because we do
+// not want to interfere with deterministic PRNG state later,
+// seedrandom will not call math.random on its own again after
+// initialization.
+//
+mixkey(math.random(), pool);
+
+//
+// Nodejs and AMD support: export the implementation as a module using
+// either convention.
+//
+if ( true && module.exports) {
+  module.exports = seedrandom;
+  // When in node.js, try using crypto package for autoseeding.
+  try {
+    nodecrypto = __webpack_require__(/*! crypto */ "?d4c0");
+  } catch (ex) {}
+} else if (true) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return seedrandom; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {}
+
+
+// End anonymous scope, and pass initial values.
+})(
+  // global: `self` in browsers (including strict mode and web workers),
+  // otherwise `this` in Node and other environments
+  (typeof self !== 'undefined') ? self : this,
+  [],     // pool: entropy pool starts empty
+  Math    // math: package containing random, pow, and seedrandom
+);
 
 
 /***/ }),
@@ -4251,65 +7140,109 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var svelte_internal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! svelte/internal */ "./node_modules/svelte/internal/index.mjs");
-/* harmony import */ var _ChooseType_svelte__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ChooseType.svelte */ "./src/App/ChooseType.svelte");
+/* harmony import */ var _ConnectionHandler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ConnectionHandler */ "./src/ConnectionHandler.js");
+/* harmony import */ var _JoinOrCreate_svelte__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./JoinOrCreate.svelte */ "./src/App/JoinOrCreate.svelte");
+/* harmony import */ var _CreateNewGame_svelte__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./CreateNewGame.svelte */ "./src/App/CreateNewGame.svelte");
+/* harmony import */ var _Game_svelte__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Game.svelte */ "./src/App/Game.svelte");
+/* harmony import */ var svelte__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! svelte */ "./node_modules/svelte/index.mjs");
 /* src/App/App.svelte generated by Svelte v3.44.2 */
 
 
 
 
+
+
+
+
 function add_css(target) {
-	(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append_styles)(target, "svelte-1d3hdy2", "h1.svelte-1d3hdy2{color:tomato}");
+	(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append_styles)(target, "svelte-19xeq24", "button{font-size:1.5rem;padding:0.5rem 1rem;border:none;cursor:pointer}p{font-size:20px}h1{font-size:3rem;margin:0.5rem 0}h2{font-size:1.5rem;margin:0.5rem 0}");
 }
 
-function create_fragment(ctx) {
-	let div1;
-	let div0;
-	let h1;
-	let t1;
-	let choosetype;
-	let t2;
-	let h2;
-	let t4;
-	let p;
-	let t6;
-	let button;
+// (34:29) 
+function create_if_block_2(ctx) {
+	let game;
 	let current;
-	choosetype = new _ChooseType_svelte__WEBPACK_IMPORTED_MODULE_1__["default"]({});
+
+	game = new _Game_svelte__WEBPACK_IMPORTED_MODULE_4__["default"]({
+			props: { gameInitData: /*gameInitData*/ ctx[0] }
+		});
 
 	return {
 		c() {
-			div1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
-			div0 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
-			h1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("h1");
-			h1.textContent = "Game raaaeady!";
-			t1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.create_component)(choosetype.$$.fragment);
-			t2 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
-			h2 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("h2");
-			h2.textContent = "Send this code to your friend";
-			t4 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
-			p = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("p");
-			p.textContent = "SKFBASGJHDBAGKB";
-			t6 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
-			button = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("button");
-			button.textContent = "Go back";
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(h1, "class", "svelte-1d3hdy2");
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(p, "id", "code");
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div0, "id", "create-new-game");
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div1, "id", "content");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.create_component)(game.$$.fragment);
 		},
 		m(target, anchor) {
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.insert)(target, div1, anchor);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div1, div0);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, h1);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t1);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.mount_component)(choosetype, div0, null);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t2);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, h2);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t4);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, p);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, t6);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div0, button);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.mount_component)(game, target, anchor);
+			current = true;
+		},
+		p(ctx, dirty) {
+			const game_changes = {};
+			if (dirty & /*gameInitData*/ 1) game_changes.gameInitData = /*gameInitData*/ ctx[0];
+			game.$set(game_changes);
+		},
+		i(local) {
+			if (current) return;
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_in)(game.$$.fragment, local);
+			current = true;
+		},
+		o(local) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_out)(game.$$.fragment, local);
+			current = false;
+		},
+		d(detaching) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.destroy_component)(game, detaching);
+		}
+	};
+}
+
+// (32:31) 
+function create_if_block_1(ctx) {
+	let getgamecode;
+	let current;
+
+	getgamecode = new _CreateNewGame_svelte__WEBPACK_IMPORTED_MODULE_3__["default"]({
+			props: { changeRoute: /*changeRoute*/ ctx[2] }
+		});
+
+	return {
+		c() {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.create_component)(getgamecode.$$.fragment);
+		},
+		m(target, anchor) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.mount_component)(getgamecode, target, anchor);
+			current = true;
+		},
+		p: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		i(local) {
+			if (current) return;
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_in)(getgamecode.$$.fragment, local);
+			current = true;
+		},
+		o(local) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_out)(getgamecode.$$.fragment, local);
+			current = false;
+		},
+		d(detaching) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.destroy_component)(getgamecode, detaching);
+		}
+	};
+}
+
+// (30:2) {#if route === 'home'}
+function create_if_block(ctx) {
+	let choosetype;
+	let current;
+
+	choosetype = new _JoinOrCreate_svelte__WEBPACK_IMPORTED_MODULE_2__["default"]({
+			props: { changeRoute: /*changeRoute*/ ctx[2] }
+		});
+
+	return {
+		c() {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.create_component)(choosetype.$$.fragment);
+		},
+		m(target, anchor) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.mount_component)(choosetype, target, anchor);
 			current = true;
 		},
 		p: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
@@ -4323,16 +7256,127 @@ function create_fragment(ctx) {
 			current = false;
 		},
 		d(detaching) {
-			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(div1);
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.destroy_component)(choosetype);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.destroy_component)(choosetype, detaching);
 		}
 	};
+}
+
+function create_fragment(ctx) {
+	let div;
+	let current_block_type_index;
+	let if_block;
+	let t;
+	let canvas;
+	let current;
+	const if_block_creators = [create_if_block, create_if_block_1, create_if_block_2];
+	const if_blocks = [];
+
+	function select_block_type(ctx, dirty) {
+		if (/*route*/ ctx[1] === 'home') return 0;
+		if (/*route*/ ctx[1] === 'create') return 1;
+		if (/*route*/ ctx[1] === 'game') return 2;
+		return -1;
+	}
+
+	if (~(current_block_type_index = select_block_type(ctx, -1))) {
+		if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+	}
+
+	return {
+		c() {
+			div = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
+			if (if_block) if_block.c();
+			t = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			canvas = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("canvas");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(canvas, "id", "gamestats");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "id", "content");
+		},
+		m(target, anchor) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.insert)(target, div, anchor);
+
+			if (~current_block_type_index) {
+				if_blocks[current_block_type_index].m(div, null);
+			}
+
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, canvas);
+			current = true;
+		},
+		p(ctx, [dirty]) {
+			let previous_block_index = current_block_type_index;
+			current_block_type_index = select_block_type(ctx, dirty);
+
+			if (current_block_type_index === previous_block_index) {
+				if (~current_block_type_index) {
+					if_blocks[current_block_type_index].p(ctx, dirty);
+				}
+			} else {
+				if (if_block) {
+					(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.group_outros)();
+
+					(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_out)(if_blocks[previous_block_index], 1, 1, () => {
+						if_blocks[previous_block_index] = null;
+					});
+
+					(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.check_outros)();
+				}
+
+				if (~current_block_type_index) {
+					if_block = if_blocks[current_block_type_index];
+
+					if (!if_block) {
+						if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+						if_block.c();
+					} else {
+						if_block.p(ctx, dirty);
+					}
+
+					(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_in)(if_block, 1);
+					if_block.m(div, t);
+				} else {
+					if_block = null;
+				}
+			}
+		},
+		i(local) {
+			if (current) return;
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_in)(if_block);
+			current = true;
+		},
+		o(local) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.transition_out)(if_block);
+			current = false;
+		},
+		d(detaching) {
+			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(div);
+
+			if (~current_block_type_index) {
+				if_blocks[current_block_type_index].d();
+			}
+		}
+	};
+}
+
+function instance($$self, $$props, $$invalidate) {
+	let gameInitData = {};
+	_ConnectionHandler__WEBPACK_IMPORTED_MODULE_1__["default"].socket.on('joined', ({ playerNumber }) => $$invalidate(0, gameInitData.playerNumber = playerNumber, gameInitData));
+
+	_ConnectionHandler__WEBPACK_IMPORTED_MODULE_1__["default"].socket.on('gameInitialization', data => {
+		$$invalidate(0, gameInitData = { ...gameInitData, ...data });
+		console.log(gameInitData);
+		$$invalidate(1, route = 'game');
+	});
+
+	(0,svelte__WEBPACK_IMPORTED_MODULE_5__.setContext)('connectionHandler', { connectionHandler: _ConnectionHandler__WEBPACK_IMPORTED_MODULE_1__["default"] });
+	let route = 'home';
+	const changeRoute = value => $$invalidate(1, route = value);
+	return [gameInitData, route, changeRoute];
 }
 
 class App extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
 	constructor(options) {
 		super();
-		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, null, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, {}, add_css);
+		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, instance, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, {}, add_css);
 	}
 }
 
@@ -4340,10 +7384,10 @@ class App extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
 
 /***/ }),
 
-/***/ "./src/App/ChooseType.svelte":
-/*!***********************************!*\
-  !*** ./src/App/ChooseType.svelte ***!
-  \***********************************/
+/***/ "./src/App/CreateNewGame.svelte":
+/*!**************************************!*\
+  !*** ./src/App/CreateNewGame.svelte ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -4352,48 +7396,327 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var svelte_internal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! svelte/internal */ "./node_modules/svelte/internal/index.mjs");
-/* src/App/ChooseType.svelte generated by Svelte v3.44.2 */
+/* harmony import */ var svelte__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! svelte */ "./node_modules/svelte/index.mjs");
+/* src/App/CreateNewGame.svelte generated by Svelte v3.44.2 */
+
+
 
 
 function add_css(target) {
-	(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append_styles)(target, "svelte-1m659an", "#form.svelte-1m659an{display:none;flex-direction:column;align-items:center;background-color:#375284;padding:1rem}");
+	(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append_styles)(target, "svelte-irr1pp", "#create-new-game.svelte-irr1pp{display:flex;flex-direction:column;align-items:center;gap:1rem}#code.svelte-irr1pp{width:210px;height:80px;text-align:center;font-size:2rem;padding:1rem 2rem;background-color:#00000088}button.svelte-irr1pp{font-size:1.5rem;padding:0.5rem 1rem;border:none;cursor:pointer}");
 }
 
 function create_fragment(ctx) {
 	let div;
+	let h1;
+	let t1;
+	let h2;
+	let t3;
+	let p0;
+	let t4;
+	let t5;
+	let p1;
+	let t7;
+	let button;
+	let mounted;
+	let dispose;
 
 	return {
 		c() {
 			div = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
-
-			div.innerHTML = `<h2>Enter your friend&#39;s code to play</h2> 
-  <input type="text" id="code"/> 
-  <h2>Or create a new game</h2> 
-  <button>Create a new game</button>`;
-
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "id", "form");
-			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "class", "svelte-1m659an");
+			h1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("h1");
+			h1.textContent = "Game ready!";
+			t1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			h2 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("h2");
+			h2.textContent = "Send this code to your friend";
+			t3 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			p0 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("p");
+			t4 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.text)(/*code*/ ctx[0]);
+			t5 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			p1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("p");
+			p1.textContent = "The game will start automatically once your friend connects";
+			t7 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			button = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("button");
+			button.textContent = "Exit game";
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(p0, "id", "code");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(p0, "class", "svelte-irr1pp");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(button, "class", "svelte-irr1pp");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "id", "create-new-game");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "class", "svelte-irr1pp");
 		},
 		m(target, anchor) {
 			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.insert)(target, div, anchor);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, h1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, h2);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t3);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, p0);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(p0, t4);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t5);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, p1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t7);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, button);
+
+			if (!mounted) {
+				dispose = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.listen)(button, "click", /*goHome*/ ctx[1]);
+				mounted = true;
+			}
+		},
+		p(ctx, [dirty]) {
+			if (dirty & /*code*/ 1) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.set_data)(t4, /*code*/ ctx[0]);
+		},
+		i: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		o: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		d(detaching) {
+			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(div);
+			mounted = false;
+			dispose();
+		}
+	};
+}
+
+function instance($$self, $$props, $$invalidate) {
+	let { changeRoute } = $$props;
+	const { connectionHandler } = (0,svelte__WEBPACK_IMPORTED_MODULE_1__.getContext)('connectionHandler');
+	let code = '';
+	let seed = '';
+
+	//connectionHandler.socket.on('gameInfo', handleGameInit);
+	connectionHandler.startNewGame();
+
+	connectionHandler.socket.on('gameCode', gameCode => {
+		$$invalidate(0, code = gameCode);
+	});
+
+	function handleGameInit(data) {
+		$$invalidate(0, code = data.code);
+		seed = data.seed;
+		console.log(data);
+	}
+
+	const goHome = () => changeRoute('home');
+
+	$$self.$$set = $$props => {
+		if ('changeRoute' in $$props) $$invalidate(2, changeRoute = $$props.changeRoute);
+	};
+
+	return [code, goHome, changeRoute];
+}
+
+class CreateNewGame extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
+	constructor(options) {
+		super();
+		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, instance, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, { changeRoute: 2 }, add_css);
+	}
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CreateNewGame);
+
+/***/ }),
+
+/***/ "./src/App/Game.svelte":
+/*!*****************************!*\
+  !*** ./src/App/Game.svelte ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var svelte_internal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! svelte/internal */ "./node_modules/svelte/internal/index.mjs");
+/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Game */ "./src/Game.js");
+/* harmony import */ var svelte__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! svelte */ "./node_modules/svelte/index.mjs");
+/* src/App/Game.svelte generated by Svelte v3.44.2 */
+
+
+
+
+
+
+function create_fragment(ctx) {
+	let canvas;
+
+	return {
+		c() {
+			canvas = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("canvas");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(canvas, "id", "gamecanvas");
+		},
+		m(target, anchor) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.insert)(target, canvas, anchor);
 		},
 		p: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
 		i: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
 		o: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
 		d(detaching) {
-			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(div);
+			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(canvas);
 		}
 	};
 }
 
-class ChooseType extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
+function instance($$self, $$props, $$invalidate) {
+	let { gameInitData } = $$props;
+	const { connectionHandler } = (0,svelte__WEBPACK_IMPORTED_MODULE_2__.getContext)('connectionHandler');
+
+	function startGame() {
+		const game = new _Game__WEBPACK_IMPORTED_MODULE_1__["default"](gameInitData.seed, gameInitData.players, gameInitData.playerNumber);
+	}
+
+	(0,svelte__WEBPACK_IMPORTED_MODULE_2__.onMount)(async () => {
+		startGame();
+	});
+
+	$$self.$$set = $$props => {
+		if ('gameInitData' in $$props) $$invalidate(0, gameInitData = $$props.gameInitData);
+	};
+
+	return [gameInitData];
+}
+
+class Game_1 extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
 	constructor(options) {
 		super();
-		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, null, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, {}, add_css);
+		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, instance, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, { gameInitData: 0 });
 	}
 }
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChooseType);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Game_1);
+
+/***/ }),
+
+/***/ "./src/App/JoinOrCreate.svelte":
+/*!*************************************!*\
+  !*** ./src/App/JoinOrCreate.svelte ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var svelte_internal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! svelte/internal */ "./node_modules/svelte/internal/index.mjs");
+/* harmony import */ var svelte__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! svelte */ "./node_modules/svelte/index.mjs");
+/* src/App/JoinOrCreate.svelte generated by Svelte v3.44.2 */
+
+
+
+
+function add_css(target) {
+	(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append_styles)(target, "svelte-ntnt0", "input.svelte-ntnt0{font-size:1.5rem;max-width:200px;text-align:center}input.svelte-ntnt0:focus{outline:none}#form.svelte-ntnt0{display:flex;gap:1rem;flex-direction:column;align-items:center;background-color:#375284;padding:1rem}");
+}
+
+function create_fragment(ctx) {
+	let div;
+	let h1;
+	let t1;
+	let p0;
+	let t3;
+	let input;
+	let t4;
+	let p1;
+	let t6;
+	let button;
+	let mounted;
+	let dispose;
+
+	return {
+		c() {
+			div = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("div");
+			h1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("h1");
+			h1.textContent = "Let's play Tunneler";
+			t1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			p0 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("p");
+			p0.textContent = "Connect to a friend using a code";
+			t3 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			input = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("input");
+			t4 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			p1 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("p");
+			p1.textContent = "Or create a new game";
+			t6 = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.space)();
+			button = (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.element)("button");
+			button.textContent = "Create a new game";
+			input.autofocus = true;
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(input, "type", "text");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(input, "id", "code");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(input, "placeholder", "abc123");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(input, "class", "svelte-ntnt0");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "id", "form");
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.attr)(div, "class", "svelte-ntnt0");
+		},
+		m(target, anchor) {
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.insert)(target, div, anchor);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, h1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, p0);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t3);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, input);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.set_input_value)(input, /*gameCode*/ ctx[0]);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t4);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, p1);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, t6);
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.append)(div, button);
+			input.focus();
+
+			if (!mounted) {
+				dispose = [
+					(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.listen)(input, "input", /*input_input_handler*/ ctx[4]),
+					(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.listen)(input, "input", /*handleInput*/ ctx[2]),
+					(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.listen)(button, "click", /*createGame*/ ctx[1])
+				];
+
+				mounted = true;
+			}
+		},
+		p(ctx, [dirty]) {
+			if (dirty & /*gameCode*/ 1 && input.value !== /*gameCode*/ ctx[0]) {
+				(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.set_input_value)(input, /*gameCode*/ ctx[0]);
+			}
+		},
+		i: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		o: svelte_internal__WEBPACK_IMPORTED_MODULE_0__.noop,
+		d(detaching) {
+			if (detaching) (0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.detach)(div);
+			mounted = false;
+			(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.run_all)(dispose);
+		}
+	};
+}
+
+function instance($$self, $$props, $$invalidate) {
+	const { connectionHandler } = (0,svelte__WEBPACK_IMPORTED_MODULE_1__.getContext)('connectionHandler');
+	let { changeRoute } = $$props;
+	let gameCode;
+
+	function createGame() {
+		changeRoute('create');
+	}
+
+	function handleInput() {
+		connectionHandler.socket.emit('gameCodeInput', gameCode);
+	}
+
+	function input_input_handler() {
+		gameCode = this.value;
+		$$invalidate(0, gameCode);
+	}
+
+	$$self.$$set = $$props => {
+		if ('changeRoute' in $$props) $$invalidate(3, changeRoute = $$props.changeRoute);
+	};
+
+	return [gameCode, createGame, handleInput, changeRoute, input_input_handler];
+}
+
+class JoinOrCreate extends svelte_internal__WEBPACK_IMPORTED_MODULE_0__.SvelteComponent {
+	constructor(options) {
+		super();
+		(0,svelte_internal__WEBPACK_IMPORTED_MODULE_0__.init)(this, options, instance, create_fragment, svelte_internal__WEBPACK_IMPORTED_MODULE_0__.safe_not_equal, { changeRoute: 3 }, add_css);
+	}
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (JoinOrCreate);
 
 /***/ }),
 
@@ -4473,6 +7796,16 @@ yeast.encode = encode;
 yeast.decode = decode;
 module.exports = yeast;
 
+
+/***/ }),
+
+/***/ "?d4c0":
+/*!************************!*\
+  !*** crypto (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
 
 /***/ }),
 
@@ -7823,6 +11156,533 @@ exports.hasBinary = hasBinary;
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _arrayLikeToArray)
+/* harmony export */ });
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _arrayWithHoles)
+/* harmony export */ });
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _arrayWithoutHoles)
+/* harmony export */ });
+/* harmony import */ var _arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js");
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(arr);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _asyncToGenerator)
+/* harmony export */ });
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+        args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+
+      _next(undefined);
+    });
+  };
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _classCallCheck)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/construct.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/construct.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _construct)
+/* harmony export */ });
+/* harmony import */ var _setPrototypeOf_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./setPrototypeOf.js */ "./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js");
+/* harmony import */ var _isNativeReflectConstruct_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./isNativeReflectConstruct.js */ "./node_modules/@babel/runtime/helpers/esm/isNativeReflectConstruct.js");
+
+
+function _construct(Parent, args, Class) {
+  if ((0,_isNativeReflectConstruct_js__WEBPACK_IMPORTED_MODULE_1__["default"])()) {
+    _construct = Reflect.construct;
+  } else {
+    _construct = function _construct(Parent, args, Class) {
+      var a = [null];
+      a.push.apply(a, args);
+      var Constructor = Function.bind.apply(Parent, a);
+      var instance = new Constructor();
+      if (Class) (0,_setPrototypeOf_js__WEBPACK_IMPORTED_MODULE_0__["default"])(instance, Class.prototype);
+      return instance;
+    };
+  }
+
+  return _construct.apply(null, arguments);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/createClass.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/createClass.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _createClass)
+/* harmony export */ });
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _defineProperty)
+/* harmony export */ });
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/isNativeReflectConstruct.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/isNativeReflectConstruct.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _isNativeReflectConstruct)
+/* harmony export */ });
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js ***!
+  \********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _iterableToArray)
+/* harmony export */ });
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _iterableToArrayLimit)
+/* harmony export */ });
+function _iterableToArrayLimit(arr, i) {
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+  if (_i == null) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+
+  var _s, _e;
+
+  try {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js ***!
+  \********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _nonIterableRest)
+/* harmony export */ });
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _nonIterableSpread)
+/* harmony export */ });
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _objectWithoutProperties)
+/* harmony export */ });
+/* harmony import */ var _objectWithoutPropertiesLoose_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./objectWithoutPropertiesLoose.js */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = (0,_objectWithoutPropertiesLoose_js__WEBPACK_IMPORTED_MODULE_0__["default"])(source, excluded);
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _objectWithoutPropertiesLoose)
+/* harmony export */ });
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _setPrototypeOf)
+/* harmony export */ });
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _slicedToArray)
+/* harmony export */ });
+/* harmony import */ var _arrayWithHoles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayWithHoles.js */ "./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js");
+/* harmony import */ var _iterableToArrayLimit_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterableToArrayLimit.js */ "./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js");
+/* harmony import */ var _unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js");
+/* harmony import */ var _nonIterableRest_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nonIterableRest.js */ "./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js");
+
+
+
+
+function _slicedToArray(arr, i) {
+  return (0,_arrayWithHoles_js__WEBPACK_IMPORTED_MODULE_0__["default"])(arr) || (0,_iterableToArrayLimit_js__WEBPACK_IMPORTED_MODULE_1__["default"])(arr, i) || (0,_unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__["default"])(arr, i) || (0,_nonIterableRest_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _toConsumableArray)
+/* harmony export */ });
+/* harmony import */ var _arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayWithoutHoles.js */ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js");
+/* harmony import */ var _iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js");
+/* harmony import */ var _unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js");
+/* harmony import */ var _nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nonIterableSpread.js */ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js");
+
+
+
+
+function _toConsumableArray(arr) {
+  return (0,_arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__["default"])(arr) || (0,_iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__["default"])(arr) || (0,_unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__["default"])(arr) || (0,_nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _unsupportedIterableToArray)
+/* harmony export */ });
+/* harmony import */ var _arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js");
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(o, minLen);
+}
+
+/***/ }),
+
+/***/ "./node_modules/svelte/index.mjs":
+/*!***************************************!*\
+  !*** ./node_modules/svelte/index.mjs ***!
+  \***************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "SvelteComponent": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.SvelteComponentDev),
+/* harmony export */   "SvelteComponentTyped": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.SvelteComponentTyped),
+/* harmony export */   "afterUpdate": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.afterUpdate),
+/* harmony export */   "beforeUpdate": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.beforeUpdate),
+/* harmony export */   "createEventDispatcher": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.createEventDispatcher),
+/* harmony export */   "getAllContexts": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.getAllContexts),
+/* harmony export */   "getContext": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.getContext),
+/* harmony export */   "hasContext": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.hasContext),
+/* harmony export */   "onDestroy": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.onDestroy),
+/* harmony export */   "onMount": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.onMount),
+/* harmony export */   "setContext": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.setContext),
+/* harmony export */   "tick": () => (/* reexport safe */ _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__.tick)
+/* harmony export */ });
+/* harmony import */ var _internal_index_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./internal/index.mjs */ "./node_modules/svelte/internal/index.mjs");
+
+
+
+/***/ }),
+
 /***/ "./node_modules/svelte/internal/index.mjs":
 /*!************************************************!*\
   !*** ./node_modules/svelte/internal/index.mjs ***!
@@ -10075,19 +13935,46 @@ function loop_guard(timeout) {
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/amd define */
+/******/ 	(() => {
+/******/ 		__webpack_require__.amdD = function () {
+/******/ 			throw new Error('define cannot be used indirect');
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/amd options */
+/******/ 	(() => {
+/******/ 		__webpack_require__.amdO = {};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -10116,6 +14003,15 @@ function loop_guard(timeout) {
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
@@ -10131,14 +14027,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _App_App_svelte__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./App/App.svelte */ "./src/App/App.svelte");
 /* harmony import */ var modern_css_reset__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! modern-css-reset */ "./node_modules/modern-css-reset/dist/reset.min.css");
 /* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./style.css */ "./src/style.css");
-/* harmony import */ var _ConnectionHandler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ConnectionHandler */ "./src/ConnectionHandler.js");
-/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Game */ "./src/Game.js");
-
+/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Game */ "./src/Game.js");
 
 
 
  //const game = new Game();
-//const connectionHandler = new ConnectionHandler();
 
 var app = new _App_App_svelte__WEBPACK_IMPORTED_MODULE_0__["default"]({
   target: document.getElementById('container')
